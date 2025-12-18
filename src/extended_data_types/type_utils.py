@@ -53,12 +53,8 @@ DATE_PATTERN: re.Pattern[str] = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # Matches YY
 DATETIME_PATTERN: re.Pattern[str] = re.compile(
     r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$"
 )  # Matches extended datetime formats like YYYY-MM-DDTHH:MM[:SS][.fff][Z|±hh:mm]
-TIME_PATTERN: re.Pattern[str] = re.compile(
-    r"^\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?$"
-)  # Matches HH:MM[:SS] and microseconds
-PATH_PATTERN: re.Pattern[str] = re.compile(
-    r'^(?:[a-zA-Z]:)?[\\/](?:[^<>:"|?*\n]+[\\/])*[^<>:"|?*\n]*$'
-)
+TIME_PATTERN: re.Pattern[str] = re.compile(r"^\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?$")  # Matches HH:MM[:SS] and microseconds
+PATH_PATTERN: re.Pattern[str] = re.compile(r'^(?:[a-zA-Z]:)?[\\/](?:[^<>:"|?*\n]+[\\/])*[^<>:"|?*\n]*$')
 NUMBER_PATTERN: re.Pattern[str] = re.compile(r"^-?\d+(\.\d+)?$")
 TRUTHY_PATTERN: re.Pattern[str] = re.compile(r"^(y|yes|t|true|on|1)$", re.IGNORECASE)
 FALSY_PATTERN: re.Pattern[str] = re.compile(r"^(n|no|f|false|off|0)$", re.IGNORECASE)
@@ -111,10 +107,7 @@ class ConversionError(ValueError):
         self.value = value
 
         # Handle Path type specially to ensure consistent error messages
-        if expected_type == Path:
-            type_str = "<class 'pathlib.Path'>"
-        else:
-            type_str = str(self.expected_type)
+        type_str = "<class 'pathlib.Path'>" if expected_type == Path else str(self.expected_type)
 
         super().__init__(f"Invalid {type_str} value: {self.value!r}")
 
@@ -200,9 +193,7 @@ def strtoint(val: str, raise_on_error: bool = False) -> int | None:
     return None
 
 
-def strtopath(
-    val: str | bytes | os.PathLike[str] | None, raise_on_error: bool = False
-) -> Path | None:
+def strtopath(val: str | bytes | os.PathLike[str] | None, raise_on_error: bool = False) -> Path | None:
     """Converts a string or byte representation of a path to a pathlib.Path object.
 
     Args:
@@ -398,9 +389,7 @@ def is_potential_json(obj: str) -> bool:
     :param obj: The string to be checked.
     :return: True if the string is a potential JSON object or array, False otherwise.
     """
-    return (obj.startswith("{") and obj.endswith("}")) or (
-        obj.startswith("[") and obj.endswith("]")
-    )
+    return (obj.startswith("{") and obj.endswith("}")) or (obj.startswith("[") and obj.endswith("]"))
 
 
 def reconstruct_special_type(converted_obj: str, fail_silently: bool = False) -> Any:
@@ -459,10 +448,7 @@ def reconstruct_special_types(obj: Any, fail_silently: bool = False) -> Any:
     if isinstance(obj, str):
         return reconstruct_special_type(obj, fail_silently=fail_silently)
     if isinstance(obj, Mapping):
-        return {
-            k: reconstruct_special_types(v, fail_silently=fail_silently)
-            for k, v in obj.items()
-        }
+        return {k: reconstruct_special_types(v, fail_silently=fail_silently) for k, v in obj.items()}
     if isinstance(obj, list):
         return [reconstruct_special_types(v, fail_silently=fail_silently) for v in obj]
     if isinstance(obj, set):

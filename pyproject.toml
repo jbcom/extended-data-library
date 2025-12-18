@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 dependencies = [
@@ -61,14 +62,29 @@ typing = [
 ]
 docs = [
     "sphinx>=7.0",
-    "sphinxawesome-theme>=5.2.0",
-    "sphinx-autodoc2>=0.5.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=2.0.0",
     "myst-parser>=3.0.1",
     "docutils>=0.17",
 ]
 
 [tool.uv]
 required-version = ">=0.5.0"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.github",
+    "/.cursor",
+    "/.kiro",
+    "/.ruler",
+    "/docs",
+    "/memory-bank",
+    "/tests",
+    "/tox.ini",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/extended_data_types"]
 
 [tool.hatch.envs.default]
 type = "virtual"
@@ -107,6 +123,8 @@ exclude_lines = [
 ]
 
 [tool.ruff]
+target-version = "py39"
+line-length = 120
 src = ["extended_data_types", "tests"]
 exclude = ["docs"]
 
@@ -151,6 +169,11 @@ ignore = [
     "TRY",
 ]
 "tests/__init__.py" = ["D100", "D104", "D103"]
+"examples/*" = [
+    "INP001",
+    "T201",
+    "EXE001",
+]
 "src/extended_data_types/transformations/numbers/words.py" = [
     "PLR0912",
     "PLR0124",

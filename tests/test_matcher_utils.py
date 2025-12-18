@@ -26,9 +26,7 @@ from extended_data_types.matcher_utils import is_non_empty_match, is_partial_mat
         ("pre", "suffix", True, False),
     ],
 )
-def test_is_partial_match(
-    a: str, b: str, check_prefix_only: bool, expected: bool
-) -> None:
+def test_is_partial_match(a: str, b: str, check_prefix_only: bool, expected: bool) -> None:
     """Tests partial matching of strings with optional prefix check.
 
     Args:

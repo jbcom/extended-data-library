@@ -135,9 +135,7 @@ def test_filter_list_denylist(test_list: list[str], denylist: list[str]) -> None
     assert result == ["apple", "cherry"]
 
 
-def test_filter_list_allowlist_and_denylist(
-    test_list: list[str], allowlist_and_denylist: dict[str, list[str]]
-) -> None:
+def test_filter_list_allowlist_and_denylist(test_list: list[str], allowlist_and_denylist: dict[str, list[str]]) -> None:
     """Tests filtering a list with both allowlist and denylist.
 
     Args:

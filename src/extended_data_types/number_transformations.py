@@ -233,6 +233,4 @@ def number_to_currency(amount: float, currency: str = "USD", lang: str = "en") -
     try:
         return num2words(amount, to="currency", currency=currency_code, lang=lang_code)
     except NotImplementedError as exc:  # pragma: no cover
-        raise ValueError(
-            f"Currency '{currency}' is not supported for language '{lang_code}'."
-        ) from exc
+        raise ValueError(f"Currency '{currency}' is not supported for language '{lang_code}'.") from exc

@@ -116,10 +116,7 @@ def test_get_available_methods() -> None:
     assert "method_with_noparse" not in available_methods
     assert available_methods["public_method"] == "This is a public method."
     assert "public_method_no_doc" in available_methods
-    assert (
-        available_methods["public_method_no_doc"]
-        == "A public method with no documentation."
-    )
+    assert available_methods["public_method_no_doc"] == "A public method with no documentation."
 
 
 def test_get_inputs_from_docstring() -> None:

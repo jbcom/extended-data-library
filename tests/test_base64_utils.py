@@ -33,9 +33,7 @@ def test_base64_encode_string() -> None:
     raw_data = "test data"
     expected_encoded_data = base64.b64encode(raw_data.encode("utf-8")).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=False)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_bytes() -> None:
@@ -47,9 +45,7 @@ def test_base64_encode_bytes() -> None:
     raw_data = b"test data"
     expected_encoded_data = base64.b64encode(raw_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=False)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_with_wrap() -> None:
@@ -62,9 +58,7 @@ def test_base64_encode_with_wrap() -> None:
     wrapped_data = wrap_raw_data_for_export(raw_data).encode("utf-8")
     expected_encoded_data = base64.b64encode(wrapped_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=True)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_with_bytes_and_wrap() -> None:
@@ -77,9 +71,7 @@ def test_base64_encode_with_bytes_and_wrap() -> None:
     wrapped_data = wrap_raw_data_for_export(raw_data.decode("utf-8")).encode("utf-8")
     expected_encoded_data = base64.b64encode(wrapped_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=True)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_empty_string() -> None:
@@ -91,9 +83,7 @@ def test_base64_encode_empty_string() -> None:
     raw_data = ""
     expected_encoded_data = base64.b64encode(raw_data.encode("utf-8")).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=False)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_empty_bytes() -> None:
@@ -105,9 +95,7 @@ def test_base64_encode_empty_bytes() -> None:
     raw_data = b""
     expected_encoded_data = base64.b64encode(raw_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=False)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_empty_string_with_wrap() -> None:
@@ -120,9 +108,7 @@ def test_base64_encode_empty_string_with_wrap() -> None:
     wrapped_data = wrap_raw_data_for_export(raw_data).encode("utf-8")
     expected_encoded_data = base64.b64encode(wrapped_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=True)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_encode_empty_bytes_with_wrap() -> None:
@@ -135,9 +121,7 @@ def test_base64_encode_empty_bytes_with_wrap() -> None:
     wrapped_data = wrap_raw_data_for_export(raw_data.decode("utf-8")).encode("utf-8")
     expected_encoded_data = base64.b64encode(wrapped_data).decode("utf-8")
     result = base64_encode(raw_data, wrap_raw_data=True)
-    assert result == expected_encoded_data, (
-        f"Expected {expected_encoded_data}, but got {result}."
-    )
+    assert result == expected_encoded_data, f"Expected {expected_encoded_data}, but got {result}."
 
 
 def test_base64_decode_string() -> None:
@@ -149,9 +133,7 @@ def test_base64_decode_string() -> None:
     encoded_data = "dGVzdCBkYXRh"
     expected_decoded_data = "test data"
     result = base64_decode(encoded_data, unwrap_raw_data=False)
-    assert result == expected_decoded_data, (
-        f"Expected {expected_decoded_data}, but got {result}."
-    )
+    assert result == expected_decoded_data, f"Expected {expected_decoded_data}, but got {result}."
 
 
 def test_base64_decode_bytes() -> None:
@@ -163,9 +145,7 @@ def test_base64_decode_bytes() -> None:
     encoded_data = "dGVzdCBkYXRh"
     expected_decoded_data = "test data"
     result = base64_decode(encoded_data, unwrap_raw_data=False)
-    assert result == expected_decoded_data, (
-        f"Expected {expected_decoded_data}, but got {result}."
-    )
+    assert result == expected_decoded_data, f"Expected {expected_decoded_data}, but got {result}."
 
 
 def test_base64_decode_with_unwrap() -> None:

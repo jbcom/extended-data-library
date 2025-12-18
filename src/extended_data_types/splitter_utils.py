@@ -16,9 +16,7 @@ from typing import Any
 from extended_data_types.type_utils import typeof
 
 
-def split_list_by_type(
-    input_list: list[Any], primitive_only: bool = False
-) -> defaultdict[type, list[Any]]:
+def split_list_by_type(input_list: list[Any], primitive_only: bool = False) -> defaultdict[type, list[Any]]:
     """Split a list by the type of its items, with an option to categorize by primitive types only.
 
     Args:
@@ -35,9 +33,7 @@ def split_list_by_type(
     return result
 
 
-def split_dict_by_type(
-    input_dict: dict[Any, Any], primitive_only: bool = False
-) -> defaultdict[type, dict[Any, Any]]:
+def split_dict_by_type(input_dict: dict[Any, Any], primitive_only: bool = False) -> defaultdict[type, dict[Any, Any]]:
     """Split a dictionary by the type of its values, with an option to categorize by primitive types only.
 
     Args:

@@ -181,9 +181,7 @@ def removesuffix_data(request: Any) -> tuple[str, str, str]:
         (memoryview(b"memoryview data"), "memoryview data"),  # Memoryview input
     ],
 )
-def test_bytestostr(
-    input_value: str | memoryview | bytes | bytearray, expected_output: str
-) -> None:
+def test_bytestostr(input_value: str | memoryview | bytes | bytearray, expected_output: str) -> None:
     """Tests converting various byte-like objects and strings into a UTF-8 decoded string.
 
     Args:

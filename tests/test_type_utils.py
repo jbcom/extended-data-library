@@ -51,9 +51,7 @@ def strtobool_data(request: Any) -> tuple[str, bool | None]:
     return request.param
 
 
-@pytest.fixture(
-    params=[("3.14", EXPECTED_FLOAT_1), ("42", EXPECTED_FLOAT_2), ("invalid", None)]
-)
+@pytest.fixture(params=[("3.14", EXPECTED_FLOAT_1), ("42", EXPECTED_FLOAT_2), ("invalid", None)])
 def strtofloat_data(request: Any) -> tuple[str, float | None]:
     """Provides data for testing strtofloat function.
 
@@ -63,9 +61,7 @@ def strtofloat_data(request: Any) -> tuple[str, float | None]:
     return request.param
 
 
-@pytest.fixture(
-    params=[("42", EXPECTED_INT_1), ("3.0", EXPECTED_INT_2), ("invalid", None)]
-)
+@pytest.fixture(params=[("42", EXPECTED_INT_1), ("3.0", EXPECTED_INT_2), ("invalid", None)])
 def strtoint_data(request: Any) -> tuple[str, int | None]:
     """Provides data for testing strtoint function.
 
@@ -92,9 +88,7 @@ def valid_path_data(request: Any) -> tuple[str | bytes | Path | None, Path | Non
     return request.param
 
 
-@pytest.fixture(
-    params=[("invalid:://path", ValueError, True), (b"\x80invalid", ValueError, True)]
-)
+@pytest.fixture(params=[("invalid:://path", ValueError, True), (b"\x80invalid", ValueError, True)])
 def invalid_path_data(request: Any) -> tuple[str | bytes, type[Exception], bool]:
     """Provides invalid input, expected exception type, and raise_on_error flag for testing strtopath.
 
@@ -142,9 +136,7 @@ def strtodate_data(request: Any) -> tuple[str, datetime.date | None]:
         ),
         (
             "2023-09-05T12:30:00.123456",
-            datetime.datetime(
-                2023, 9, 5, 12, 30, 0, 123456, tzinfo=datetime.timezone.utc
-            ),
+            datetime.datetime(2023, 9, 5, 12, 30, 0, 123456, tzinfo=datetime.timezone.utc),
         ),
         ("invalid-datetime", None),
     ]
@@ -187,9 +179,7 @@ def test_strtobool(strtobool_data: tuple[str, bool | None]) -> None:
     val, expected = strtobool_data
     assert strtobool(val) == expected
     if expected is None and val == "invalid":
-        with pytest.raises(
-            ConversionError, match=r"Invalid <class 'bool'> value: 'invalid'"
-        ):
+        with pytest.raises(ConversionError, match=r"Invalid <class 'bool'> value: 'invalid'"):
             strtobool(val, raise_on_error=True)
 
 
@@ -205,9 +195,7 @@ def test_strtofloat(strtofloat_data: tuple[str, float | None]) -> None:
     val, expected = strtofloat_data
     assert strtofloat(val) == expected
     if expected is None and val == "invalid":
-        with pytest.raises(
-            ConversionError, match=r"Invalid <class 'float'> value: 'invalid'"
-        ):
+        with pytest.raises(ConversionError, match=r"Invalid <class 'float'> value: 'invalid'"):
             strtofloat(val, raise_on_error=True)
 
 
@@ -223,9 +211,7 @@ def test_strtoint(strtoint_data: tuple[str, int | None]) -> None:
     val, expected = strtoint_data
     assert strtoint(val) == expected
     if expected is None and val == "invalid":
-        with pytest.raises(
-            ConversionError, match=r"Invalid <class 'int'> value: 'invalid'"
-        ):
+        with pytest.raises(ConversionError, match=r"Invalid <class 'int'> value: 'invalid'"):
             strtoint(val, raise_on_error=True)
 
 
@@ -256,9 +242,7 @@ def test_strtopath_invalid(
         The strtopath function raises the expected exception with the correct error message when the raise_on_error flag is set to True.
     """
     value, expected_exception, raise_on_error = invalid_path_data
-    with pytest.raises(
-        expected_exception, match=r"Invalid <class 'pathlib.Path'> value"
-    ):
+    with pytest.raises(expected_exception, match=r"Invalid <class 'pathlib.Path'> value"):
         strtopath(value, raise_on_error=raise_on_error)
 
 
@@ -475,13 +459,7 @@ def test_reconstruct_special_type(obj: str, expected: Any) -> None:
             ["2023-09-05", {"nested": ["2023-09-05T12:30:00"]}],
             [
                 datetime.date(2023, 9, 5),
-                {
-                    "nested": [
-                        datetime.datetime(
-                            2023, 9, 5, 12, 30, tzinfo=datetime.timezone.utc
-                        )
-                    ]
-                },
+                {"nested": [datetime.datetime(2023, 9, 5, 12, 30, tzinfo=datetime.timezone.utc)]},
             ],
         ),
         (
@@ -498,12 +476,8 @@ def test_reconstruct_special_types(obj: Any, expected: Any) -> None:
 # Test for reconstruct_special_type with fail_silently=True
 def test_reconstruct_special_type_fail_silently() -> None:
     """Tests reconstruction with fail_silently=True, ensuring no exception is raised and original value is returned."""
-    assert (
-        reconstruct_special_type("invalid path:://example") == "invalid path:://example"
-    )
-    assert (
-        reconstruct_special_type("not a number", fail_silently=True) == "not a number"
-    )
+    assert reconstruct_special_type("invalid path:://example") == "invalid path:://example"
+    assert reconstruct_special_type("not a number", fail_silently=True) == "not a number"
 
 
 @pytest.mark.parametrize(
@@ -515,11 +489,7 @@ def test_reconstruct_special_type_fail_silently() -> None:
                 {
                     "nested": [
                         True,
-                        {
-                            "deep": datetime.datetime(
-                                2023, 9, 5, 12, 30, tzinfo=datetime.timezone.utc
-                            )
-                        },
+                        {"deep": datetime.datetime(2023, 9, 5, 12, 30, tzinfo=datetime.timezone.utc)},
                     ]
                 }
             ],
