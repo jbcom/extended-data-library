@@ -74,10 +74,7 @@ def from_roman(numeral: str) -> int:
     result = 0
     index = 0
     while index < len(normalized):
-        if (
-            index + 1 < len(normalized)
-            and normalized[index : index + 2] in _ROMAN_VALUES
-        ):
+        if index + 1 < len(normalized) and normalized[index : index + 2] in _ROMAN_VALUES:
             result += _ROMAN_VALUES[normalized[index : index + 2]]
             index += 2
         elif normalized[index] in _ROMAN_VALUES:
@@ -128,13 +125,9 @@ def from_ordinal(text: str) -> int:
     return words_module.words_to_ordinal(cleaned)
 
 
-def to_words(
-    number: int | float, *, capitalize: bool = False, conjunction: str = " and "
-) -> str:
+def to_words(number: int | float, *, capitalize: bool = False, conjunction: str = " and ") -> str:
     """Expose :func:`number_to_words` via the notation namespace."""
-    return words_module.number_to_words(
-        number, capitalize=capitalize, conjunction=conjunction
-    )
+    return words_module.number_to_words(number, capitalize=capitalize, conjunction=conjunction)
 
 
 def from_words(text: str) -> float:
@@ -142,9 +135,7 @@ def from_words(text: str) -> float:
     return words_module.words_to_number(text)
 
 
-def to_fraction(
-    number: float, *, mixed: bool = False, precision: int | None = None
-) -> str:
+def to_fraction(number: float, *, mixed: bool = False, precision: int | None = None) -> str:
     """Convert a float to a fractional string representation."""
     if not isinstance(number, (int, float)):
         msg = "Fraction conversion expects a real number"
@@ -164,9 +155,7 @@ def to_fraction(
 
     if mixed and fraction.numerator >= fraction.denominator:
         whole = fraction.numerator // fraction.denominator
-        remainder = Fraction(
-            fraction.numerator % fraction.denominator, fraction.denominator
-        )
+        remainder = Fraction(fraction.numerator % fraction.denominator, fraction.denominator)
         if remainder.numerator == 0:
             return f"{sign}{whole}"
         return f"{sign}{whole} {remainder.numerator}/{remainder.denominator}"

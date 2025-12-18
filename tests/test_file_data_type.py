@@ -145,9 +145,7 @@ def test_get_tld(mocker) -> None:
         The result of get_tld matches the expected top-level directory or None if not a repository.
     """
     # Mock get_parent_repository to return a mock Repo instance
-    mock_get_parent_repo = mocker.patch(
-        "extended_data_types.file_data_type.get_parent_repository"
-    )
+    mock_get_parent_repo = mocker.patch("extended_data_types.file_data_type.get_parent_repository")
     mock_repo_instance = mocker.Mock(spec=Repo)
     mock_repo_instance.working_tree_dir = "/valid/repo"
     mock_get_parent_repo.return_value = mock_repo_instance
@@ -198,9 +196,7 @@ def test_match_file_extensions(
         ("/path/to/file.unknown", "raw"),
     ],
 )
-def test_get_encoding_for_file_path(
-    file_path: FilePath, expected_encoding: str
-) -> None:
+def test_get_encoding_for_file_path(file_path: FilePath, expected_encoding: str) -> None:
     """Tests retrieving the file encoding based on file extension.
 
     Args:

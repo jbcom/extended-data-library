@@ -28,9 +28,7 @@ def decode_yaml(yaml_data: str | memoryview | bytes | bytearray) -> Any:
     try:
         yaml_data = bytestostr(yaml_data)
     except UnicodeDecodeError as exc:
-        raise yaml.YAMLError(
-            f"Failed to decode bytes to string: {yaml_data!r}"
-        ) from exc
+        raise yaml.YAMLError(f"Failed to decode bytes to string: {yaml_data!r}") from exc
     return yaml.load(yaml_data, Loader=PureLoader)  # noqa: S506
 
 

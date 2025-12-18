@@ -315,9 +315,7 @@ def test_get_default_dict() -> None:
 
     assert result["key"]["subkey"] == "value"
     assert isinstance(result["key"], dict)
-    assert isinstance(
-        result["key"]["subkey"], str
-    )  # Final level contains the assigned value.
+    assert isinstance(result["key"]["subkey"], str)  # Final level contains the assigned value.
 
 
 def test_get_default_dict_sorted() -> None:
@@ -365,12 +363,8 @@ def test_get_default_dict_multiple_levels() -> None:
     result["key1"]["key2"]["key3"] = "value"
 
     assert result["key1"]["key2"]["key3"] == "value"
-    assert isinstance(
-        result["key1"]["key2"], defaultdict
-    )  # Intermediate levels are defaultdict.
-    assert isinstance(
-        result["key1"]["key2"]["key3"], str
-    )  # Final level contains the assigned value.
+    assert isinstance(result["key1"]["key2"], defaultdict)  # Intermediate levels are defaultdict.
+    assert isinstance(result["key1"]["key2"]["key3"], str)  # Final level contains the assigned value.
 
 
 def test_get_default_dict_single_level() -> None:
@@ -412,9 +406,7 @@ def test_get_default_dict_invalid_levels() -> None:
     Asserts:
         - A ValueError is raised when levels < 1.
     """
-    with pytest.raises(
-        ValueError, match=r"The number of levels must be greater than or equal to 1\."
-    ):
+    with pytest.raises(ValueError, match=r"The number of levels must be greater than or equal to 1\."):
         get_default_dict(levels=0)
 
 
@@ -435,9 +427,7 @@ def test_unhump_map(camel_case_map: dict) -> None:
     }
 
 
-def test_filter_map(
-    filter_map_data: dict, allowlist: list[str], denylist: list[str]
-) -> None:
+def test_filter_map(filter_map_data: dict, allowlist: list[str], denylist: list[str]) -> None:
     """Tests filtering a map using allowlist and denylist.
 
     Args:

@@ -106,15 +106,10 @@ def get_inputs_from_docstring(docstring: str) -> dict[str, dict[str, str]]:
     """
     input_pattern = r"name: (\w+), required: (true|false), sensitive: (true|false)"
     matches = re.findall(input_pattern, docstring or "")
-    return {
-        name.lower(): {"required": required, "sensitive": sensitive}
-        for name, required, sensitive in matches
-    }
+    return {name.lower(): {"required": required, "sensitive": sensitive} for name, required, sensitive in matches}
 
 
-def update_docstring(
-    original_docstring: str, new_inputs: dict[str, dict[str, str]]
-) -> str:
+def update_docstring(original_docstring: str, new_inputs: dict[str, dict[str, str]]) -> str:
     """Update the docstring with new input definitions.
 
     Args:
@@ -169,6 +164,4 @@ def current_python_version_is_at_least(minor: int, major: int = 3) -> bool:
     Returns:
         bool: True if the current Python version is at least the specified version, False otherwise.
     """
-    return (sys.version_info.major > major) or (
-        sys.version_info.major == major and sys.version_info.minor >= minor
-    )
+    return (sys.version_info.major > major) or (sys.version_info.major == major and sys.version_info.minor >= minor)

@@ -34,9 +34,7 @@ FilePath: TypeAlias = Union[str, os.PathLike[str]]
 """Type alias for file paths that can be represented as strings or os.PathLike objects."""
 
 
-def get_parent_repository(
-    file_path: FilePath | None = None, search_parent_directories: bool = True
-) -> Repo | None:
+def get_parent_repository(file_path: FilePath | None = None, search_parent_directories: bool = True) -> Repo | None:
     """Retrieves the Git repository object for a given path.
 
     Args:
@@ -89,15 +87,11 @@ def clone_repository_to_temp(
     Raises:
         EnvironmentError: If errors occur while trying to clone a Git repository.
     """
-    repo_url = (
-        f"https://{github_token}:x-oauth-basic@github.com/{repo_owner}/{repo_name}.git"
-    )
+    repo_url = f"https://{github_token}:x-oauth-basic@github.com/{repo_owner}/{repo_name}.git"
 
     try:
         temp_dir = Path(tempfile.mkdtemp())
-        repo = Repo.clone_from(
-            repo_url, str(temp_dir), branch=branch if branch else None
-        )
+        repo = Repo.clone_from(repo_url, str(temp_dir), branch=branch if branch else None)
         return temp_dir, repo
     except GitCommandError as e:
         error_message = "Git command error occurred"
@@ -113,9 +107,7 @@ def clone_repository_to_temp(
         raise OSError(error_message) from e
 
 
-def get_tld(
-    file_path: FilePath | None = None, search_parent_directories: bool = True
-) -> Path | None:
+def get_tld(file_path: FilePath | None = None, search_parent_directories: bool = True) -> Path | None:
     """Retrieves the top-level directory of a Git repository.
 
     Args:
@@ -128,9 +120,7 @@ def get_tld(
         Path | None: The resolved top-level directory of the Git repository if found,
         otherwise None if the path is not a Git repository.
     """
-    repo = get_parent_repository(
-        file_path, search_parent_directories=search_parent_directories
-    )
+    repo = get_parent_repository(file_path, search_parent_directories=search_parent_directories)
     return Path(repo.working_tree_dir) if repo and repo.working_tree_dir else None
 
 
@@ -149,24 +139,13 @@ def match_file_extensions(
     Returns:
         bool: True if the file's extension is allowed and not denied, otherwise False.
     """
-    allowed_extensions = [
-        ext.removeprefix(".").lower() for ext in (allowed_extensions or [])
-    ]
-    denied_extensions = [
-        ext.removeprefix(".").lower() for ext in (denied_extensions or [])
-    ]
+    allowed_extensions = [ext.removeprefix(".").lower() for ext in (allowed_extensions or [])]
+    denied_extensions = [ext.removeprefix(".").lower() for ext in (denied_extensions or [])]
 
     p = Path(p)
-    suffix = (
-        p.name.removeprefix(".")
-        if p.name.startswith(".")
-        else p.suffix.removeprefix(".")
-    ).lower()
+    suffix = (p.name.removeprefix(".") if p.name.startswith(".") else p.suffix.removeprefix(".")).lower()
 
-    return not (
-        (allowed_extensions and suffix not in allowed_extensions)
-        or suffix in denied_extensions
-    )
+    return not ((allowed_extensions and suffix not in allowed_extensions) or suffix in denied_extensions)
 
 
 def get_encoding_for_file_path(file_path: FilePath) -> str:
@@ -253,9 +232,7 @@ def resolve_local_path(file_path: FilePath, tld: Path | None = None) -> Path:
         tld = get_tld()
 
     if tld is None:
-        raise RuntimeError(
-            f"Cannot resolve relative path '{file_path}' without a top-level directory"
-        )
+        raise RuntimeError(f"Cannot resolve relative path '{file_path}' without a top-level directory")
 
     return Path(tld, file_path).resolve()
 
@@ -426,9 +403,7 @@ def write_file(
     return local_path
 
 
-def delete_file(
-    file_path: FilePath, tld: Path | None = None, missing_ok: bool = True
-) -> bool:
+def delete_file(file_path: FilePath, tld: Path | None = None, missing_ok: bool = True) -> bool:
     """Deletes a file at the given path.
 
     Args:

@@ -85,9 +85,7 @@ _ORDINAL_SCALE_MAP: dict[str, str] = {
 
 _DIGIT_WORDS: dict[str, int] = {
     word: value
-    for value, word in enumerate(
-        ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-    )
+    for value, word in enumerate(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"])
 }
 
 
@@ -160,13 +158,9 @@ def _tokenize(text: str) -> list[str]:
     return tokens
 
 
-def number_to_words(
-    number: int | float, *, capitalize: bool = False, conjunction: str = " and "
-) -> str:
+def number_to_words(number: int | float, *, capitalize: bool = False, conjunction: str = " and ") -> str:
     """Convert numbers to English words."""
-    if isinstance(number, float) and (
-        number != number or number in {float("inf"), -float("inf")}
-    ):
+    if isinstance(number, float) and (number != number or number in {float("inf"), -float("inf")}):
         msg = "Cannot convert non-finite numbers"
         raise ValueError(msg)
 
@@ -264,12 +258,8 @@ def fraction_to_words(fraction: str, *, capitalize: bool = False) -> str:
     if remainder.numerator:
         if whole:
             parts.append("and")
-        use_article = (
-            remainder.numerator == 1 and remainder.denominator == 2 and whole > 0
-        )
-        numerator_words = (
-            "a" if use_article else num2words(remainder.numerator, lang="en")
-        )
+        use_article = remainder.numerator == 1 and remainder.denominator == 2 and whole > 0
+        numerator_words = "a" if use_article else num2words(remainder.numerator, lang="en")
         plural = remainder.numerator != 1
         denom_word = _denominator_word(remainder.denominator, plural)
         parts.append(f"{numerator_words} {denom_word}")

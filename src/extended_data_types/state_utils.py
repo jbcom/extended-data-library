@@ -68,9 +68,7 @@ def are_nothing(*args: Any, **kwargs: Any) -> bool:
     return False
 
 
-def all_non_empty(
-    *args: Any, **kwargs: Any
-) -> list[Any] | dict[str, Any] | tuple[list[Any], dict[str, Any]] | None:
+def all_non_empty(*args: Any, **kwargs: Any) -> list[Any] | dict[str, Any] | tuple[list[Any], dict[str, Any]] | None:
     """Returns all non-empty values from the provided args and kwargs.
 
     Args:
@@ -128,11 +126,7 @@ def first_non_empty(*vals: Any) -> Any:
         Any: The first non-empty value, or None if all are 'nothing'.
     """
     non_empty_vals = all_non_empty(*vals)
-    return (
-        non_empty_vals[0]
-        if isinstance(non_empty_vals, list) and non_empty_vals
-        else None
-    )
+    return non_empty_vals[0] if isinstance(non_empty_vals, list) and non_empty_vals else None
 
 
 def any_non_empty(m: dict[Any, Any], *keys: Any) -> dict[Any, Any]:
@@ -152,9 +146,7 @@ def any_non_empty(m: dict[Any, Any], *keys: Any) -> dict[Any, Any]:
     return {}
 
 
-def yield_non_empty(
-    m: dict[Any, Any], *keys: Any
-) -> Generator[dict[Any, Any], None, None]:
+def yield_non_empty(m: dict[Any, Any], *keys: Any) -> Generator[dict[Any, Any], None, None]:
     """Yields non-empty values from a mapping for the given keys.
 
     Args:

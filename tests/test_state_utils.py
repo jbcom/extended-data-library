@@ -69,9 +69,7 @@ def test_is_nothing(value: Any, expected: bool) -> None:
         (([], {"a": "A"}, [], {"b": "B"}), {}, False),
     ],
 )
-def test_are_nothing(
-    values: tuple[Any, ...], kwargs: dict[str, Any], expected: bool
-) -> None:
+def test_are_nothing(values: tuple[Any, ...], kwargs: dict[str, Any], expected: bool) -> None:
     """Tests determining if all values in a set of inputs are "nothing".
 
     Args:
@@ -134,9 +132,7 @@ def test_all_non_empty(args, kwargs, expected):
         The result of all_non_empty matches the expected value.
     """
     result = all_non_empty(*args, **kwargs)
-    assert result == expected, (
-        f"Args: '{args}', Kwargs: '{kwargs}', Expected {expected}, got {result}"
-    )
+    assert result == expected, f"Args: '{args}', Kwargs: '{kwargs}', Expected {expected}, got {result}"
 
 
 @pytest.mark.parametrize(
@@ -168,9 +164,7 @@ def test_first_non_empty(values: tuple[Any, ...], expected: Any) -> None:
         ({"key1": "value1", "key2": "value2"}, ("key3", "key1"), {"key1": "value1"}),
     ],
 )
-def test_any_non_empty(
-    mapping: dict[str, Any], keys: tuple[str, ...], expected: dict[str, Any]
-) -> None:
+def test_any_non_empty(mapping: dict[str, Any], keys: tuple[str, ...], expected: dict[str, Any]) -> None:
     """Tests retrieving any non-empty values from a mapping given a set of keys.
 
     Args:

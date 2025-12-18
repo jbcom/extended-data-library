@@ -9,10 +9,7 @@ import inflection
 
 def pluralize(word: str, count: int | None = None) -> str:
     """Return the plural form of *word*, honoring an optional count."""
-    if word.lower() == "criterion":
-        base_plural = "criteria"
-    else:
-        base_plural = inflection.pluralize(word)
+    base_plural = "criteria" if word.lower() == "criterion" else inflection.pluralize(word)
 
     if count is None:
         return base_plural

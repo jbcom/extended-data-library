@@ -58,11 +58,7 @@ def wrap_raw_data_for_export(
         # Attempt to convert string-based allow_encoding to a boolean
         try:
             allow_encoding_bool = strtobool(allow_encoding, raise_on_error=True)
-            allow_encoding = (
-                allow_encoding_bool
-                if isinstance(allow_encoding_bool, bool)
-                else allow_encoding
-            )
+            allow_encoding = allow_encoding_bool if isinstance(allow_encoding_bool, bool) else allow_encoding
         except ValueError as e:
             raise ValueError(f"Invalid allow_encoding value: {allow_encoding}") from e
 
@@ -106,15 +102,9 @@ def make_raw_data_export_safe(raw_data: Any, export_to_yaml: bool = False) -> An
         'LiteralScalarString'
     """
     if isinstance(raw_data, dict):
-        return {
-            k: make_raw_data_export_safe(v, export_to_yaml=export_to_yaml)
-            for k, v in raw_data.items()
-        }
+        return {k: make_raw_data_export_safe(v, export_to_yaml=export_to_yaml) for k, v in raw_data.items()}
     elif isinstance(raw_data, (set, list, tuple, frozenset)):
-        return [
-            make_raw_data_export_safe(v, export_to_yaml=export_to_yaml)
-            for v in raw_data
-        ]
+        return [make_raw_data_export_safe(v, export_to_yaml=export_to_yaml) for v in raw_data]
 
     exported_data = raw_data
 
@@ -136,11 +126,7 @@ def make_raw_data_export_safe(raw_data: Any, export_to_yaml: bool = False) -> An
     exported_data = exported_data.replace("${{ ", "${{").replace(" }}", "}}")
 
     # Use literal string format for multiline or command strings
-    if (
-        len(exported_data.splitlines()) > 1
-        or "||" in exported_data
-        or "&&" in exported_data
-    ):
+    if len(exported_data.splitlines()) > 1 or "||" in exported_data or "&&" in exported_data:
         return LiteralScalarString(exported_data)
 
     return exported_data
