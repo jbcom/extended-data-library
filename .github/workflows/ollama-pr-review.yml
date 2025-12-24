@@ -40,7 +40,7 @@ jobs:
   # ============================================
   initial-review:
     name: Initial Code Review
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     outputs:
       pr_number: ${{ github.event.pull_request.number }}
@@ -262,7 +262,7 @@ jobs:
         run: git checkout "$HEAD_REF"
 
       - name: Download review artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ollama-review
           path: /tmp
