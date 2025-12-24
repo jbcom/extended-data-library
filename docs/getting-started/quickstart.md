@@ -1,15 +1,16 @@
 # Quickstart
 
-This guide will help you get started with PACKAGE_NAME.
+This guide will help you get started with extended-data-types.
 
 ## Basic Usage
 
 ```python
 # TODO: Add basic usage example
-from PACKAGE_NAME import example
+from extended_data_types import json_utils
 
-result = example.do_something()
-print(result)
+data = {"key": "value"}
+json_str = json_utils.encode_json(data)
+print(json_str)
 ```
 
 ## Next Steps

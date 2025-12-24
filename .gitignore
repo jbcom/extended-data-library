@@ -114,3 +114,4 @@ uv.lock
 /tests/CLAUDE.md
 /tests/CLAUDE.md.bak
 # END Ruler Generated Files
+docs/_build/

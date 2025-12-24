@@ -9,17 +9,17 @@
 
 ```bash
 # Using uv (recommended)
-uv add PACKAGE_NAME
+uv add extended-data-types
 
 # Using pip
-pip install PACKAGE_NAME
+pip install extended-data-types
 ```
 
 ## Install from Source
 
 ```bash
-git clone https://github.com/jbcom/PACKAGE_NAME.git
-cd PACKAGE_NAME
+git clone https://github.com/jbcom/extended-data-types.git
+cd extended-data-types
 uv sync
 ```
 
@@ -27,7 +27,7 @@ uv sync
 
 ```bash
 # Clone and install with dev dependencies
-git clone https://github.com/jbcom/PACKAGE_NAME.git
-cd PACKAGE_NAME
+git clone https://github.com/jbcom/extended-data-types.git
+cd extended-data-types
 uv sync --extra dev --extra docs
 ```

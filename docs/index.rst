@@ -1,8 +1,8 @@
-.. PACKAGE_NAME documentation master file
+.. extended-data-types documentation master file
    Synced from jbcom-control-center - customize for your project
 
 =======================================
-PACKAGE_NAME Documentation
+extended-data-types Documentation
 =======================================
 
 .. TODO: Add your project description here
