@@ -1,0 +1,197 @@
+/* jbcom Brand - Dark Theme for Sphinx RTD Theme */
+/* Color Palette */
+:root {
+    --jbcom-bg: #0a0f1a;
+    --jbcom-surface: #111827;
+    --jbcom-primary: #06b6d4;
+    --jbcom-secondary: #3b82f6;
+    --jbcom-text-primary: #f1f5f9;
+    --jbcom-text-secondary: #94a3b8;
+    --jbcom-success: #10b981;
+    --jbcom-warning: #f59e0b;
+    --jbcom-error: #ef4444;
+}
+
+/* Dark Theme Base */
+body, .wy-nav-content-wrap {
+    background-color: var(--jbcom-bg) !important;
+    color: var(--jbcom-text-primary) !important;
+}
+
+.wy-nav-content {
+    background-color: var(--jbcom-bg) !important;
+    color: var(--jbcom-text-primary) !important;
+    max-width: 900px;
+}
+
+/* Sidebar */
+.wy-side-nav-search {
+    background-color: var(--jbcom-surface) !important;
+}
+
+.wy-menu-vertical {
+    background-color: var(--jbcom-surface) !important;
+}
+
+.wy-menu-vertical a {
+    color: var(--jbcom-text-secondary) !important;
+}
+
+.wy-menu-vertical a:hover {
+    background-color: rgba(6, 182, 212, 0.1) !important;
+    color: var(--jbcom-primary) !important;
+}
+
+.wy-menu-vertical li.current > a {
+    background-color: rgba(6, 182, 212, 0.2) !important;
+    color: var(--jbcom-primary) !important;
+    border-right: 3px solid var(--jbcom-primary) !important;
+}
+
+/* Typography - Headings with Space Grotesk feel */
+h1, h2, h3, h4, h5, h6, .rst-content .toctree-wrapper p.caption {
+    color: var(--jbcom-text-primary) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em;
+}
+
+h1 { font-weight: 700 !important; }
+
+/* Body text - Inter feel */
+body, p, li, td, th {
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* Code blocks - JetBrains Mono feel */
+code, pre, .highlight {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 400;
+}
+
+.highlight {
+    background-color: var(--jbcom-surface) !important;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 6px;
+    padding: 1em;
+}
+
+code.literal {
+    background-color: var(--jbcom-surface) !important;
+    color: var(--jbcom-primary) !important;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Links */
+a, a:visited {
+    color: var(--jbcom-primary) !important;
+}
+
+a:hover {
+    color: var(--jbcom-secondary) !important;
+}
+
+/* Tables */
+table.docutils {
+    border-collapse: collapse;
+    background-color: var(--jbcom-surface);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+table.docutils td, table.docutils th {
+    padding: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: var(--jbcom-text-primary);
+}
+
+table.docutils th {
+    background-color: rgba(6, 182, 212, 0.1);
+    font-weight: 600;
+    color: var(--jbcom-primary);
+}
+
+/* Admonitions */
+.admonition {
+    background-color: var(--jbcom-surface);
+    border-left: 4px solid var(--jbcom-primary);
+    border-radius: 4px;
+    padding: 1em;
+    margin: 1em 0;
+}
+
+.admonition.note {
+    border-left-color: var(--jbcom-secondary);
+}
+
+.admonition.warning {
+    border-left-color: var(--jbcom-warning);
+}
+
+.admonition.danger, .admonition.error {
+    border-left-color: var(--jbcom-error);
+}
+
+.admonition.tip, .admonition.hint {
+    border-left-color: var(--jbcom-success);
+}
+
+.admonition-title {
+    color: var(--jbcom-text-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Search box */
+.wy-side-nav-search input[type=text] {
+    background-color: var(--jbcom-bg) !important;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    color: var(--jbcom-text-primary) !important;
+}
+
+.wy-side-nav-search input[type=text]:focus {
+    border-color: var(--jbcom-primary);
+}
+
+/* Footer */
+.rst-footer-buttons {
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+footer {
+    color: var(--jbcom-text-secondary) !important;
+}
+
+/* Accessibility - Focus states */
+a:focus, button:focus, input:focus {
+    outline: 2px solid var(--jbcom-primary);
+    outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--jbcom-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--jbcom-surface);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.3);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
