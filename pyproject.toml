@@ -222,8 +222,8 @@ ignore_missing_imports = true
 
 # Python Semantic Release configuration
 [tool.semantic_release]
-build_command = "uv build"
-commit_message = "chore(release): release v{version} [skip ci]"
+# Build happens in CI, not in semantic-release
+commit_message = "chore(release): v{version} [skip ci]"
 allow_zero_version = true
 tag_format = "v{version}"
 version_toml = ["pyproject.toml:project.version"]
@@ -241,7 +241,6 @@ prerelease = false
 
 # Changelog configuration
 [tool.semantic_release.changelog]
-template_dir = "templates"
 changelog_file = "CHANGELOG.md"
 exclude_commit_patterns = []
 
