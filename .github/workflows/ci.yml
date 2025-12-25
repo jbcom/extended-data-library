@@ -147,12 +147,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: semantic-release version
 
-      - name: Download packages
+      - name: Build packages with new version
         if: steps.check.outputs.should_release == 'true'
-        uses: actions/download-artifact@v7
-        with:
-          name: Packages
-          path: dist
+        run: |
+          uv build
+          ls -lh dist/
 
       - name: Publish to PyPI
         if: steps.check.outputs.should_release == 'true'
