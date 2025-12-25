@@ -110,92 +110,50 @@ jobs:
     needs: [build, test, lint]
     runs-on: ubuntu-latest
     
-    # Request elevated permissions for this job
+    # CRITICAL: These permissions allow semantic-release to work
     permissions:
-      contents: write      # To push commits and tags
-      id-token: write      # For PyPI trusted publishing
-      pull-requests: write # To create release PRs if needed
+      contents: write      # Create commits and tags
+      id-token: write      # PyPI Trusted Publishing
+      pull-requests: write # Not strictly needed but good practice
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Use default token - has write access with job permissions
-          token: ${{ github.token }}
+          # IMPORTANT: persist-credentials must be true for push to work
           persist-credentials: true
 
-      - name: Configure Git
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Configure git credential helper to use the GitHub token
-          git config --global credential.helper store
-          echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
-      - uses: hynek/setup-cached-uv@v2
+      - name: Setup UV
+        uses: hynek/setup-cached-uv@v2
 
-      - name: Install python-semantic-release
-        run: uv tool install python-semantic-release
-
-      - name: Check if release needed
-        id: check
-        run: |
-          NEW_VERSION=$(semantic-release --noop version --print 2>/dev/null || echo "")
-          if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "No release will be made" ]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-            echo "📦 Will release version: $NEW_VERSION"
-          else
-            echo "should_release=false" >> $GITHUB_OUTPUT
-            echo "ℹ️  No release needed - no conventional commits since last release"
-          fi
-
-      - name: Run semantic-release
-        if: steps.check.outputs.should_release == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # Run semantic-release which will:
-          # 1. Bump version in files
-          # 2. Update CHANGELOG
-          # 3. Create commit  
-          # 4. Create and push tag
-          semantic-release version --skip-build
-
-      - name: Build packages with new version
-        if: steps.check.outputs.should_release == 'true'
-        run: |
-          uv build
-          echo "📦 Built packages:"
-          ls -lh dist/
+      # Use the official python-semantic-release GitHub Action
+      # This is the recommended best practice approach
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.14.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Build command from pyproject.toml will be used
+          root_options: "-vv"
 
       - name: Publish to PyPI
-        if: steps.check.outputs.should_release == 'true'
+        if: steps.release.outputs.released == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          # Use the new synced token
           password: ${{ secrets.PYPI_TOKEN }}
-          skip-existing: true
           verbose: true
+          skip-existing: true
 
-      - name: Create GitHub Release
-        if: steps.check.outputs.should_release == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          NEW_VERSION="${{ steps.check.outputs.version }}"
-          
-          # Extract changelog for this version
-          CHANGELOG_SECTION=$(awk "/^## v?${NEW_VERSION}/,/^## v?[0-9]/" CHANGELOG.md | head -n -1 || echo "See CHANGELOG.md for details")
-          
-          # Create GitHub release
-          gh release create "v${NEW_VERSION}" \
-            --title "Release v${NEW_VERSION}" \
-            --notes "${CHANGELOG_SECTION}" \
-            --verify-tag \
-            dist/*
-          
-          echo "✅ Released v${NEW_VERSION}"
+      - name: Publish to GitHub Releases
+        if: steps.release.outputs.released == 'true'
+        uses: python-semantic-release/publish-action@v9.14.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.release.outputs.tag }}

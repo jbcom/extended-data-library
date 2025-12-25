@@ -229,6 +229,24 @@ tag_format = "v{version}"
 version_toml = ["pyproject.toml:project.version"]
 version_variables = ["src/extended_data_types/__init__.py:__version__"]
 
+# Configure for GitHub
+[tool.semantic_release.remote]
+name = "origin"
+type = "github"
+ignore_token_for_push = false
+
 [tool.semantic_release.branches.main]
 match = "main"
 prerelease = false
+
+# Changelog configuration
+[tool.semantic_release.changelog]
+template_dir = "templates"
+changelog_file = "CHANGELOG.md"
+exclude_commit_patterns = []
+
+# Commit parser configuration  
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["feat", "fix", "docs", "style", "refactor", "perf", "test", "chore", "ci", "build", "revert"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
