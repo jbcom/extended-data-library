@@ -117,24 +117,24 @@ jobs:
       pull-requests: write # To create release PRs if needed
 
     steps:
-      - name: Checkout with elevated token
+      - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Use the CI token that has bypass permissions
-          token: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+          # Use default token - has write access with job permissions
+          token: ${{ github.token }}
           persist-credentials: true
 
-      - name: Configure Git with token in URL
+      - name: Configure Git
         env:
-          GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Configure git credential helper to use the token
+          # Configure git credential helper to use the GitHub token
           git config --global credential.helper store
-          echo "https://x-access-token:${GH_TOKEN}@github.com" > ~/.git-credentials
+          echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
 
       - uses: hynek/setup-cached-uv@v2
 
@@ -157,12 +157,12 @@ jobs:
       - name: Run semantic-release
         if: steps.check.outputs.should_release == 'true'
         env:
-          GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Run semantic-release which will:
           # 1. Bump version in files
           # 2. Update CHANGELOG
-          # 3. Create commit
+          # 3. Create commit  
           # 4. Create and push tag
           semantic-release version --skip-build
 
@@ -184,7 +184,7 @@ jobs:
       - name: Create GitHub Release
         if: steps.check.outputs.should_release == 'true'
         env:
-          GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           NEW_VERSION="${{ steps.check.outputs.version }}"
           
