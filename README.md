@@ -1,13 +1,17 @@
-# Extended Data Types
+# @extended-data-library/core
 
-[![Extended Data Types Logo](docs/_static/logo.png)](https://github.com/jbcom/extended-data-types)
+[![Extended Data Types Logo](docs/_static/logo.png)](https://github.com/extended-data-library/core)
 
 *🐍 Supercharge your Python data types! 🚀*
 
-[![CI Status](https://github.com/jbcom/extended-data-types/workflows/CI/badge.svg)](https://github.com/jbcom/extended-data-types/actions?query=workflow%3ACI)
-[![Documentation Status](https://readthedocs.org/projects/extended-data-types/badge/?version=latest)](https://extended-data-types.readthedocs.io/en/latest/?badge=latest)
+[![CI Status](https://github.com/extended-data-library/core/workflows/CI/badge.svg)](https://github.com/extended-data-library/core/actions?query=workflow%3ACI)
+[![Documentation Status](https://extendeddata.dev)](https://extendeddata.dev)
 [![PyPI Package latest release](https://img.shields.io/pypi/v/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
 [![Supported versions](https://img.shields.io/pypi/pyversions/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
+
+## 🏢 Enterprise Context
+
+**Extended Data** is the Infrastructure & Libs division of the [jbcom enterprise](https://jbcom.github.io). This core library is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Agentic](https://agentic.dev) and [Strata](https://strata.game).
 
 Extended Data Types is a Python library that provides additional functionality for Python's standard data types. It includes utilities for handling YAML, JSON, Base64, file paths, strings, lists, maps, and more.
 
