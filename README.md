@@ -80,3 +80,58 @@ Extended Data Types is written and maintained by [Jon Bogaty](mailto:jon@jonboga
 - [**GitHub**](https://github.com/jbcom/extended-data-types)
 - [**Documentation**](https://extended-data-types.readthedocs.io/en/latest/)
 - [**Changelog**](https://github.com/jbcom/extended-data-types/tree/main/CHANGELOG.md)
+
+## MCP Server
+
+This library includes an MCP (Model Context Protocol) server that provides natural language API documentation and usage guidance for all extended-data-types utilities. This allows AI agents to discover and effectively use the 90+ functions in this library.
+
+### Installation
+
+To use the MCP server, install the library with the `mcp` extra:
+
+```bash
+pip install "extended-data-types[mcp]"
+```
+
+### Usage
+
+The MCP server can be started from the command line:
+
+```bash
+edt-mcp
+```
+
+By default, the server runs in stdio mode. To run it as an HTTP server, use the `--transport http` flag:
+
+```bash
+edt-mcp --transport http --host 127.0.0.1 --port 8080
+```
+
+### Configuration Examples
+
+Here are some examples of how to configure various AI tools to use the extended-data-types MCP server.
+
+**VS Code (with an MCP client extension):**
+
+```json
+{
+  "mcp.servers": {
+    "extended-data-types": {
+      "command": "edt-mcp"
+    }
+  }
+}
+```
+
+**Cursor:**
+
+```json
+{
+  "mcpServers": {
+    "extended-data-types": {
+      "command": "uvx",
+      "args": ["--from", "extended-data-types[mcp]", "edt-mcp"]
+    }
+  }
+}
+```

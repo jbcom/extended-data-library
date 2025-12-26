@@ -46,7 +46,13 @@ Documentation = "https://github.com/jbcom/extended-data-types#readme"
 Issues = "https://github.com/jbcom/extended-data-types/issues"
 Source = "https://github.com/jbcom/extended-data-types"
 
+[project.scripts]
+edt-mcp = "extended_data_types.mcp_server.cli:main"
+
 [project.optional-dependencies]
+mcp = [
+    "mcp>=1.0.0",
+]
 tests = [
     "pytest>=8.2.2",
     "pytest-cov>=5.0.0",
