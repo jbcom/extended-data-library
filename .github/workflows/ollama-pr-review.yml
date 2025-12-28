@@ -47,30 +47,33 @@ jobs:
       recommendation: ${{ steps.review.outputs.recommendation }}
     
     steps:
-      - name: Check required secrets
-        env:
-          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-        run: |
-          if [[ -z "$OLLAMA_API_KEY" ]]; then
-            echo "::error::OLLAMA_API_KEY secret is not configured"
-            exit 1
-          fi
-
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows
-          token: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows, fallback to GITHUB_TOKEN
+          token: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+
+      - name: Check OLLAMA_API_KEY
+        id: check_secret
+        run: |
+          if [[ -z "${{ secrets.OLLAMA_API_KEY }}" ]]; then
+            echo "::warning::OLLAMA_API_KEY secret is not configured. Skipping review."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get PR diff
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr diff ${{ github.event.pull_request.number }} --color=never > /tmp/pr_diff.txt
 
       - name: Generate structured review
+        if: steps.check_secret.outputs.skip == 'false'
         id: review
         env:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
@@ -166,7 +169,7 @@ jobs:
           echo "auto_apply=$(jq -r '.auto_apply' /tmp/review.json)" >> $GITHUB_OUTPUT
 
       - name: Apply safe fixes
-        if: steps.review.outputs.auto_apply == 'true'
+        if: steps.check_secret.outputs.skip == 'false' && steps.review.outputs.auto_apply == 'true'
         run: |
           jq -c '.fixes[]' /tmp/review.json | while read -r fix; do
             FILE=$(echo "$fix" | jq -r '.file')
@@ -192,13 +195,14 @@ jobs:
           done
 
       - name: Commit fixes
-        if: steps.review.outputs.auto_apply == 'true'
+        if: steps.check_secret.outputs.skip == 'false' && steps.review.outputs.auto_apply == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "fix: auto-apply safe improvements (Ollama)"
           branch: ${{ github.head_ref }}
 
       - name: Submit review
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -231,6 +235,7 @@ jobs:
             -f body="$BODY" -f event="$EVENT" || gh pr comment ${{ github.event.pull_request.number }} --body "$BODY"
 
       - name: Upload review artifact
+        if: steps.check_secret.outputs.skip == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: ollama-review
@@ -253,21 +258,34 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows
-          token: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows, fallback to GITHUB_TOKEN
+          token: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+
+      - name: Check OLLAMA_API_KEY
+        id: check_secret
+        run: |
+          if [[ -z "${{ secrets.OLLAMA_API_KEY }}" ]]; then
+            echo "::warning::OLLAMA_API_KEY secret is not configured. Skipping."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Checkout PR branch
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           HEAD_REF: ${{ github.head_ref }}
         run: git checkout "$HEAD_REF"
 
       - name: Download review artifact
+        if: steps.check_secret.outputs.skip == 'false'
         uses: actions/download-artifact@v7
         with:
           name: ollama-review
           path: /tmp
 
       - name: Analyze and resolve our own issues
+        if: steps.check_secret.outputs.skip == 'false'
         id: resolve
         env:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
@@ -359,7 +377,7 @@ jobs:
           echo "resolved=$ALL_RESOLVED" >> $GITHUB_OUTPUT
 
       - name: Apply fixes
-        if: steps.resolve.outputs.fix_count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.resolve.outputs.fix_count != '0'
         run: |
           jq -c '.resolutions[] | select(.category == "fix")' /tmp/resolutions.json | while read -r fix; do
             FILE=$(echo "$fix" | jq -r '.file')
@@ -383,13 +401,14 @@ jobs:
           done
 
       - name: Commit fixes
-        if: steps.resolve.outputs.fix_count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.resolve.outputs.fix_count != '0'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "fix: self-resolve review issues (Ollama)"
           branch: ${{ github.head_ref }}
 
       - name: Post resolution summary
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -451,14 +470,26 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-          token: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+
+      - name: Check OLLAMA_API_KEY
+        id: check_secret
+        run: |
+          if [[ -z "${{ secrets.OLLAMA_API_KEY }}" ]]; then
+            echo "::warning::OLLAMA_API_KEY secret is not configured. Skipping autofix evaluation."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Checkout PR branch
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           HEAD_REF: ${{ github.head_ref }}
         run: git checkout "$HEAD_REF"
 
       - name: Fetch code scanning alerts with autofix
+        if: steps.check_secret.outputs.skip == 'false'
         id: alerts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -488,7 +519,7 @@ jobs:
           echo "📊 Found $FIX_COUNT autofixes to evaluate"
 
       - name: Evaluate and apply autofixes
-        if: steps.alerts.outputs.fix_count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.alerts.outputs.fix_count != '0'
         id: apply
         env:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
@@ -568,7 +599,7 @@ jobs:
           echo "applied_count=$APPLIED" >> $GITHUB_OUTPUT
 
       - name: Post autofix summary
-        if: steps.alerts.outputs.fix_count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.alerts.outputs.fix_count != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -610,23 +641,25 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Check required secrets
-        env:
-          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-        run: |
-          if [[ -z "$OLLAMA_API_KEY" ]]; then
-            echo "::error::OLLAMA_API_KEY secret is not configured"
-            exit 1
-          fi
-
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows
-          token: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          # Use CI_GITHUB_TOKEN to allow commits to trigger workflows, fallback to GITHUB_TOKEN
+          token: ${{ secrets.CI_GITHUB_TOKEN || github.token }}
+
+      - name: Check OLLAMA_API_KEY
+        id: check_secret
+        run: |
+          if [[ -z "${{ secrets.OLLAMA_API_KEY }}" ]]; then
+            echo "::warning::OLLAMA_API_KEY secret is not configured. Skipping."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get PR number
+        if: steps.check_secret.outputs.skip == 'false'
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -647,11 +680,13 @@ jobs:
           echo "head_ref=$HEAD_REF" >> $GITHUB_OUTPUT
 
       - name: Checkout PR branch
+        if: steps.check_secret.outputs.skip == 'false'
         env:
           HEAD_REF: ${{ steps.pr.outputs.head_ref }}
         run: git checkout "$HEAD_REF"
 
       - name: Collect all AI feedback
+        if: steps.check_secret.outputs.skip == 'false'
         id: feedback
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -700,7 +735,7 @@ jobs:
           echo "📊 Found $FEEDBACK_COUNT feedback items to process"
 
       - name: Analyze and generate fixes
-        if: steps.feedback.outputs.count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.feedback.outputs.count != '0'
         id: analyze
         env:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
@@ -774,7 +809,7 @@ jobs:
           echo "fix_count=$FIX_COUNT" >> $GITHUB_OUTPUT
 
       - name: Apply fixes
-        if: steps.analyze.outputs.fix_count != '0'
+        if: steps.check_secret.outputs.skip == 'false' && steps.analyze.outputs.fix_count != '0'
         run: |
           jq -c '.fixes[] | select(.action == "fix" and .safe_to_apply == true)' /tmp/fixes.json | while read -r fix; do
             FILE=$(echo "$fix" | jq -r '.file')
@@ -797,13 +832,14 @@ jobs:
           done
 
       - name: Commit fixes
+        if: steps.check_secret.outputs.skip == 'false' && steps.analyze.outputs.fix_count != '0'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "fix: resolve AI feedback (automated)"
           branch: ${{ steps.pr.outputs.head_ref }}
 
       - name: Post resolution summary
-        if: steps.feedback.outputs.count != '0' && steps.analyze.outputs.fix_count != ''
+        if: steps.check_secret.outputs.skip == 'false' && steps.feedback.outputs.count != '0' && steps.analyze.outputs.fix_count != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
