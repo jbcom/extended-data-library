@@ -132,6 +132,9 @@ jobs:
       - name: Setup UV
         uses: hynek/setup-cached-uv@v2
 
+      - name: Install dependencies
+        run: uv sync
+
       # Use the official python-semantic-release GitHub Action
       # This is the recommended best practice approach
       - name: Python Semantic Release
