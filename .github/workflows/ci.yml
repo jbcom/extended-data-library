@@ -139,8 +139,13 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v9.14.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Build command from pyproject.toml will be used
           root_options: "-vv"
+          # Build in the CI environment, not in the action's container
+          build: false
+
+      - name: Build package
+        if: steps.release.outputs.released == 'true'
+        run: uv build
 
       - name: Publish to PyPI
         if: steps.release.outputs.released == 'true'
@@ -153,7 +158,9 @@ jobs:
 
       - name: Publish to GitHub Releases
         if: steps.release.outputs.released == 'true'
-        uses: python-semantic-release/publish-action@v9.14.0
+        uses: softprops/action-gh-release@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.release.outputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/*
+          tag_name: ${{ steps.release.outputs.tag }}
+          generate_release_notes: true
