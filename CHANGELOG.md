@@ -2,6 +2,167 @@
 
 <!-- version list -->
 
+## v5.4.0 (2025-12-29)
+
+### Bug Fixes
+
+- Avoid broken pipe with large diffs
+  ([`bc640ed`](https://github.com/extended-data-library/core/commit/bc640ede20a2847266840c56a63a36ddeb07eb70))
+
+- Ecosystem-reviewer gracefully handles missing Jules API key
+  ([`5138544`](https://github.com/extended-data-library/core/commit/5138544eba5027d4d595eb1390b499dd8f82d348))
+
+- Use direct Ollama API for more reliable reviews
+  ([`cbe67e0`](https://github.com/extended-data-library/core/commit/cbe67e04ba66241a3e81d90ec87cff5efd726e17))
+
+- **ci**: Disable build in semantic-release action, build in CI
+  ([#22](https://github.com/extended-data-library/core/pull/22),
+  [`8526635`](https://github.com/extended-data-library/core/commit/85266353077bb8ef8b8b67bc7fe7f2c01ed01ad5))
+
+- **ci**: Fix invalid package name and implement MCP server core
+  ([#24](https://github.com/extended-data-library/core/pull/24),
+  [`d235959`](https://github.com/extended-data-library/core/commit/d235959bc830ab9ec9d69b3d2e01902d7bfa2227))
+
+- **ci**: Fix lint errors and add mcp to test dependencies
+  ([#26](https://github.com/extended-data-library/core/pull/26),
+  [`60a0e04`](https://github.com/extended-data-library/core/commit/60a0e0408a729b1d2d1368c78ab75ca6d35fcb13))
+
+- **ci**: Fix python 3.9 compatibility for MCP server and CI
+  ([#27](https://github.com/extended-data-library/core/pull/27),
+  [`07a5b30`](https://github.com/extended-data-library/core/commit/07a5b30ab6bcfc8cc7aa672496b62cc99c0bb7e6))
+
+- **ci**: Fix ruff formatting in tests/test_mcp_server.py
+  ([#28](https://github.com/extended-data-library/core/pull/28),
+  [`50d7d9b`](https://github.com/extended-data-library/core/commit/50d7d9b61b162e7ea5141b2344161d083fe1e4b8))
+
+- **ci**: Rebuild packages after version bump and add jbcom branding to docs
+  ([#16](https://github.com/extended-data-library/core/pull/16),
+  [`273034a`](https://github.com/extended-data-library/core/commit/273034a8c6d0d940c266aca8b2831eefa7444ea7))
+
+- **ci**: Use CI_GITHUB_TOKEN to bypass branch protection for releases
+  ([#17](https://github.com/extended-data-library/core/pull/17),
+  [`5651842`](https://github.com/extended-data-library/core/commit/565184205f8f8af657f70ca9149c65f295558468))
+
+- **ci**: Use github.token instead of CI_GITHUB_TOKEN
+  ([#20](https://github.com/extended-data-library/core/pull/20),
+  [`00abfaf`](https://github.com/extended-data-library/core/commit/00abfaff2fe28e65caad5abab6560eeef4959d91))
+
+- **ci**: Use softprops/action-gh-release for more reliable artifact uploads
+  ([#22](https://github.com/extended-data-library/core/pull/22),
+  [`8526635`](https://github.com/extended-data-library/core/commit/85266353077bb8ef8b8b67bc7fe7f2c01ed01ad5))
+
+### Chores
+
+- Remove deprecated claude-code.yml (replaced by ecosystem-reviewer)
+  ([`37d21de`](https://github.com/extended-data-library/core/commit/37d21dec1d0a0853591be998ef2adac1af352361))
+
+- Remove deprecated ollama-pr-review.yml (replaced by ecosystem-reviewer)
+  ([`a77e544`](https://github.com/extended-data-library/core/commit/a77e5440b596a871eeabeb768215a252ca7248f5))
+
+- Remove deprecated pr-review.yml (replaced by ecosystem-reviewer)
+  ([`c6d904c`](https://github.com/extended-data-library/core/commit/c6d904c6a29d6badb2815b1c0909d494d68cf7b6))
+
+- Remove docs workflow - migrated to centralized docs at extendeddata.dev
+  ([#23](https://github.com/extended-data-library/core/pull/23),
+  [`73f1fb2`](https://github.com/extended-data-library/core/commit/73f1fb2de82a08ec6ba0b1250710d78c543dc8b4))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`712e463`](https://github.com/extended-data-library/core/commit/712e463ecb61e1d0eb3d3bf4478e9073f127588e))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`39bf3ee`](https://github.com/extended-data-library/core/commit/39bf3ee6046f1c2a733bf15c744730c386f56c0a))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`e49de59`](https://github.com/extended-data-library/core/commit/e49de59ae02fdc93720dfe473923d2a0953e9806))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`f178902`](https://github.com/extended-data-library/core/commit/f178902f5adba6aaeba91fc16a2f44c1175bdca4))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`c34529c`](https://github.com/extended-data-library/core/commit/c34529c2fb4a7e7efd7c782eef9e8d0ceebfff89))
+
+- Remove ecosystem workflow (moved to control-center)
+  ([`246bdaa`](https://github.com/extended-data-library/core/commit/246bdaa46627c9bf36deb4233c6e8d4d930221e2))
+
+- Remove redundant workflow (handled by control-center ecosystem)
+  ([`7d7dc3a`](https://github.com/extended-data-library/core/commit/7d7dc3a4e278f942274a57a8e06fdc691625428a))
+
+- Remove redundant workflow (handled by control-center ecosystem)
+  ([`49bfcac`](https://github.com/extended-data-library/core/commit/49bfcac5f9823dbc8aa4a7433449de0b8d975325))
+
+- Remove redundant workflow (handled by control-center ecosystem)
+  ([`43fe030`](https://github.com/extended-data-library/core/commit/43fe030b2adb47250de9408da13318eb8cd74efe))
+
+- Remove redundant workflow (handled by control-center ecosystem)
+  ([`958c604`](https://github.com/extended-data-library/core/commit/958c6045e228122e2714577d6c1596ca59f2a1d5))
+
+- Sync .github/actions/agentic-ci-resolution/action.yml from control-center
+  ([`c646b8b`](https://github.com/extended-data-library/core/commit/c646b8b9a605f5747daabe09d31e8869ade7d7f5))
+
+- Sync .github/actions/agentic-issue-triage/action.yml from control-center
+  ([`e891493`](https://github.com/extended-data-library/core/commit/e89149307956a34e181e22d727df8bb1b0057760))
+
+- Sync .github/actions/agentic-pr-review/action.yml from control-center
+  ([`646be7e`](https://github.com/extended-data-library/core/commit/646be7e3401cdd26f628cafd390ed051e1ff3972))
+
+- Sync ecosystem-curator.yml from control-center
+  ([`24c88eb`](https://github.com/extended-data-library/core/commit/24c88eb8fc2673e688ec5aec9d3fc1404754a33b))
+
+- Sync ecosystem-delegator.yml from control-center
+  ([`fa45c0d`](https://github.com/extended-data-library/core/commit/fa45c0d7df63156d45583d4342ddedbf9b4838d4))
+
+- Sync ecosystem-fixer.yml from control-center
+  ([`5ac463a`](https://github.com/extended-data-library/core/commit/5ac463a208dbd9fd5fa155c265f4e8999b9e9c42))
+
+- Sync ecosystem-harvester.yml from control-center
+  ([`aaeee74`](https://github.com/extended-data-library/core/commit/aaeee74f8614d56a4f2a51618af6c08520aa0c9c))
+
+- Sync ecosystem-reviewer.yml from control-center
+  ([`03b4296`](https://github.com/extended-data-library/core/commit/03b4296ab614b7f0cf1208313db453cc342437fe))
+
+- Sync ecosystem-sage.yml from control-center
+  ([`4839b59`](https://github.com/extended-data-library/core/commit/4839b59eb71a5ddafc1fbdaed7bcb364cc5a9ff1))
+
+- Sync scripts/ecosystem-curator.mjs from control-center
+  ([`5269537`](https://github.com/extended-data-library/core/commit/5269537ac7903ee05ee3e6a909a7a10835152934))
+
+- Sync scripts/ecosystem-harvester.mjs from control-center
+  ([`3fe715e`](https://github.com/extended-data-library/core/commit/3fe715e3491b40e6c5989c97ead8f3ec0606d39d))
+
+- Sync scripts/ecosystem-sage.mjs from control-center
+  ([`1167a75`](https://github.com/extended-data-library/core/commit/1167a7508fed80b8d3f963b36a704ac5aad6d360))
+
+### Documentation
+
+- Final status report for 1.0 stabilization effort
+  ([#19](https://github.com/extended-data-library/core/pull/19),
+  [`dc85598`](https://github.com/extended-data-library/core/commit/dc85598cd42d1c4920c03780bca315cf497852e8))
+
+- Update status with branch protection blocker analysis
+  ([#21](https://github.com/extended-data-library/core/pull/21),
+  [`b6527e2`](https://github.com/extended-data-library/core/commit/b6527e2af411f9acb81bac9b9c83030c6eabd2f9))
+
+- **enterprise**: Align with multi-org documentation strategy and branding
+  ([`d2c4dfb`](https://github.com/extended-data-library/core/commit/d2c4dfba9a29377384d1395abeb95d4753963f54))
+
+- **enterprise**: Align with multi-org documentation strategy and branding
+  ([`9bd8061`](https://github.com/extended-data-library/core/commit/9bd806161f713ea2176ec06f77dbb2139a10bce9))
+
+### Features
+
+- **ci**: Implement official python-semantic-release GitHub Action
+  ([#21](https://github.com/extended-data-library/core/pull/21),
+  [`b6527e2`](https://github.com/extended-data-library/core/commit/b6527e2af411f9acb81bac9b9c83030c6eabd2f9))
+
+- **ci**: Overhaul release workflow with robust token handling
+  ([#19](https://github.com/extended-data-library/core/pull/19),
+  [`dc85598`](https://github.com/extended-data-library/core/commit/dc85598cd42d1c4920c03780bca315cf497852e8))
+
+- **ecosystem**: Initialize foundation components and mcp server
+  ([#25](https://github.com/extended-data-library/core/pull/25),
+  [`ebe7062`](https://github.com/extended-data-library/core/commit/ebe7062777b00b1998c6828a8f2b2d1bfb9be323))
+
+
 ## v5.3.1 (2025-12-24)
 
 ### Bug Fixes
