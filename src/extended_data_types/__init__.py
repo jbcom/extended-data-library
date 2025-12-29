@@ -49,7 +49,13 @@ from extended_data_types.map_data_type import (
     zipmap,
 )
 from extended_data_types.matcher_utils import is_non_empty_match, is_partial_match
-from extended_data_types.mcp_server import main as mcp_server_main
+
+
+try:
+    from extended_data_types.mcp_server import main as mcp_server_main
+except ImportError:
+    mcp_server_main = None
+
 from extended_data_types.package_discovery import EcosystemPackageDiscovery
 from extended_data_types.release_coordination import ReleaseCoordinator
 from extended_data_types.splitter_utils import split_dict_by_type, split_list_by_type
