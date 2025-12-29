@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
-import extended_data_types
+import sys
+
 import pytest
+
+
+if sys.version_info < (3, 10):
+    pytest.skip("MCP server requires Python 3.10+", allow_module_level=True)
+
+import extended_data_types
 
 from extended_data_types.mcp_server.server import (
     get_category,
@@ -60,6 +67,8 @@ async def test_get_function_docs():
     """Test doc extraction."""
     from extended_data_types.mcp_server.server import handle_call_tool
 
-    result = await handle_call_tool("get-function-docs", {"functionName": "encode_yaml"})
+    result = await handle_call_tool(
+        "get-function-docs", {"functionName": "encode_yaml"}
+    )
     assert "Function: encode_yaml" in result[0]["text"]
     assert "YAML" in result[0]["text"]

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import extended_data_types
 
 from extended_data_types import (
@@ -11,7 +13,6 @@ from extended_data_types import (
     ReleaseCoordinator,
     mcp_server_main,
 )
-from extended_data_types.mcp_server.server import get_library_functions
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -20,6 +21,11 @@ from hypothesis import strategies as st
 @settings(max_examples=50, deadline=None)
 def test_property_1_mcp_doc_completeness(name):
     """**Feature: ecosystem-foundation, Property 1: MCP Server Function Documentation Completeness**"""
+    if sys.version_info < (3, 10):
+        return  # MCP not supported on < 3.10
+
+    from extended_data_types.mcp_server.server import get_library_functions
+
     funcs = get_library_functions()
     attr = getattr(extended_data_types, name)
     if callable(attr):
@@ -32,7 +38,8 @@ def test_ecosystem_foundation_imports():
     assert ReleaseCoordinator is not None
     assert EcosystemStatusMonitor is not None
     assert DevelopmentIntegration is not None
-    assert mcp_server_main is not None
+    if sys.version_info >= (3, 10):
+        assert mcp_server_main is not None
 
 
 def test_package_discovery_basic():
