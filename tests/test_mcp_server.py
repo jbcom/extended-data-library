@@ -67,8 +67,6 @@ async def test_get_function_docs():
     """Test doc extraction."""
     from extended_data_types.mcp_server.server import handle_call_tool
 
-    result = await handle_call_tool(
-        "get-function-docs", {"functionName": "encode_yaml"}
-    )
+    result = await handle_call_tool("get-function-docs", {"functionName": "encode_yaml"})
     assert "Function: encode_yaml" in result[0]["text"]
     assert "YAML" in result[0]["text"]
