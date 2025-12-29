@@ -33,6 +33,11 @@ from extended_data_types.hcl2_utils import decode_hcl2
 from extended_data_types.import_utils import unwrap_raw_data_from_import
 from extended_data_types.json_utils import decode_json, encode_json
 from extended_data_types.list_data_type import filter_list, flatten_list
+from extended_data_types.mcp_server import main as mcp_server_main
+from extended_data_types.package_discovery import EcosystemPackageDiscovery
+from extended_data_types.release_coordination import ReleaseCoordinator
+from extended_data_types.ecosystem_status import EcosystemStatusMonitor
+from extended_data_types.development_integration import DevelopmentIntegration
 from extended_data_types.map_data_type import (
     SortedDefaultDict,
     all_values_from_map,
@@ -114,6 +119,10 @@ __all__ = [
     # Core Data Types and Utilities
     "FilePath",
     "SortedDefaultDict",
+    "EcosystemPackageDiscovery",
+    "ReleaseCoordinator",
+    "EcosystemStatusMonitor",
+    "DevelopmentIntegration",
     "all_non_empty",
     "all_non_empty_in_dict",
     "all_non_empty_in_list",
@@ -169,6 +178,7 @@ __all__ = [
     "make_hashable",
     "make_raw_data_export_safe",
     "match_file_extensions",
+    "mcp_server_main",
     "ordinalize",
     "pluralize",
     "read_file",
