@@ -17,7 +17,11 @@ def get_library_functions() -> Dict[str, Any]:
     functions = {}
     for name in extended_data_types.__all__:
         attr = getattr(extended_data_types, name)
-        if inspect.isfunction(attr) or inspect.isclass(attr):
+        # Include if it's a function, class, or TypeAlias (captured as Any for docs)
+        if inspect.isfunction(attr) or inspect.isclass(attr) or hasattr(attr, "__origin__") or hasattr(attr, "__metadata__"):
+            functions[name] = attr
+        elif not inspect.ismodule(attr):
+            # Include other types too, as long as they aren't modules
             functions[name] = attr
     return functions
 
