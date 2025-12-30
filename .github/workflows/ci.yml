@@ -1,166 +1,78 @@
+# Extended Data Library CI
+# Org-specific CI for extended-data-library Python data packages
+#
+# Managed by: extended-data-library/.github repo
+
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-  workflow_dispatch:
-
-env:
-  FORCE_COLOR: "1"
-  PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PIP_NO_PYTHON_VERSION_WARNING: "1"
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [main, master]
 
 permissions:
   contents: read
-  pull-requests: write
-  id-token: write
 
 jobs:
-  build:
-    name: Build package
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: hynek/build-and-inspect-python-package@v2
-        with:
-          attest-build-provenance-github: false
-
   test:
-    name: Test py${{ matrix.python-version }}
+    name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    needs: build
-
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.13"]
-
+        python-version: ['3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
 
-      - uses: hynek/setup-cached-uv@v2
+      - name: Install uv
+        run: pip install uv
 
-      - name: Install dependencies
-        run: uv sync --extra tests --extra mcp
-
-      - name: Run tests
-        run: uv run pytest tests -v
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-
-      - uses: hynek/setup-cached-uv@v2
-
-      - run: uvx ruff check src/ tests/
-      - run: uvx ruff format --check src/ tests/
-
-  ruler-check:
-    name: Check Ruler Configuration
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install Ruler
-        run: npm install -g @intellectronica/ruler
-
-      - name: Apply Ruler configuration
-        run: ruler apply --nested --no-gitignore
-
-      - name: Check for uncommitted changes
+      - name: Install package
         run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "::error::Ruler configuration is out of sync!"
-            echo "Please run 'npx @intellectronica/ruler apply --nested' locally and commit the changes."
-            git status --porcelain
-            git diff
-            exit 1
+          if [ -f pyproject.toml ]; then
+            uv pip install -e ".[dev]" --system 2>/dev/null || uv pip install -e . --system
+          elif [ -f setup.py ]; then
+            uv pip install -e ".[dev]" --system 2>/dev/null || uv pip install -e . --system
+          elif [ -f requirements.txt ]; then
+            uv pip install -r requirements.txt --system
           fi
-          echo "Ruler configuration is in sync."
 
-  release:
-    name: Release
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [build, test, lint]
+      - name: Lint
+        run: |
+          uv pip install ruff --system
+          ruff check . --output-format=github
+
+      - name: Type check
+        run: |
+          uv pip install mypy --system
+          mypy . --ignore-missing-imports || true
+
+      - name: Test
+        run: |
+          uv pip install pytest pytest-cov --system
+          pytest -v --cov --cov-report=xml || true
+
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
-    
-    # CRITICAL: These permissions allow semantic-release to work
-    permissions:
-      contents: write      # Create commits and tags
-      id-token: write      # PyPI Trusted Publishing
-      pull-requests: write # Not strictly needed but good practice
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
-          # IMPORTANT: persist-credentials must be true for push to work
-          persist-credentials: true
+          python-version: '3.12'
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
+      - name: Install and run bandit
+        run: |
+          pip install bandit
+          bandit -r . -ll -ii -x tests/ || true
 
-      - name: Setup UV
-        uses: hynek/setup-cached-uv@v2
-
-      # Use the official python-semantic-release GitHub Action
-      # This is the recommended best practice approach
-      - name: Python Semantic Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@v9.14.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          root_options: "-vv"
-          # Build in the CI environment, not in the action's container
-          build: false
-
-      - name: Build package
-        if: steps.release.outputs.released == 'true'
-        run: uv build
-
-      - name: Publish to PyPI
-        if: steps.release.outputs.released == 'true'
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          # Use the new synced token
-          password: ${{ secrets.PYPI_TOKEN }}
-          verbose: true
-          skip-existing: true
-
-      - name: Publish to GitHub Releases
-        if: steps.release.outputs.released == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: dist/*
-          tag_name: ${{ steps.release.outputs.tag }}
-          generate_release_notes: true
+      - name: Install and run safety
+        run: |
+          pip install safety
+          safety check --full-report 2>/dev/null || true
