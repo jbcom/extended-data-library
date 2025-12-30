@@ -1,86 +1,45 @@
-# @extended-data-library/core
+# Org-Specific Overrides
 
-[![Extended Data Types Logo](docs/_static/logo.png)](https://github.com/extended-data-library/core)
+Place files here to override enterprise defaults from jbcom/control-center.
 
-*🐍 Supercharge your Python data types! 🚀*
-
-[![CI Status](https://github.com/extended-data-library/core/workflows/CI/badge.svg)](https://github.com/extended-data-library/core/actions?query=workflow%3ACI)
-[![Documentation Status](https://extendeddata.dev)](https://extendeddata.dev)
-[![PyPI Package latest release](https://img.shields.io/pypi/v/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
-[![Supported versions](https://img.shields.io/pypi/pyversions/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
-
-## 🏢 Enterprise Context
-
-**Extended Data** is the Infrastructure & Libs division of the [jbcom enterprise](https://jbcom.github.io). This core library is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Agentic](https://agentic.dev) and [Strata](https://strata.game).
-
-Extended Data Types is a Python library that provides additional functionality for Python's standard data types. It includes utilities for handling YAML, JSON, Base64, file paths, strings, lists, maps, and more.
-
-## Project Goals
-
-- Provide a reliable, typed utility layer for working with common serialization formats (YAML, JSON, TOML, HCL) without sacrificing readability or ergonomics.
-- Offer safe helpers for file-system aware workflows, including path handling and Git repository discovery, while keeping platform differences in mind.
-- Maintain a modern, well-tested codebase backed by automated CI/CD that validates packaging, linting, typing, coverage, and documentation builds.
-
-## Key Features
-
-- 🔒 **Base64 encoding and decoding** - Easily encode data to Base64 format with optional wrapping for export.
-- 📁 **File path utilities** - Manipulate and validate file paths, check file extensions, and determine encoding types.
-- 🗺️ **Extended map and list utilities** - Flatten, filter, and manipulate dictionaries and lists with ease.
-- 🔍 **String matching and manipulation** - Partially match strings, convert case, and validate URLs.
-- 🎛️ **Custom YAML utilities** - Handle custom YAML tags, construct YAML pairs, and represent data structures.
-
-### Base64 Encoding
+## Directory Structure
 
 ```
-from extended_data_types import base64_encode
-
-data = "Hello, world!"
-encoded = base64_encode(data)
-print(encoded)  # Output: SGVsbG8sIHdvcmxkIQ==
+repository-files/
+├── always-sync/          # From enterprise (don't edit)
+├── initial-only/         # From enterprise (don't edit)  
+├── python/               # From enterprise (don't edit)
+├── nodejs/               # From enterprise (don't edit)
+├── go/                   # From enterprise (don't edit)
+├── rust/                 # From enterprise (don't edit)
+├── terraform/            # From enterprise (don't edit)
+└── org-overrides/        # YOUR ORG CUSTOMIZATIONS HERE
+    ├── .github/
+    │   └── workflows/    # Org-specific workflows
+    ├── .cursor/
+    │   └── rules/        # Org-specific Cursor rules
+    ├── CLAUDE.md         # Org-specific Claude instructions
+    └── AGENTS.md         # Org-specific agent instructions
 ```
 
-### File Path Utilities
+## Merge Order
 
-```python
-from extended_data_types import match_file_extensions
+When syncing to repos, files are applied in this order:
+1. Enterprise `always-sync/` (base)
+2. Language-specific rules (python/, nodejs/, etc.)
+3. **Org overrides** (this directory - wins on conflicts)
+4. `initial-only/` (only if file doesn't exist)
 
-file_path = "example.txt"
-allowed_extensions = [".txt", ".log"]
-is_allowed = match_file_extensions(file_path, allowed_extensions)
-print(is_allowed)  # Output: True
+## Examples
+
+### Override CI workflow for your org
+```bash
+cp repository-files/always-sync/.github/workflows/ci.yml \
+   repository-files/org-overrides/.github/workflows/ci.yml
+# Then edit ci.yml with org-specific changes
 ```
 
-### YAML Utilities
-
-```python
-from extended_data_types import encode_yaml, decode_yaml
-
-data = {"name": "Alice", "age": 30}
-yaml_str = encode_yaml(data)
-print(yaml_str)
-# Output:
-# name: Alice
-# age: 30
-
-decoded_data = decode_yaml(yaml_str)
-print(decoded_data)  # Output: {'name': 'Alice', 'age': 30}
+### Add org-specific Cursor rule
+```bash
+echo "# My Org Rule" > repository-files/org-overrides/.cursor/rules/my-org.mdc
 ```
-
-For more usage examples, see the [Usage](https://extended-data-types.readthedocs.io/en/latest/usage.md) documentation.
-
-## Contributing
-
-Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-types/blob/main/CONTRIBUTING.md) for more information.
-
-## Credit
-
-Extended Data Types is written and maintained by [Jon Bogaty](mailto:jon@jonbogaty.com).
-
-## Project Links
-
-- [**Get Help**](https://stackoverflow.com/questions/tagged/extended-data-types) (use the *extended-data-types* tag on
-  Stack Overflow)
-- [**PyPI**](https://pypi.org/project/extended-data-types/)
-- [**GitHub**](https://github.com/jbcom/extended-data-types)
-- [**Documentation**](https://extended-data-types.readthedocs.io/en/latest/)
-- [**Changelog**](https://github.com/jbcom/extended-data-types/tree/main/CHANGELOG.md)
