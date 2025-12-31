@@ -12,6 +12,11 @@ if sys.version_info < (3, 10):
 
 import extended_data_types
 
+try:
+    import mcp
+except ImportError:
+    pytest.skip("mcp package not installed", allow_module_level=True)
+
 from extended_data_types.mcp_server.server import (
     get_category,
     get_library_functions,
