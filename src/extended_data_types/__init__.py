@@ -54,7 +54,7 @@ from extended_data_types.matcher_utils import is_non_empty_match, is_partial_mat
 try:
     from extended_data_types.mcp_server import main as mcp_server_main
 except ImportError:
-    mcp_server_main = None
+    mcp_server_main = None  # type: ignore[assignment]
 
 from extended_data_types.package_discovery import EcosystemPackageDiscovery
 from extended_data_types.release_coordination import ReleaseCoordinator
