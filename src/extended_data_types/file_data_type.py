@@ -351,7 +351,7 @@ def decode_file(
         "tf": decode_hcl2,
     }
 
-    decoder = decoder_map.get(suffix)
+    decoder = decoder_map.get(suffix) if suffix else None
     if decoder is not None:
         return decoder(file_data)
     return file_data

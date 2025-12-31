@@ -237,7 +237,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[dict[st
         return [{"type": "text", "text": str(results)}]
 
     elif name == "get-function-docs":
-        func_name = arguments.get("functionName")
+        func_name = str(arguments.get("functionName", ""))
         if func_name not in functions:
             return [{"type": "text", "text": f"Error: Function '{func_name}' not found."}]
 
@@ -268,7 +268,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[dict[st
         raise ValueError(f"Unknown tool: {name}")
 
 
-async def main():
+async def main() -> None:
     """Main entry point."""
     async with stdio_server() as (read_stream, write_server):
         await server.run(
