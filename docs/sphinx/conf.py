@@ -30,28 +30,22 @@ source_suffix = {
 # -- autodoc2 configuration -------------------------------------------------
 # Point autodoc2 at each package's source directory.
 # Paths must be relative to this conf.py file's directory.
+# To add a new package, append a (package-dir, module-name) tuple below.
+
+_packages_to_document = [
+    ("extended-data-types", "extended_data_types"),
+    ("lifecyclelogging", "lifecyclelogging"),
+    ("directed-inputs-class", "directed_inputs_class"),
+    ("vendor-connectors", "vendor_connectors"),
+]
 
 autodoc2_packages = [
     {
-        "path": "../../packages/extended-data-types/src/extended_data_types",
-        "module": "extended_data_types",
+        "path": f"../../packages/{pkg_dir}/src/{module_name}",
+        "module": module_name,
         "exclude_dirs": ["__pycache__"],
-    },
-    {
-        "path": "../../packages/lifecyclelogging/src/lifecyclelogging",
-        "module": "lifecyclelogging",
-        "exclude_dirs": ["__pycache__"],
-    },
-    {
-        "path": "../../packages/directed-inputs-class/src/directed_inputs_class",
-        "module": "directed_inputs_class",
-        "exclude_dirs": ["__pycache__"],
-    },
-    {
-        "path": "../../packages/vendor-connectors/src/vendor_connectors",
-        "module": "vendor_connectors",
-        "exclude_dirs": ["__pycache__"],
-    },
+    }
+    for pkg_dir, module_name in _packages_to_document
 ]
 
 # Render as MyST Markdown (compatible with Starlight via sphinx-markdown-builder)

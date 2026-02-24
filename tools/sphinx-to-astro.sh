@@ -30,9 +30,10 @@ rm -rf "${ASTRO_API_DIR}/.buildinfo" \
 # 2. Add YAML frontmatter required by Starlight
 # 3. Remove placeholder .mdx files that have been superseded
 find "${ASTRO_API_DIR}" -name '*.md' -type f | while read -r md_file; do
-    # Replace unsupported code block languages
-    sed -i.bak -e 's/```pycon/```python/g' -e 's/```default/```text/g' "${md_file}"
-    rm -f "${md_file}.bak"
+    # Replace unsupported code block languages (portable: redirect + mv)
+    tmp_sed_file=$(mktemp)
+    sed -e 's/```pycon/```python/g' -e 's/```default/```text/g' "${md_file}" > "${tmp_sed_file}"
+    mv "${tmp_sed_file}" "${md_file}"
 
     # Extract the first H1 heading as the title (skip if frontmatter already exists)
     if head -1 "${md_file}" | grep -q '^---$'; then
