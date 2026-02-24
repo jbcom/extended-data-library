@@ -54,32 +54,42 @@ class EcosystemStatusMonitor:
                 ``EcosystemPackageDiscovery`` with default settings is created.
         """
         self.discovery = discovery or EcosystemPackageDiscovery()
+        self._cached_ecosystem_names: set[str] | None = None
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
     def _get_package_details(
-        self, package_info: dict[str, Any]
+        self,
+        package_info: dict[str, Any],
+        ecosystem_names: set[str] | None = None,
     ) -> dict[str, Any]:
         """Enrich a scanned package entry with version and dependency metadata.
 
         Args:
             package_info: A single dict as returned by
                 ``EcosystemPackageDiscovery.scan_packages()``.
+            ecosystem_names: Pre-computed ecosystem names to avoid redundant
+                scanning. If ``None``, names are fetched via
+                ``_get_ecosystem_package_names()``.
 
         Returns:
             A dict containing the original fields plus ``version``,
             ``dependencies``, and ``ecosystem_dependencies``.
         """
-        package_path = Path(package_info["path"])
+        path_value = package_info.get("path")
+        if not path_value:
+            return {**package_info, "version": None, "dependencies": [], "ecosystem_dependencies": []}
+
+        package_path = Path(path_value)
         dep_info = self.discovery.get_package_dependencies(package_path)
 
         version: str | None = dep_info.get("version")
         raw_deps: list[str] = dep_info.get("dependencies", [])
 
-        # Determine which dependencies belong to the ecosystem.
-        ecosystem_names = self._get_ecosystem_package_names()
+        if ecosystem_names is None:
+            ecosystem_names = self._get_ecosystem_package_names()
         ecosystem_deps: list[str] = []
         for dep in raw_deps:
             dep_name, _ = _parse_dep_spec(dep)
@@ -96,17 +106,27 @@ class EcosystemStatusMonitor:
     def _get_ecosystem_package_names(self) -> set[str]:
         """Return normalized names of all packages discovered in the ecosystem.
 
+        Results are cached for the lifetime of the monitor instance to avoid
+        repeated filesystem scans.
+
         Returns:
             A set of lowercased, hyphen-normalized package names.
         """
+        if self._cached_ecosystem_names is not None:
+            return self._cached_ecosystem_names
+
         packages = self.discovery.scan_packages()
         names: set[str] = set()
         for pkg in packages:
-            package_path = Path(pkg["path"])
+            path_value = pkg.get("path")
+            if not path_value:
+                continue
+            package_path = Path(path_value)
             dep_info = self.discovery.get_package_dependencies(package_path)
             pkg_name = dep_info.get("name")
             if pkg_name:
                 names.add(re.sub(r"[-_.]+", "-", pkg_name).lower())
+        self._cached_ecosystem_names = names
         return names
 
     def _assess_health(
@@ -152,7 +172,8 @@ class EcosystemStatusMonitor:
             - ``health``: Overall health assessment string.
         """
         packages = self.discovery.scan_packages()
-        details = [self._get_package_details(pkg) for pkg in packages]
+        eco_names = self._get_ecosystem_package_names()
+        details = [self._get_package_details(pkg, eco_names) for pkg in packages]
         dep_graph = self.get_dependency_graph()
         consistency = self.check_version_consistency()
         health = self._assess_health(details, consistency)
@@ -185,7 +206,10 @@ class EcosystemStatusMonitor:
         graph: dict[str, list[str]] = {}
 
         for pkg in packages:
-            package_path = Path(pkg["path"])
+            path_value = pkg.get("path")
+            if not path_value:
+                continue
+            package_path = Path(path_value)
             dep_info = self.discovery.get_package_dependencies(package_path)
             pkg_name = dep_info.get("name")
             if not pkg_name:
@@ -226,7 +250,10 @@ class EcosystemStatusMonitor:
         dep_specs: dict[str, list[dict[str, str]]] = {}
 
         for pkg in packages:
-            package_path = Path(pkg["path"])
+            path_value = pkg.get("path")
+            if not path_value:
+                continue
+            package_path = Path(path_value)
             dep_info = self.discovery.get_package_dependencies(package_path)
             pkg_name = dep_info.get("name")
             if not pkg_name:
@@ -239,17 +266,13 @@ class EcosystemStatusMonitor:
                 dep_name, version_spec = _parse_dep_spec(dep)
                 if dep_name not in ecosystem_names or dep_name == normalized_name:
                     continue
-                dep_specs.setdefault(dep_name, []).append(
-                    {"package": normalized_name, "version_spec": version_spec}
-                )
+                dep_specs.setdefault(dep_name, []).append({"package": normalized_name, "version_spec": version_spec})
 
         inconsistencies: list[dict[str, Any]] = []
         for dep_name, specs in dep_specs.items():
             unique_versions = {s["version_spec"] for s in specs}
             if len(unique_versions) > 1:
-                inconsistencies.append(
-                    {"dependency": dep_name, "specifications": specs}
-                )
+                inconsistencies.append({"dependency": dep_name, "specifications": specs})
 
         return {
             "consistent": len(inconsistencies) == 0,

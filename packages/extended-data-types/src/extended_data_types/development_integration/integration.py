@@ -106,7 +106,7 @@ class DevelopmentIntegration:
             checks.append(
                 {
                     "name": "hatchling build backend",
-                    "passed": "hatchling" in build_backend,
+                    "passed": build_backend.startswith("hatchling"),
                 }
             )
 
@@ -167,7 +167,7 @@ class DevelopmentIntegration:
             if not isinstance(content, (str, bytes, bytearray, memoryview)):
                 return {}
             data = extended_data_types.decode_toml(content)
-        except (OSError, ValueError):
+        except (OSError, ValueError, TypeError):
             return {}
 
         project = data.get("project", {})
