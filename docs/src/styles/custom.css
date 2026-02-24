@@ -1,0 +1,32 @@
+/* 
+  extended-data-library Documentation Portal
+  
+  BRANDING HIERARCHY:
+  1. Enterprise base (jbcom.github.io) - fonts, core colors, layout
+  2. Org theme - accent colors (below)
+  3. Org customizations - unique to this org
+  
+  Owner: Jon Bogaty (jbcom)
+  Part of the jbcom Enterprise ecosystem
+*/
+
+/* ===== LAYER 1: Enterprise Base ===== */
+@import url('https://raw.githubusercontent.com/jbcom/jbcom.github.io/main/enterprise-branding/starlight-base.css');
+
+/* ===== LAYER 2: Org Theme (Amber) ===== */
+/* 
+  Extended Data Division - Branding Override
+  Org: extended-data-library
+*/
+
+:root {
+  /* Amber Theme */
+  --sl-color-accent-low: #451a03;
+  --sl-color-accent: #f59e0b;
+  --sl-color-accent-high: #fef3c7;
+  --sl-color-text-accent: #f59e0b;
+}
+
+/* ===== LAYER 3: Org-Specific Customizations ===== */
+/* Add styles unique to extended-data-library below */
+

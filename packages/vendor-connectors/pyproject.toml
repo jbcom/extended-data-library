@@ -1,0 +1,354 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vendor-connectors"
+version = "0.2.0"
+description = "Universal vendor connectors with transparent secret management, including Cursor AI agents, Anthropic Claude, and Meshy AI for 3D assets"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+readme = "README.md"
+keywords = ["aws", "gcp", "github", "slack", "vault", "zoom", "meshy", "3d", "connectors"]
+authors = [{ name = "Jon Bogaty", email = "jon@jonbogaty.com" }]
+maintainers = [{ name = "Jon Bogaty", email = "jon@jonbogaty.com" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    # === Core dependencies (minimal - HTTP client foundation) ===
+    # jbcom ecosystem
+    "extended-data-types",
+    "lifecyclelogging",
+    "directed-inputs-class",
+    # HTTP client with retries
+    "httpx>=0.28.1",
+    "tenacity>=9.1.2",
+    "pydantic>=2.0.0",
+    "requests>=2.32.0",
+    # Utilities
+    "deepmerge>=1.1.0",
+    "more-itertools>=10.0.0",
+]
+
+[project.urls]
+Documentation = "https://extendeddata.dev"
+Issues = "https://github.com/extended-data-library/extended-data-types/issues"
+Source = "https://github.com/extended-data-library/extended-data-types"
+Changelog = "https://github.com/extended-data-library/extended-data-types/blob/main/packages/vendor-connectors/CHANGELOG.md"
+
+[project.optional-dependencies]
+# === Vendor Connector Extras (install what you need) ===
+# AWS connector
+aws = [
+    "boto3>=1.34.0",
+]
+# Google Cloud connector
+google = [
+    "google-api-python-client>=2.0.0",
+    "google-cloud-billing>=1.0.0",
+    "google-cloud-resource-manager>=1.0.0",
+]
+# GitHub connector
+github = [
+    "PyGithub>=2.0.0",
+    "python-graphql-client>=0.4.0",
+]
+# Slack connector
+slack = [
+    "slack-sdk>=3.0.0",
+]
+# HashiCorp Vault connector
+vault = [
+    "hvac>=2.0.0",
+]
+# Zoom connector (no extra deps - uses requests from core)
+zoom = []
+# Anthropic connector
+anthropic = [
+    "anthropic>=0.40.0",
+]
+# Cursor connector (no extra deps)
+cursor = []
+# Meshy connector (extra utils for CLI/display)
+meshy = [
+    "rich>=14.0.0",
+    "numpy>=1.26.0",
+    "validators>=0.22.0",
+    "filelock>=3.13.0",
+]
+# Secrets connector (native bindings optional, CLI fallback available)
+# Note: secretssync native bindings must be built separately via gopy
+secrets = [
+    "pyyaml>=6.0.0",
+]
+
+# === AI Framework Extras (optional tool frameworks) ===
+# We provide tools; users choose their LLM provider.
+# langchain-core provides standard StructuredTool definitions that work with
+# LangChain, LangGraph, and any framework that uses LangChain tool format.
+langchain = [
+    "langchain-core>=0.3.0",
+]
+# CrewAI tools support
+crewai = [
+    "crewai[tools]>=1.5.0",
+]
+# AWS Strands agents support
+strands = [
+    "strands-agents>=0.1.0",
+]
+# MCP server support
+mcp = [
+    "mcp>=1.0.0",
+]
+# All AI frameworks
+ai = [
+    "langchain-core>=0.3.0",
+    "crewai[tools]>=1.5.0",
+    "strands-agents>=0.1.0",
+    "mcp>=1.0.0",
+]
+
+# === Feature Extras ===
+# Meshy webhooks support
+webhooks = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.38.0",
+    "pyngrok>=7.2.2",
+]
+# Vector store for Meshy RAG embeddings
+vector = [
+    "sqlite-vec>=0.1.0",
+    "sentence-transformers>=3.0.0",
+]
+
+# === Testing Extras ===
+# Base test dependencies (unit tests)
+tests = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+]
+# E2E test base (VCR for recording)
+tests-e2e = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-vcr>=1.0.0",
+    "vcrpy>=6.0.0",
+]
+# E2E tests for LangChain
+tests-e2e-langchain = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-vcr>=1.0.0",
+    "vcrpy>=6.0.0",
+    "langchain-core>=0.3.0",
+    "langchain-anthropic>=0.3.0",
+    "langgraph>=0.2.0",
+]
+# E2E tests for CrewAI
+tests-e2e-crewai = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-vcr>=1.0.0",
+    "vcrpy>=6.0.0",
+    "crewai[tools]>=1.5.0",
+]
+# E2E tests for Strands
+tests-e2e-strands = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-vcr>=1.0.0",
+    "vcrpy>=6.0.0",
+    "strands-agents>=0.1.0",
+]
+# All E2E tests
+tests-e2e-all = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-vcr>=1.0.0",
+    "vcrpy>=6.0.0",
+    "langchain-core>=0.3.0",
+    "langchain-anthropic>=0.3.0",
+    "langgraph>=0.2.0",
+    "crewai[tools]>=1.5.0",
+    "strands-agents>=0.1.0",
+]
+
+# === Documentation ===
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=2.0.0",
+    "myst-parser>=3.0.0",
+]
+
+# === Development ===
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.23.0",
+    "mypy>=1.8.0",
+    "types-requests>=2.31.0",
+    # Development tools
+    "beautifulsoup4>=4.14.3",
+    "rich>=14.2.0",
+]
+
+# === Full Installation (all vendors + all AI frameworks) ===
+all = [
+    # Vendors
+    "boto3>=1.34.0",
+    "google-api-python-client>=2.0.0",
+    "google-cloud-billing>=1.0.0",
+    "google-cloud-resource-manager>=1.0.0",
+    "PyGithub>=2.0.0",
+    "python-graphql-client>=0.4.0",
+    "slack-sdk>=3.0.0",
+    "hvac>=2.0.0",
+    "anthropic>=0.40.0",
+    "rich>=14.0.0",
+    "numpy>=1.26.0",
+    "validators>=0.22.0",
+    "filelock>=3.13.0",
+    # AI frameworks
+    "langchain-core>=0.3.0",
+    "crewai[tools]>=1.5.0",
+    "strands-agents>=0.1.0",
+    "mcp>=1.0.0",
+    # Features
+    "fastapi>=0.115.0",
+    "uvicorn>=0.38.0",
+    "pyngrok>=7.2.2",
+    "sqlite-vec>=0.1.0",
+    "sentence-transformers>=3.0.0",
+]
+
+[project.scripts]
+vendor-connectors = "vendor_connectors.cli:main"
+vendor-connectors-mcp = "vendor_connectors.mcp:main"
+# Legacy - keeping for backwards compatibility
+meshy-mcp = "vendor_connectors.meshy.mcp:main"
+
+[project.entry-points."vendor_connectors.connectors"]
+# Google connectors
+jules = "vendor_connectors.google.jules:JulesConnector"
+google = "vendor_connectors.google:GoogleConnector"
+google_cloud = "vendor_connectors.google:GoogleCloudConnector"
+google_workspace = "vendor_connectors.google:GoogleWorkspaceConnector"
+google_billing = "vendor_connectors.google:GoogleBillingConnector"
+# Other connectors
+cursor = "vendor_connectors.cursor:CursorConnector"
+github = "vendor_connectors.github:GitHubConnector"
+meshy = "vendor_connectors.meshy:MeshyConnector"
+anthropic = "vendor_connectors.anthropic:AnthropicConnector"
+aws = "vendor_connectors.aws:AWSConnector"
+slack = "vendor_connectors.slack:SlackConnector"
+zoom = "vendor_connectors.zoom:ZoomConnector"
+vault = "vendor_connectors.vault:VaultConnector"
+secrets = "vendor_connectors.secrets:SecretsConnector"
+
+[tool.uv.sources]
+extended-data-types = { workspace = true }
+lifecyclelogging = { workspace = true }
+directed-inputs-class = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vendor_connectors"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+    ".cursor",
+    ".kiro",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+timeout = 30
+timeout_method = "thread"
+addopts = [
+    "--verbose",
+    "--cov=vendor_connectors",
+    "--cov-report=term-missing",
+]
+markers = [
+    "e2e: End-to-end tests requiring API keys (run with --e2e flag)",
+    "e2e_langchain: E2E tests for LangChain framework",
+    "e2e_crewai: E2E tests for CrewAI framework",
+    "e2e_strands: E2E tests for AWS Strands framework",
+]
+
+[tool.coverage.run]
+omit = [
+    # Test files
+    "tests/*",
+]
+
+[tool.coverage.report]
+# Target: 75% (tracked in issue #21)
+# Current: ~47% - threshold set to pass CI while tests are being added.
+# A 2% buffer is provided to avoid CI failures due to minor coverage fluctuations as tests are being added.
+fail_under = 45
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
+[tool.semantic_release]
+build_command = "uv build"
+commit_message = "chore(release): release v{version} [skip ci]"
+allow_zero_version = true
+tag_format = "vendor-connectors-v{version}"
+version_toml = ["packages/vendor-connectors/pyproject.toml:project.version"]
+version_variables = ["packages/vendor-connectors/src/vendor_connectors/__init__.py:__version__"]
+
+[tool.semantic_release.remote]
+name = "origin"
+type = "github"
+ignore_token_for_push = false
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+
+[tool.semantic_release.changelog]
+changelog_file = "CHANGELOG.md"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["feat", "fix", "docs", "style", "refactor", "perf", "test", "chore", "ci", "build", "revert"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]

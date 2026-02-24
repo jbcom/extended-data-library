@@ -1,0 +1,535 @@
+---
+title: Lifecycle Logging
+description: Rich structured logging with verbosity control and message storage
+---
+
+import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+**Lifecycle Logging** (`lifecyclelogging`) is a comprehensive logging utility combining Python's standard `logging` with rich output formatting, verbosity controls, and message storage.
+
+```bash
+pip install lifecyclelogging
+```
+
+[![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg)](https://pypi.org/project/lifecyclelogging/)
+[![Python](https://img.shields.io/pypi/pyversions/lifecyclelogging.svg)](https://pypi.org/project/lifecyclelogging/)
+[![CI](https://github.com/extended-data-library/logging/workflows/CI/badge.svg)](https://github.com/extended-data-library/logging/actions)
+
+---
+
+## Key Features
+
+<CardGrid>
+  <Card title="Rich Formatting" icon="pencil">
+    Beautiful console output with colors and structure
+  </Card>
+  <Card title="Verbosity Control" icon="setting">
+    Threshold-based filtering with bypass markers
+  </Card>
+  <Card title="Message Storage" icon="document">
+    Store and retrieve messages programmatically
+  </Card>
+  <Card title="Gunicorn Ready" icon="rocket">
+    Automatic integration with WSGI servers
+  </Card>
+</CardGrid>
+
+---
+
+## Quick Start
+
+### Basic Logging
+
+```python
+from lifecyclelogging import Logging
+
+# Create a logger with console output
+logger = Logging(enable_console=True, enable_file=False)
+
+# Log at different levels
+logger.logged_statement("Debug message", log_level="debug")
+logger.logged_statement("Info message", log_level="info")
+logger.logged_statement("Warning message", log_level="warning")
+logger.logged_statement("Error message", log_level="error")
+```
+
+### With JSON Data
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Attach JSON data to log messages
+user_data = {"username": "john_doe", "email": "john@example.com"}
+logger.logged_statement(
+    "User logged in",
+    json_data=user_data,
+    log_level="info",
+)
+
+# Output includes pretty-printed JSON:
+# [INFO] User logged in
+# {
+#   "username": "john_doe",
+#   "email": "john@example.com"
+# }
+```
+
+### With Labeled Data
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Multiple labeled data sections
+labeled_data = {
+    "Request": {"method": "POST", "path": "/api/users"},
+    "Response": {"status": 201, "body": {"id": 123}},
+}
+
+logger.logged_statement(
+    "API request completed",
+    labeled_json_data=labeled_data,
+    log_level="info",
+)
+
+# Output:
+# [INFO] API request completed
+# Request:
+#   {"method": "POST", "path": "/api/users"}
+# Response:
+#   {"status": 201, "body": {"id": 123}}
+```
+
+---
+
+## Configuration
+
+### Constructor Options
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(
+    # Output destinations
+    enable_console=True,        # Enable console (stdout) output
+    enable_file=False,          # Enable file output
+    log_file_path="app.log",    # File path (if enable_file=True)
+    
+    # Formatting
+    logger_name="my_app",       # Logger name prefix
+    
+    # Verbosity
+    enable_verbose_output=False,   # Enable verbose message filtering
+    verbosity_threshold=1,         # Max verbosity level to show
+)
+```
+
+### Console and File Output
+
+```python
+from lifecyclelogging import Logging
+
+# Console only (development)
+dev_logger = Logging(
+    enable_console=True,
+    enable_file=False,
+)
+
+# File only (production)
+prod_logger = Logging(
+    enable_console=False,
+    enable_file=True,
+    log_file_path="/var/log/myapp/app.log",
+)
+
+# Both (debugging)
+debug_logger = Logging(
+    enable_console=True,
+    enable_file=True,
+    log_file_path="debug.log",
+)
+```
+
+---
+
+## Verbosity Control
+
+Control which messages are shown based on verbosity levels:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(
+    enable_console=True,
+    enable_verbose_output=True,
+    verbosity_threshold=2,  # Only show messages with verbosity <= 2
+)
+
+# This WILL be shown (verbosity 1 <= threshold 2)
+logger.logged_statement(
+    "Important debug info",
+    verbose=True,
+    verbosity=1,
+    log_level="debug",
+)
+
+# This WILL be shown (verbosity 2 <= threshold 2)
+logger.logged_statement(
+    "Less important debug info",
+    verbose=True,
+    verbosity=2,
+    log_level="debug",
+)
+
+# This will be SUPPRESSED (verbosity 3 > threshold 2)
+result = logger.logged_statement(
+    "Very detailed debug info",
+    verbose=True,
+    verbosity=3,
+    log_level="debug",
+)
+# result is None when suppressed
+```
+
+### Verbosity Bypass Markers
+
+Register markers that bypass verbosity filtering:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(
+    enable_console=True,
+    enable_verbose_output=True,
+    verbosity_threshold=1,  # Very restrictive
+)
+
+# Register bypass marker
+logger.register_verbosity_bypass_marker("CRITICAL_PATH")
+
+# This bypasses verbosity despite high verbosity level
+logger.logged_statement(
+    "Critical path message - always shown",
+    context_marker="CRITICAL_PATH",
+    verbose=True,
+    verbosity=100,  # Would normally be suppressed
+    log_level="debug",
+)
+```
+
+---
+
+## Context and Storage Markers
+
+### Context Markers
+
+Add context labels to messages:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Messages with context
+logger.logged_statement(
+    "Application starting",
+    context_marker="STARTUP",
+    log_level="info",
+)
+
+logger.logged_statement(
+    "Loading configuration",
+    context_marker="CONFIG",
+    log_level="debug",
+)
+
+logger.logged_statement(
+    "Graceful shutdown",
+    context_marker="SHUTDOWN",
+    log_level="info",
+)
+
+# Output:
+# [STARTUP] [INFO] Application starting
+# [CONFIG] [DEBUG] Loading configuration
+# [SHUTDOWN] [INFO] Graceful shutdown
+```
+
+### Message Storage
+
+Store messages for later retrieval:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Store messages under markers
+logger.logged_statement(
+    "User login failed",
+    storage_marker="SECURITY_EVENTS",
+    log_level="warning",
+)
+
+logger.logged_statement(
+    "Password reset requested",
+    storage_marker="SECURITY_EVENTS",
+    log_level="info",
+)
+
+logger.logged_statement(
+    "Database connection timeout",
+    storage_marker="ERRORS",
+    log_level="error",
+)
+
+# Retrieve stored messages
+security_events = logger.stored_messages["SECURITY_EVENTS"]
+errors = logger.stored_messages["ERRORS"]
+
+print(f"Security events: {len(security_events)}")
+print(f"Errors: {len(errors)}")
+```
+
+### Storage Level Filtering
+
+Control which log levels are stored:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Only store WARNING and above
+logger.register_storage_level_filter(
+    "ALERTS",
+    allowed_levels=["warning", "error", "critical"],
+)
+
+# This will NOT be stored (info < warning)
+logger.logged_statement(
+    "Normal operation",
+    storage_marker="ALERTS",
+    log_level="info",
+)
+
+# This WILL be stored
+logger.logged_statement(
+    "Disk space low",
+    storage_marker="ALERTS",
+    log_level="warning",
+)
+
+alerts = logger.stored_messages.get("ALERTS", [])
+print(f"Alerts: {len(alerts)}")  # 1
+```
+
+---
+
+## Identifiers
+
+Attach identifiers to messages for correlation:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Log with identifiers
+logger.logged_statement(
+    "Processing order",
+    identifiers=["order_123", "customer_456"],
+    log_level="info",
+)
+
+# Output:
+# [order_123] [customer_456] [INFO] Processing order
+```
+
+---
+
+## Gunicorn Integration
+
+Lifecycle Logging automatically integrates with Gunicorn:
+
+```python
+# gunicorn.conf.py
+bind = "0.0.0.0:8000"
+workers = 4
+
+# Lifecycle Logging will detect and use Gunicorn's logger
+
+# app.py
+from lifecyclelogging import Logging
+
+# Automatically uses Gunicorn's handlers if running under Gunicorn
+logger = Logging(
+    enable_console=True,
+    enable_file=True,
+)
+```
+
+<Aside type="tip">
+When running under Gunicorn, the logger automatically inherits Gunicorn's configuration including log levels and handlers.
+</Aside>
+
+---
+
+## Exit Run Formatting
+
+Special formatting for exit/shutdown sequences:
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(enable_console=True)
+
+# Regular message
+logger.logged_statement("Normal operation", log_level="info")
+
+# Exit run message (special formatting)
+logger.logged_statement(
+    "Shutting down gracefully",
+    exit_run=True,
+    log_level="info",
+)
+
+# Output with visual separator:
+# [INFO] Normal operation
+# ════════════════════════════════════════
+# [EXIT] [INFO] Shutting down gracefully
+# ════════════════════════════════════════
+```
+
+---
+
+## Complete Example
+
+```python
+from lifecyclelogging import Logging
+
+# Production-ready logger setup
+logger = Logging(
+    enable_console=True,
+    enable_file=True,
+    log_file_path="/var/log/myapp/app.log",
+    logger_name="myapp",
+    enable_verbose_output=True,
+    verbosity_threshold=2,
+)
+
+# Register bypass markers for critical paths
+logger.register_verbosity_bypass_marker("SECURITY")
+logger.register_verbosity_bypass_marker("HEALTH_CHECK")
+
+# Register storage filters
+logger.register_storage_level_filter(
+    "ERRORS",
+    allowed_levels=["error", "critical"],
+)
+
+# Application logging
+logger.logged_statement(
+    "Application started",
+    context_marker="STARTUP",
+    log_level="info",
+)
+
+def handle_request(request_id: str, user_id: str):
+    logger.logged_statement(
+        "Request received",
+        identifiers=[request_id, user_id],
+        json_data={"method": "POST", "path": "/api/data"},
+        log_level="info",
+    )
+    
+    # Detailed trace (only shown if verbosity allows)
+    logger.logged_statement(
+        "Parsing request body",
+        verbose=True,
+        verbosity=3,
+        log_level="debug",
+    )
+    
+    # Error logging with storage
+    try:
+        # ... process request ...
+        pass
+    except Exception as e:
+        logger.logged_statement(
+            f"Request failed: {e}",
+            identifiers=[request_id],
+            storage_marker="ERRORS",
+            log_level="error",
+        )
+
+def shutdown():
+    # Report stored errors
+    errors = logger.stored_messages.get("ERRORS", [])
+    if errors:
+        logger.logged_statement(
+            f"Session ended with {len(errors)} errors",
+            exit_run=True,
+            log_level="warning",
+        )
+    else:
+        logger.logged_statement(
+            "Clean shutdown",
+            exit_run=True,
+            log_level="info",
+        )
+```
+
+---
+
+## API Reference
+
+### Logging Constructor
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `enable_console` | `bool` | `True` | Enable console output |
+| `enable_file` | `bool` | `False` | Enable file output |
+| `log_file_path` | `str` | `None` | Path for log file |
+| `logger_name` | `str` | `"lifecycle"` | Logger name prefix |
+| `enable_verbose_output` | `bool` | `False` | Enable verbosity filtering |
+| `verbosity_threshold` | `int` | `1` | Max verbosity to show |
+
+### logged_statement Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `message` | `str` | The log message |
+| `log_level` | `str` | `"debug"`, `"info"`, `"warning"`, `"error"`, `"critical"` |
+| `context_marker` | `str` | Context label for message |
+| `storage_marker` | `str` | Key for message storage |
+| `identifiers` | `list[str]` | Correlation identifiers |
+| `json_data` | `dict` | JSON data to attach |
+| `labeled_json_data` | `dict[str, dict]` | Labeled JSON sections |
+| `verbose` | `bool` | Mark as verbose message |
+| `verbosity` | `int` | Verbosity level (higher = more verbose) |
+| `exit_run` | `bool` | Use exit run formatting |
+
+### Instance Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `stored_messages` | `dict[str, list]` | Messages stored by marker |
+
+### Instance Methods
+
+| Method | Description |
+|--------|-------------|
+| `register_verbosity_bypass_marker(marker)` | Register marker that bypasses verbosity |
+| `register_storage_level_filter(marker, allowed_levels)` | Set allowed levels for storage marker |
+
+---
+
+## See Also
+
+- [GitHub Repository](https://github.com/extended-data-library/logging)
+- [PyPI Package](https://pypi.org/project/lifecyclelogging/)
+- [Changelog](https://github.com/extended-data-library/logging/blob/main/CHANGELOG.md)

@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Example: Running the Meshy MCP Server.
+
+This example demonstrates how to run the Model Context Protocol (MCP)
+server for Meshy AI, enabling integration with Claude Desktop and
+other MCP-compatible clients.
+
+Requirements:
+    pip install vendor-connectors[meshy,mcp]
+
+Environment Variables:
+    MESHY_API_KEY: Your Meshy API key
+
+Usage:
+    # Run the server (connects via stdio)
+    python examples/mcp_server.py
+
+    # Or use the installed command
+    meshy-mcp
+
+    # Configure in Claude Desktop's config.json:
+    {
+        "mcpServers": {
+            "meshy": {
+                "command": "meshy-mcp",
+                "env": {
+                    "MESHY_API_KEY": "your-api-key"
+                }
+            }
+        }
+    }
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+
+
+def main() -> int:
+    """Run the Meshy MCP server."""
+    # Check for required environment variables
+    if not os.getenv("MESHY_API_KEY"):
+        return 1
+
+    try:
+        from vendor_connectors.meshy.mcp import run_server
+    except ImportError:
+        return 1
+
+    try:
+        # Run the server (blocks until stopped)
+        run_server()
+    except KeyboardInterrupt:
+        pass
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

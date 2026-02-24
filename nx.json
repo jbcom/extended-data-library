@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": [
+      "default",
+      "!{projectRoot}/tests/**/*",
+      "!{projectRoot}/**/*.test.*",
+      "!{projectRoot}/**/*_test.go"
+    ]
+  },
+  "plugins": [
+    {
+      "plugin": "@nxlv/python",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "lintTargetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx-go/nx-go",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "lintTargetName": "lint"
+      }
+    }
+  ],
+  "targetDefaults": {
+    "test": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"]
+    }
+  },
+  "defaultBase": "main"
+}

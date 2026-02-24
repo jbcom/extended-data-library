@@ -1,12 +1,22 @@
 {
-  "name": "{{ REPO_NAME }}",
-  "version": "0.1.0",
-  "description": "A data package in the Extended Data Library",
-  "main": "index.js",
+  "name": "extended-data-library",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Extended Data Library monorepo",
+  "author": "Jon Bogaty <jon@jonbogaty.com>",
+  "license": "MIT",
+  "workspaces": [
+    "docs"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "echo \"No lint script specified\""
+    "nx": "nx",
+    "graph": "nx graph",
+    "affected": "nx affected"
   },
-  "author": "Extended Data Library",
-  "license": "MIT"
+  "devDependencies": {
+    "nx": "^20.0.0",
+    "@nxlv/python": "^20.0.0",
+    "@nx-go/nx-go": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
 }

@@ -1,0 +1,29 @@
+{
+  "name": "extended-data-types",
+  "projectType": "library",
+  "sourceRoot": "packages/extended-data-types/src",
+  "tags": ["scope:python", "type:lib"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run pytest packages/extended-data-types/tests/ -q",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uvx ruff check packages/extended-data-types/src/",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv build --package extended-data-types",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

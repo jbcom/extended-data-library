@@ -1,0 +1,31 @@
+{
+  "name": "directed-inputs-class",
+  "projectType": "library",
+  "sourceRoot": "packages/directed-inputs-class/src",
+  "tags": ["scope:python", "type:lib"],
+  "implicitDependencies": ["extended-data-types"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run pytest packages/directed-inputs-class/tests/ -q",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uvx ruff check packages/directed-inputs-class/src/",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv build --package directed-inputs-class",
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["^build"]
+    }
+  }
+}

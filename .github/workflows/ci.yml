@@ -18,141 +18,277 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
-  id-token: write
 
 jobs:
-  build:
-    name: Build package
+  # ==========================================================================
+  # Detect which packages changed
+  # ==========================================================================
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      edt: ${{ steps.filter.outputs.edt }}
+      logging: ${{ steps.filter.outputs.logging }}
+      inputs: ${{ steps.filter.outputs.inputs }}
+      connectors: ${{ steps.filter.outputs.connectors }}
+      go: ${{ steps.filter.outputs.go }}
+      python_any: ${{ steps.filter.outputs.python_any }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            edt:
+              - 'packages/extended-data-types/**'
+              - 'pyproject.toml'
+              - 'tox.ini'
+            logging:
+              - 'packages/lifecyclelogging/**'
+              - 'packages/extended-data-types/**'
+              - 'pyproject.toml'
+              - 'tox.ini'
+            inputs:
+              - 'packages/directed-inputs-class/**'
+              - 'packages/extended-data-types/**'
+              - 'pyproject.toml'
+              - 'tox.ini'
+            connectors:
+              - 'packages/vendor-connectors/**'
+              - 'packages/extended-data-types/**'
+              - 'packages/lifecyclelogging/**'
+              - 'packages/directed-inputs-class/**'
+              - 'pyproject.toml'
+              - 'tox.ini'
+            go:
+              - 'packages/secretssync/**'
+            python_any:
+              - 'packages/extended-data-types/**'
+              - 'packages/lifecyclelogging/**'
+              - 'packages/directed-inputs-class/**'
+              - 'packages/vendor-connectors/**'
+              - 'pyproject.toml'
+              - 'tox.ini'
+
+  # ==========================================================================
+  # Lint all Python packages
+  # ==========================================================================
+  lint:
+    name: Lint
+    needs: changes
+    if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - uses: hynek/build-and-inspect-python-package@d1b0f96a0a46b28c389aa982cfa69be61ea2dcbd # v2
+      - uses: actions/setup-python@v5
         with:
-          attest-build-provenance-github: false
+          python-version: "3.13"
 
-  test:
-    name: Test py${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
+
+      - name: Run linting
+        run: tox -e lint
+
+  # ==========================================================================
+  # Type-check all Python packages
+  # ==========================================================================
+  typecheck:
+    name: Type check
+    needs: changes
+    if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
-    needs: build
+    steps:
+      - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
+
+      - name: Run type checking
+        run: tox -e typecheck
+
+  # ==========================================================================
+  # Test: extended-data-types
+  # ==========================================================================
+  test-edt:
+    name: Test edt / py${{ matrix.python-version }}
+    needs: changes
+    if: needs.changes.outputs.edt == 'true'
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        include:
-          - python-version: "3.10"
-            tox-env: "py310"
-          - python-version: "3.11"
-            tox-env: "py311"
-          - python-version: "3.12"
-            tox-env: "py312"
-          - python-version: "3.13"
-            tox-env: "py313"
-
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - uses: hynek/setup-cached-uv@2a4a9b893253e16cf11e6def5f774336af2f80bc # v2
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
 
       - name: Install tox
         run: uv tool install tox --with tox-uv --with tox-gh
 
-      - name: Run tests with tox
-        run: tox -e ${{ matrix.tox-env }}
+      - name: Run tests
+        run: tox -e edt
 
-  lint:
-    name: Lint
+  # ==========================================================================
+  # Test: lifecyclelogging
+  # ==========================================================================
+  test-logging:
+    name: Test logging / py${{ matrix.python-version }}
+    needs: changes
+    if: needs.changes.outputs.logging == 'true'
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
 
-      - uses: hynek/setup-cached-uv@2a4a9b893253e16cf11e6def5f774336af2f80bc # v2
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
 
       - name: Install tox
         run: uv tool install tox --with tox-uv --with tox-gh
 
-      - name: Run linting with tox
-        run: tox -e lint
+      - name: Run tests
+        run: tox -e logging
 
-  release:
-    name: Release
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [build, test, lint]
+  # ==========================================================================
+  # Test: directed-inputs-class
+  # ==========================================================================
+  test-inputs:
+    name: Test inputs / py${{ matrix.python-version }}
+    needs: changes
+    if: needs.changes.outputs.inputs == 'true'
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      id-token: write
-
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
 
-      - name: Git config
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+      - uses: astral-sh/setup-uv@v4
         with:
-          python-version: "3.13"
+          enable-cache: true
 
-      - uses: hynek/setup-cached-uv@2a4a9b893253e16cf11e6def5f774336af2f80bc # v2
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
 
-      - name: Install python-semantic-release
-        run: uv tool install python-semantic-release
+      - name: Run tests
+        run: tox -e inputs
 
-      - name: Check if release needed
-        id: check
-        run: |
-          NEW_VERSION=$(semantic-release --noop version --print 2>/dev/null || true)
-          if [ -n "$NEW_VERSION" ]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          else
-            echo "should_release=false" >> $GITHUB_OUTPUT
-          fi
+  # ==========================================================================
+  # Test: vendor-connectors
+  # ==========================================================================
+  test-connectors:
+    name: Test connectors / py${{ matrix.python-version }}
+    needs: changes
+    if: needs.changes.outputs.connectors == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Release version
-        if: steps.check.outputs.should_release == 'true'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
+
+      - name: Run tests
+        run: tox -e connectors
+
+  # ==========================================================================
+  # Test: secretssync (Go)
+  # ==========================================================================
+  test-go:
+    name: Test secretssync (Go)
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache-dependency-path: packages/secretssync/go.sum
+
+      - name: Run Go tests
+        working-directory: packages/secretssync
+        run: go test -v -race ./...
+
+      - name: Run Go vet
+        working-directory: packages/secretssync
+        run: go vet ./...
+
+  # ==========================================================================
+  # CI gate - single status check for branch protection
+  # ==========================================================================
+  ci-pass:
+    name: CI
+    if: always()
+    needs: [lint, typecheck, test-edt, test-logging, test-inputs, test-connectors, test-go]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release version
-
-      - name: Download packages
-        if: steps.check.outputs.should_release == 'true'
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
-        with:
-          name: Packages
-          path: dist
-
-      - name: Publish to PyPI
-        if: steps.check.outputs.should_release == 'true'
-        uses: pypa/gh-action-pypi-publish@03f86fee9ac21f854951f5c6e2a02c2a1324aec7 # v1.12.4
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-          skip-existing: true
-
-      - name: Create GitHub Release
-        if: steps.check.outputs.should_release == 'true'
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
-        with:
-          tag_name: v${{ steps.check.outputs.version }}
-          name: v${{ steps.check.outputs.version }}
-          files: dist/*
-          token: ${{ secrets.GITHUB_TOKEN }}
+          LINT: ${{ needs.lint.result }}
+          TYPECHECK: ${{ needs.typecheck.result }}
+          EDT: ${{ needs.test-edt.result }}
+          LOGGING: ${{ needs.test-logging.result }}
+          INPUTS: ${{ needs.test-inputs.result }}
+          CONNECTORS: ${{ needs.test-connectors.result }}
+          GO: ${{ needs.test-go.result }}
+        run: |
+          results=("$LINT" "$TYPECHECK" "$EDT" "$LOGGING" "$INPUTS" "$CONNECTORS" "$GO")
+          for result in "${results[@]}"; do
+            if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+              echo "One or more jobs failed or were cancelled."
+              exit 1
+            fi
+          done
+          echo "All required checks passed."

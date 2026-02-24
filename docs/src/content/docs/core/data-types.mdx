@@ -1,0 +1,427 @@
+---
+title: Extended Data Types
+description: Supercharge your Python data types with serialization, transformations, and utilities
+---
+
+import { Tabs, TabItem, Aside, Card, CardGrid, Code } from '@astrojs/starlight/components';
+
+**Extended Data Types** (`extended-data-types`) is the core utility library providing enhanced Python data type operations.
+
+```bash
+pip install extended-data-types
+```
+
+[![PyPI](https://img.shields.io/pypi/v/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
+[![Python](https://img.shields.io/pypi/pyversions/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
+[![CI](https://github.com/extended-data-library/core/workflows/CI/badge.svg)](https://github.com/extended-data-library/core/actions)
+
+---
+
+## Serialization
+
+### YAML
+
+Full YAML support with custom tag handling:
+
+```python
+from extended_data_types import encode_yaml, decode_yaml
+
+# Encode Python objects to YAML
+data = {
+    "name": "example",
+    "version": "1.0.0",
+    "features": ["yaml", "json", "toml"],
+    "config": {"debug": True, "port": 8080},
+}
+
+yaml_str = encode_yaml(data)
+print(yaml_str)
+# name: example
+# version: 1.0.0
+# features:
+#   - yaml
+#   - json
+#   - toml
+# config:
+#   debug: true
+#   port: 8080
+
+# Decode YAML back to Python
+decoded = decode_yaml(yaml_str)
+assert decoded == data
+```
+
+<Aside type="tip">
+The YAML utilities support custom tags and complex data structures like anchors and aliases.
+</Aside>
+
+### JSON
+
+High-performance JSON via `orjson`:
+
+```python
+from extended_data_types import encode_json, decode_json
+
+data = {
+    "users": [
+        {"id": 1, "name": "Alice", "active": True},
+        {"id": 2, "name": "Bob", "active": False},
+    ],
+    "metadata": {"total": 2, "page": 1},
+}
+
+# Fast JSON encoding
+json_str = encode_json(data)
+print(json_str)
+# {"users":[{"id":1,"name":"Alice","active":true},{"id":2,"name":"Bob","active":false}],"metadata":{"total":2,"page":1}}
+
+# Decode back
+decoded = decode_json(json_str)
+assert decoded == data
+```
+
+### TOML
+
+Python 3.11+ compatible TOML handling:
+
+```python
+from extended_data_types import encode_toml, decode_toml
+
+data = {
+    "package": {"name": "my-app", "version": "0.1.0"},
+    "dependencies": {"requests": ">=2.28.0", "pyyaml": ">=6.0"},
+}
+
+toml_str = encode_toml(data)
+print(toml_str)
+# [package]
+# name = "my-app"
+# version = "0.1.0"
+#
+# [dependencies]
+# requests = ">=2.28.0"
+# pyyaml = ">=6.0"
+
+decoded = decode_toml(toml_str)
+assert decoded == data
+```
+
+### Base64
+
+Encoding and decoding with optional data wrapping:
+
+```python
+from extended_data_types import base64_encode, base64_decode
+
+# Simple encoding
+text = "Hello, World!"
+encoded = base64_encode(text, wrap_raw_data=False)
+print(encoded)  # SGVsbG8sIFdvcmxkIQ==
+
+decoded = base64_decode(encoded, unwrap_raw_data=False)
+print(decoded)  # Hello, World!
+
+# With data wrapping (useful for structured data)
+wrapped_encoded = base64_encode(text, wrap_raw_data=True)
+wrapped_decoded = base64_decode(wrapped_encoded, unwrap_raw_data=True)
+assert wrapped_decoded == text
+```
+
+---
+
+## String Transformations
+
+### Case Conversion
+
+Convert between all common case styles:
+
+```python
+from extended_data_types import (
+    to_camel_case,
+    to_pascal_case,
+    to_snake_case,
+    to_kebab_case,
+)
+
+# From snake_case
+original = "user_account_settings"
+print(to_camel_case(original))   # userAccountSettings
+print(to_pascal_case(original))  # UserAccountSettings
+print(to_kebab_case(original))   # user-account-settings
+
+# From camelCase
+camel = "userAccountSettings"
+print(to_snake_case(camel))  # user_account_settings
+print(to_kebab_case(camel))  # user-account-settings
+
+# From PascalCase
+pascal = "HTTPResponseCode"
+print(to_snake_case(pascal))  # http_response_code
+print(to_camel_case(pascal))  # httpResponseCode
+```
+
+### Humanization
+
+Make machine-readable strings human-friendly:
+
+```python
+from extended_data_types import humanize, titleize
+
+examples = [
+    "user_id",
+    "createdAt",
+    "HTTPResponse",
+    "employee_salary_amount",
+]
+
+for example in examples:
+    print(f"{example:30} → humanize: {humanize(example)}")
+    print(f"{' ':30} → titleize: {titleize(example)}")
+
+# user_id                        → humanize: User id
+#                                → titleize: User Id
+# createdAt                      → humanize: Created at
+#                                → titleize: Created At
+# HTTPResponse                   → humanize: Http response
+#                                → titleize: Http Response
+# employee_salary_amount         → humanize: Employee salary amount
+#                                → titleize: Employee Salary Amount
+```
+
+### Pluralization
+
+Smart English pluralization and singularization:
+
+```python
+from extended_data_types import pluralize, singularize
+
+# Regular and irregular plurals
+words = ["cat", "child", "person", "mouse", "analysis", "octopus"]
+for word in words:
+    print(f"{word} → {pluralize(word)}")
+
+# cat → cats
+# child → children
+# person → people
+# mouse → mice
+# analysis → analyses
+# octopus → octopi
+
+# Singularization
+plural_words = ["cats", "children", "people", "mice", "analyses"]
+for word in plural_words:
+    print(f"{word} → {singularize(word)}")
+```
+
+### Ordinalization
+
+Convert numbers to ordinal strings:
+
+```python
+from extended_data_types import ordinalize
+
+numbers = [1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 100, 101]
+for num in numbers:
+    print(f"{num} → {ordinalize(num)}")
+
+# 1 → 1st
+# 2 → 2nd
+# 3 → 3rd
+# 4 → 4th
+# 11 → 11th
+# 12 → 12th
+# 13 → 13th
+# 21 → 21st
+# 22 → 22nd
+# 23 → 23rd
+# 100 → 100th
+# 101 → 101st
+```
+
+### String Utilities
+
+Common string operations:
+
+```python
+from extended_data_types import (
+    removeprefix,
+    removesuffix,
+    truncate,
+    sanitize_key,
+)
+
+# Remove prefix/suffix (backport for older Python)
+text = "prefix_content_suffix"
+print(removeprefix(text, "prefix_"))  # content_suffix
+print(removesuffix(text, "_suffix"))  # prefix_content
+
+# Truncate long strings
+long_text = "This is a very long string that needs to be truncated"
+print(truncate(long_text, 20))  # This is a very lo...
+
+# Sanitize for use as keys
+messy_key = "User Name (Primary)"
+print(sanitize_key(messy_key))  # user_name_primary
+```
+
+---
+
+## Data Structure Utilities
+
+### List Operations
+
+```python
+from extended_data_types import flatten_list, filter_list
+
+# Flatten nested lists
+nested = [[1, 2], [3, [4, 5]], 6]
+print(flatten_list(nested))  # [1, 2, 3, 4, 5, 6]
+
+# Filter with predicate
+items = ["apple", "banana", "apricot", "cherry"]
+filtered = filter_list(items, lambda x: x.startswith("a"))
+print(filtered)  # ["apple", "apricot"]
+```
+
+### Map/Dictionary Operations
+
+```python
+from extended_data_types import deep_merge, flatten_map, filter_map
+
+# Deep merge dictionaries
+dict1 = {"a": 1, "b": {"c": 2, "d": 3}}
+dict2 = {"b": {"d": 4, "e": 5}, "f": 6}
+merged = deep_merge(dict1, dict2)
+print(merged)
+# {"a": 1, "b": {"c": 2, "d": 4, "e": 5}, "f": 6}
+
+# Flatten nested dictionaries
+nested_dict = {"a": {"b": {"c": 1}}, "d": 2}
+flat = flatten_map(nested_dict)
+print(flat)
+# {"a.b.c": 1, "d": 2}
+
+# Filter dictionary
+data = {"name": "John", "age": 30, "city": "NYC", "active": True}
+strings_only = filter_map(data, lambda k, v: isinstance(v, str))
+print(strings_only)
+# {"name": "John", "city": "NYC"}
+```
+
+---
+
+## State Utilities
+
+Helpers for checking and coalescing values:
+
+```python
+from extended_data_types import (
+    is_nothing,
+    first_non_empty,
+    all_non_empty,
+    any_non_empty,
+)
+
+# Check if values are "nothing" (None, empty string, empty list, etc.)
+print(is_nothing(None))       # True
+print(is_nothing(""))         # True
+print(is_nothing([]))         # True
+print(is_nothing({}))         # True
+print(is_nothing("hello"))    # False
+print(is_nothing([1, 2, 3]))  # False
+
+# Get first non-empty value (like COALESCE in SQL)
+result = first_non_empty(None, "", "fallback", "ignored")
+print(result)  # "fallback"
+
+# Check if all values are non-empty
+values = ["hello", "world", "!"]
+print(all_non_empty(*values))  # True
+
+with_empty = ["hello", "", "world"]
+print(all_non_empty(*with_empty))  # False
+
+# Check if any value is non-empty
+mostly_empty = [None, "", "found"]
+print(any_non_empty(*mostly_empty))  # True
+```
+
+<Aside type="caution">
+`is_nothing()` treats `0` and `False` as valid values (not "nothing"), which differs from Python's default truthiness.
+</Aside>
+
+---
+
+## File Utilities
+
+Work with file paths and extensions:
+
+```python
+from extended_data_types import match_file_extensions
+
+# Check if file matches allowed extensions
+file_path = "document.txt"
+allowed = [".txt", ".md", ".rst"]
+print(match_file_extensions(file_path, allowed))  # True
+
+image_path = "photo.jpg"
+print(match_file_extensions(image_path, allowed))  # False
+```
+
+---
+
+## Complete API Reference
+
+### Serialization
+
+| Function | Description |
+|----------|-------------|
+| `encode_yaml(data)` | Encode Python object to YAML string |
+| `decode_yaml(yaml_str)` | Decode YAML string to Python object |
+| `encode_json(data)` | Encode Python object to JSON string (via orjson) |
+| `decode_json(json_str)` | Decode JSON string to Python object |
+| `encode_toml(data)` | Encode Python object to TOML string |
+| `decode_toml(toml_str)` | Decode TOML string to Python object |
+| `base64_encode(data, wrap_raw_data)` | Encode to Base64 |
+| `base64_decode(data, unwrap_raw_data)` | Decode from Base64 |
+
+### String Transformations
+
+| Function | Description |
+|----------|-------------|
+| `to_camel_case(s)` | Convert to camelCase |
+| `to_pascal_case(s)` | Convert to PascalCase |
+| `to_snake_case(s)` | Convert to snake_case |
+| `to_kebab_case(s)` | Convert to kebab-case |
+| `humanize(s)` | Convert to human-readable form |
+| `titleize(s)` | Convert to Title Case |
+| `pluralize(word)` | Get plural form |
+| `singularize(word)` | Get singular form |
+| `ordinalize(n)` | Convert number to ordinal (1st, 2nd, 3rd) |
+
+### Data Structures
+
+| Function | Description |
+|----------|-------------|
+| `deep_merge(base, override)` | Recursively merge dictionaries |
+| `flatten_map(d, separator)` | Flatten nested dict to single level |
+| `flatten_list(lst)` | Flatten nested list |
+| `filter_map(d, predicate)` | Filter dictionary by predicate |
+| `filter_list(lst, predicate)` | Filter list by predicate |
+
+### State Utilities
+
+| Function | Description |
+|----------|-------------|
+| `is_nothing(value)` | Check if value is None/empty |
+| `first_non_empty(*values)` | Return first non-empty value |
+| `all_non_empty(*values)` | Check all values are non-empty |
+| `any_non_empty(*values)` | Check any value is non-empty |
+
+---
+
+## See Also
+
+- [GitHub Repository](https://github.com/extended-data-library/core)
+- [PyPI Package](https://pypi.org/project/extended-data-types/)
+- [Changelog](https://github.com/extended-data-library/core/blob/main/CHANGELOG.md)
