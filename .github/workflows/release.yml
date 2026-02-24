@@ -45,7 +45,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs['edt--tag_name'] }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -74,7 +74,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs['logging--tag_name'] }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -103,7 +103,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs['inputs--tag_name'] }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -132,7 +132,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs['connectors--tag_name'] }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
