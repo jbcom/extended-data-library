@@ -1,0 +1,39 @@
+# PR Labeler configuration
+# Used by actions/labeler to auto-label PRs based on changed files
+
+"pkg:edt":
+  - changed-files:
+      - any-glob-to-any-file: "packages/extended-data-types/**"
+
+"pkg:logging":
+  - changed-files:
+      - any-glob-to-any-file: "packages/lifecyclelogging/**"
+
+"pkg:inputs":
+  - changed-files:
+      - any-glob-to-any-file: "packages/directed-inputs-class/**"
+
+"pkg:connectors":
+  - changed-files:
+      - any-glob-to-any-file: "packages/vendor-connectors/**"
+
+"pkg:secretssync":
+  - changed-files:
+      - any-glob-to-any-file: "packages/secretssync/**"
+
+"docs":
+  - changed-files:
+      - any-glob-to-any-file: "docs/**"
+
+"ci":
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+"infrastructure":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "pyproject.toml"
+          - "tox.ini"
+          - "justfile"
+          - "nx.json"
+          - "package.json"

@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "extended-data-types"
 version = "5.4.0"
 description = "Extended functionality for data types"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 readme = "README.md"
 keywords = ["python3", "data-types", "utilities"]
@@ -17,7 +17,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -36,7 +35,6 @@ dependencies = [
     "ruamel.yaml>=0.18.0",
     "sortedcontainers>=2.4.0",
     "tomlkit>=0.13.2",
-    "typing_extensions>=4.3.0; python_version < '3.10'",
     "validators>=0.22.0",
     "wrapt>=1.16.0",
 ]
@@ -97,6 +95,10 @@ source = ["src/extended_data_types"]
 branch = true
 parallel = true
 source = ["extended_data_types"]
+relative_files = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
 
 [tool.coverage.report]
 show_missing = true
@@ -117,8 +119,8 @@ exclude_lines = [
 commit_message = "chore(release): v{version} [skip ci]"
 allow_zero_version = true
 tag_format = "v{version}"
-version_toml = ["packages/extended-data-types/pyproject.toml:project.version"]
-version_variables = ["packages/extended-data-types/src/extended_data_types/__init__.py:__version__"]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = ["src/extended_data_types/__init__.py:__version__"]
 
 [tool.semantic_release.remote]
 name = "origin"

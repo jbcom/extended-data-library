@@ -1,9 +1,7 @@
 # Dependabot Configuration
-# 
+#
 # DIRECT PUSH MODE: Dependabot pushes directly to main (no PRs)
 # Branch rulesets allow Dependabot to bypass protections
-#
-# Dependabot ignores ecosystems that don't apply to your repo
 
 version: 2
 
@@ -16,15 +14,7 @@ updates:
     commit-message:
       prefix: "ci"
 
-  # Docker
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "build"
-
-  # NPM/Node.js
+  # NPM/Node.js - root (Nx workspace)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -32,41 +22,49 @@ updates:
     commit-message:
       prefix: "deps"
 
-  # Python/pip
+  # NPM/Node.js - Astro docs site
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+
+  # Python/pip - extended-data-types
   - package-ecosystem: "pip"
-    directory: "/"
+    directory: "/packages/extended-data-types"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "deps"
 
-  # Go modules
+  # Python/pip - lifecyclelogging
+  - package-ecosystem: "pip"
+    directory: "/packages/lifecyclelogging"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+
+  # Python/pip - directed-inputs-class
+  - package-ecosystem: "pip"
+    directory: "/packages/directed-inputs-class"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+
+  # Python/pip - vendor-connectors
+  - package-ecosystem: "pip"
+    directory: "/packages/vendor-connectors"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+
+  # Go modules - secretssync
   - package-ecosystem: "gomod"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps"
-
-  # Rust/Cargo
-  - package-ecosystem: "cargo"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps"
-
-  # Terraform
-  - package-ecosystem: "terraform"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps"
-
-  # Git submodules
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
+    directory: "/packages/secretssync"
     schedule:
       interval: "weekly"
     commit-message:

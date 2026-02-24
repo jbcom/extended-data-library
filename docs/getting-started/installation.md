@@ -18,7 +18,7 @@ pip install extended-data-types
 ## Install from Source
 
 ```bash
-git clone https://github.com/jbcom/extended-data-types.git
+git clone https://github.com/jbcom/extended-data-library.git
 cd extended-data-types
 uv sync
 ```
@@ -27,7 +27,7 @@ uv sync
 
 ```bash
 # Clone and install with dev dependencies
-git clone https://github.com/jbcom/extended-data-types.git
+git clone https://github.com/jbcom/extended-data-library.git
 cd extended-data-types
 uv sync --extra dev --extra docs
 ```

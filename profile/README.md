@@ -1,24 +1,19 @@
 # Extended Data Library
 
-Welcome to the **Extended Data Library** organization! We focus on high-performance, type-safe data processing and enterprise-grade vendor connectors.
+High-performance Python libraries and tools for data processing, configuration management, logging, and cloud integrations.
 
-## 🚀 Key Repositories
+## Packages
 
-- **[core](https://github.com/extended-data-library/core)**: High-performance data types for Python.
-- **[vendor-connectors](https://github.com/extended-data-library/vendor-connectors)**: Unified AI-ready interfaces for AWS, Google Cloud, Slack, and more.
-- **[inputs](https://github.com/extended-data-library/inputs)**: Type-safe dynamic configuration loading.
-- **[logging](https://github.com/extended-data-library/logging)**: Standardized lifecycle logging.
+All packages now live in the [extended-data-library monorepo](https://github.com/jbcom/extended-data-library):
 
-## 🤖 AI Automation
+| Package | Description |
+|---------|-------------|
+| [extended-data-types](https://pypi.org/project/extended-data-types/) | Typed utilities for YAML, JSON, TOML, HCL, Base64, file paths, strings, lists, and maps |
+| [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | Lifecycle-aware logging with rich output, verbosity control, and message storage |
+| [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | Transparent input handling from environment variables, stdin, and config files |
+| [vendor-connectors](https://pypi.org/project/vendor-connectors/) | Universal cloud and service connectors (AWS, GitHub, Slack, Vault, Anthropic, Cursor, Meshy) |
+| secretssync | Enterprise-grade secret synchronization pipeline (Go) |
 
-This organization is fully automated using AI agents:
-- **Cursor Cloud Agents**: Automated PR reviews and bug fixes.
-- **Google Jules**: Session-based coding assistance and ecosystem orchestration.
-- **Automated CI/CD**: Seamless syncing and deployment across all repositories.
+## Documentation
 
-## 📚 Documentation
-
-Visit our central documentation hub: **[extended-data-library.github.io](https://extended-data-library.github.io)**
-
----
-*Managed by [control-center](https://github.com/extended-data-library/control-center)*
+Visit [extendeddata.dev](https://extendeddata.dev) for full documentation.

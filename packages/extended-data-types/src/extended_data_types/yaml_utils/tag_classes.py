@@ -11,7 +11,7 @@ import wrapt
 
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     _ObjectProxyBase: TypeAlias = "wrapt.ObjectProxy[Any]"
 else:
