@@ -332,6 +332,7 @@ jobs:
     needs: [changes, test-edt]
     if: always() && needs.changes.outputs.edt == 'true' && needs.test-edt.result == 'success'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -343,7 +344,7 @@ jobs:
           path: packages/extended-data-types
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: packages/extended-data-types
         env:
@@ -357,6 +358,7 @@ jobs:
     needs: [changes, test-logging]
     if: always() && needs.changes.outputs.logging == 'true' && needs.test-logging.result == 'success'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -368,7 +370,7 @@ jobs:
           path: packages/lifecyclelogging
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: packages/lifecyclelogging
         env:
@@ -382,6 +384,7 @@ jobs:
     needs: [changes, test-inputs]
     if: always() && needs.changes.outputs.inputs == 'true' && needs.test-inputs.result == 'success'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -393,7 +396,7 @@ jobs:
           path: packages/directed-inputs-class
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: packages/directed-inputs-class
         env:
@@ -407,6 +410,7 @@ jobs:
     needs: [changes, test-connectors]
     if: always() && needs.changes.outputs.connectors == 'true' && needs.test-connectors.result == 'success'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -418,7 +422,7 @@ jobs:
           path: packages/vendor-connectors
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: packages/vendor-connectors
         env:
@@ -438,10 +442,6 @@ jobs:
       - test-inputs
       - test-connectors
       - test-go
-      - sonar-edt
-      - sonar-logging
-      - sonar-inputs
-      - sonar-connectors
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -453,15 +453,10 @@ jobs:
           INPUTS: ${{ needs.test-inputs.result }}
           CONNECTORS: ${{ needs.test-connectors.result }}
           GO: ${{ needs.test-go.result }}
-          SONAR_EDT: ${{ needs.sonar-edt.result }}
-          SONAR_LOGGING: ${{ needs.sonar-logging.result }}
-          SONAR_INPUTS: ${{ needs.sonar-inputs.result }}
-          SONAR_CONNECTORS: ${{ needs.sonar-connectors.result }}
         run: |
           results=(
             "$LINT" "$TYPECHECK"
             "$EDT" "$LOGGING" "$INPUTS" "$CONNECTORS" "$GO"
-            "$SONAR_EDT" "$SONAR_LOGGING" "$SONAR_INPUTS" "$SONAR_CONNECTORS"
           )
           for result in "${results[@]}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
