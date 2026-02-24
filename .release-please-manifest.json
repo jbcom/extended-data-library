@@ -3,5 +3,5 @@
   "packages/lifecyclelogging": "2.0.0",
   "packages/directed-inputs-class": "2.0.0",
   "packages/vendor-connectors": "1.0.0",
-  "packages/secretssync": "1.0.0"
+  "packages/secretssync": "2.0.0"
 }
