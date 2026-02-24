@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: hynek/build-and-inspect-python-package@d1b0f96a0a46b28c389aa982cfa69be61ea2dcbd # v2
+      - uses: hynek/build-and-inspect-python-package@17808a62cd9ccf6f8f8361d9b5eadb5bc8508e36 # v2
         with:
           attest-build-provenance-github: false
 
