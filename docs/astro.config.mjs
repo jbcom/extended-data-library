@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://extended-data-library.github.io',
+  site: 'https://extended-data.dev',
   integrations: [
     starlight({
       title: 'Extended Data',
@@ -15,7 +15,7 @@ export default defineConfig({
         alt: 'Extended Data',
       },
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/extended-data-library' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/jbcom/extended-data-library' },
       ],
       head: [
         {
@@ -64,8 +64,7 @@ export default defineConfig({
         {
           label: 'Vendor Connectors',
           items: [
-            { label: 'Overview', slug: 'api/vendor-connectors' },
-            { label: 'API Reference', slug: 'api/vendor-connectors-api', attrs: { class: 'api-link' } },
+            { label: 'Overview & API', slug: 'api/vendor-connectors' },
           ],
         },
         {
@@ -90,7 +89,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: 'https://github.com/extended-data-library/extended-data-types/edit/main/docs/',
+        baseUrl: 'https://github.com/jbcom/extended-data-library/edit/main/docs/',
       },
       lastUpdated: true,
     }),

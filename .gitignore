@@ -61,7 +61,11 @@ packages/secretssync/bin/
 # Docs
 docs/_build/
 docs/.astro/
-docs/src/content/docs/api/
+docs/test-results/
+docs/playwright-report/
+# Sphinx-generated API docs (regenerated at build time)
+docs/src/content/docs/api/*.md
+docs/src/content/docs/api/.doctrees/
 
 # START Ruler Generated Files
 /.aider.conf.yml
