@@ -62,9 +62,9 @@ class UserService:
 
 def main() -> None:
     """Demonstrate decorator API usage."""
-    # Set up environment variables
+    # Set up environment variables (use your own values in production)
     os.environ["SERVICE_USER_ID"] = "12345"
-    os.environ["SERVICE_API_KEY"] = "secret-key-abc123"
+    os.environ["SERVICE_API_KEY"] = "test-only-example-key"
     os.environ["SERVICE_CONFIG"] = '{"host": "localhost", "debug": "true"}'
     os.environ["SERVICE_PORT"] = "9000"
 

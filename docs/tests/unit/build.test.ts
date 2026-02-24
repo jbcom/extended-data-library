@@ -83,17 +83,15 @@ describe('Starlight sidebar structure', () => {
 });
 
 describe('Sidebar slug integrity', () => {
-  // These are the known sidebar slugs extracted from the config.
-  // If the config changes, update this list or use dynamic extraction.
+  // Static content slugs from the sidebar config.
+  // API Reference entries use `link` (not `slug`) because they point to
+  // autodoc2-generated content that only exists after the Sphinx build step.
+  // Only `slug`-based entries are validated here.
   const sidebarSlugs = [
     { label: 'Introduction', slug: 'getting-started' },
     { label: 'Overview (Data Types)', slug: 'core/data-types' },
-    { label: 'API Reference (EDT)', slug: 'api/extended-data-types' },
     { label: 'Overview (Logging)', slug: 'packages/logging' },
-    { label: 'API Reference (Logging)', slug: 'api/lifecyclelogging' },
     { label: 'Overview (Inputs)', slug: 'packages/inputs' },
-    { label: 'API Reference (Inputs)', slug: 'api/directed-inputs-class' },
-    { label: 'Overview & API (Vendor Connectors)', slug: 'api/vendor-connectors' },
     { label: 'Overview (SecretSync)', slug: 'api/secretsync' },
     { label: 'Overview (Packages)', slug: 'packages' },
   ];
