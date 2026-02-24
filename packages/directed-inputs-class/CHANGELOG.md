@@ -1,5 +1,7 @@
 # CHANGELOG
 
+> **Note:** Historical links reference pre-monorepo repositories.
+
 <!-- version list -->
 
 ## v1.2.0 (2025-12-25)

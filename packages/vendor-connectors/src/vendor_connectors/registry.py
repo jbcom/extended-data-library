@@ -30,8 +30,6 @@ Entry Points (in pyproject.toml):
 
 from __future__ import annotations
 
-import sys
-
 from typing import TYPE_CHECKING, Any
 
 
@@ -52,16 +50,9 @@ def _discover_connectors() -> dict[str, type[VendorConnectorBase]]:
     connectors: dict[str, type[VendorConnectorBase]] = {}
 
     # Python 3.10+ uses importlib.metadata
-    if sys.version_info >= (3, 10):
-        from importlib.metadata import entry_points
+    from importlib.metadata import entry_points
 
-        eps = entry_points(group="vendor_connectors.connectors")
-    else:
-        # Fallback for older Python
-        from importlib.metadata import entry_points as _entry_points
-
-        all_eps = _entry_points()
-        eps = all_eps.get("vendor_connectors.connectors", [])
+    eps = entry_points(group="vendor_connectors.connectors")
 
     for ep in eps:
         try:

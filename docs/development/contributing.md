@@ -6,7 +6,7 @@ Thank you for your interest in contributing to extended-data-types!
 
 ```bash
 # Clone the repository
-git clone https://github.com/jbcom/extended-data-types.git
+git clone https://github.com/jbcom/extended-data-library.git
 cd extended-data-types
 
 # Install with all development dependencies

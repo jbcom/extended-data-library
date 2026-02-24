@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-import sys
-
 import pytest
-
-
-if sys.version_info < (3, 10):
-    pytest.skip("MCP server requires Python 3.10+", allow_module_level=True)
 
 import extended_data_types
 

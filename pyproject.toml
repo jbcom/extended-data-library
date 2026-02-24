@@ -2,7 +2,7 @@
 name = "extended-data-library"
 version = "0.0.0"
 description = "Extended Data Library monorepo"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Jon Bogaty", email = "jon@jonbogaty.com" }]
 
@@ -32,7 +32,7 @@ required-version = ">=0.5.0"
 # ── Shared tool configuration ─────────────────────────
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 line-length = 120
 src = ["packages/*/src", "packages/*/tests"]
 exclude = ["docs", "packages/secretssync"]

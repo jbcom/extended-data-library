@@ -19,12 +19,11 @@ import os
 import sys
 
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from pathlib import Path
 from typing import (
     Any,
-    Callable,
     ClassVar,
     cast,
 )

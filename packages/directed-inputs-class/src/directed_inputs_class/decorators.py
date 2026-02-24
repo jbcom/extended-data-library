@@ -19,9 +19,9 @@ from __future__ import annotations
 import functools
 import inspect
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from directed_inputs_class.__main__ import DirectedInputsClass
 

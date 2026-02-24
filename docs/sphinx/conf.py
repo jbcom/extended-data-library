@@ -13,7 +13,7 @@ for pkg in ["extended-data-types", "lifecyclelogging", "directed-inputs-class", 
 
 # -- Project information -----------------------------------------------------
 project = "Extended Data Library"
-copyright = "2025, Jon Bogaty"
+copyright = "2025-2026, Jon Bogaty"
 author = "Jon Bogaty"
 
 # -- General configuration ---------------------------------------------------

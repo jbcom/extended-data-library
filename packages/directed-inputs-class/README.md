@@ -2,7 +2,7 @@
 
 *Manage your Python inputs efficiently!*
 
-[![CI Status](https://github.com/extended-data-library/extended-data-types/workflows/CI/badge.svg)](https://github.com/extended-data-library/extended-data-types/actions?query=workflow%3ACI)
+[![CI Status](https://github.com/jbcom/extended-data-library/actions/workflows/ci.yml/badge.svg)](https://github.com/jbcom/extended-data-library/actions/workflows/ci.yml)
 [![PyPI Package latest release](https://img.shields.io/pypi/v/directed-inputs-class.svg)](https://pypi.org/project/directed-inputs-class/)
 [![Supported versions](https://img.shields.io/pypi/pyversions/directed-inputs-class.svg)](https://pypi.org/project/directed-inputs-class/)
 
@@ -307,11 +307,11 @@ from directed_inputs_class import (
 
 ## Contributing
 
-Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/extended-data-library/extended-data-types/blob/main/CONTRIBUTING.md) for more information.
+Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/CONTRIBUTING.md) for more information.
 
 ## Project Links
 
 - [**PyPI**](https://pypi.org/project/directed-inputs-class/)
-- [**GitHub**](https://github.com/extended-data-library/extended-data-types/tree/main/packages/directed-inputs-class)
+- [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/directed-inputs-class)
 - [**Documentation**](https://extendeddata.dev)
-- [**Changelog**](https://github.com/extended-data-library/extended-data-types/blob/main/packages/directed-inputs-class/CHANGELOG.md)
+- [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/directed-inputs-class/CHANGELOG.md)

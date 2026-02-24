@@ -9,28 +9,19 @@ file extensions and encodings.
 from __future__ import annotations
 
 import os
-import sys
 import tempfile
 import urllib.request
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeAlias
 
 import validators
-
-
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias, Union
-else:
-    from typing import Union
-
-    from typing_extensions import TypeAlias
 
 from git import GitCommandError, InvalidGitRepositoryError, NoSuchPathError, Repo
 
 
-FilePath: TypeAlias = Union[str, os.PathLike[str]]
+FilePath: TypeAlias = str | os.PathLike[str]
 """Type alias for file paths that can be represented as strings or os.PathLike objects."""
 
 

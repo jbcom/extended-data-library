@@ -49,9 +49,7 @@ Thumbs.db
 # Build artifacts
 *.log
 .cache/
-
-# uv
-uv.lock
+coverage.xml
 
 # Node.js
 node_modules/

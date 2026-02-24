@@ -312,10 +312,15 @@ markers = [
 ]
 
 [tool.coverage.run]
+source = ["vendor_connectors"]
 omit = [
     # Test files
     "tests/*",
 ]
+relative_files = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
 
 [tool.coverage.report]
 # Target: 75% (tracked in issue #21)
@@ -333,8 +338,8 @@ build_command = "uv build"
 commit_message = "chore(release): release v{version} [skip ci]"
 allow_zero_version = true
 tag_format = "vendor-connectors-v{version}"
-version_toml = ["packages/vendor-connectors/pyproject.toml:project.version"]
-version_variables = ["packages/vendor-connectors/src/vendor_connectors/__init__.py:__version__"]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = ["src/vendor_connectors/__init__.py:__version__"]
 
 [tool.semantic_release.remote]
 name = "origin"

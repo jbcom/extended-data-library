@@ -7,23 +7,28 @@ default:
 
 # Run all Python tests via tox
 test *args:
-    tox {{ args }}
+    tox -e edt,logging,inputs,connectors {{ args }}
 
 # Run tests for a specific package (edt, logging, inputs, connectors)
 test-pkg pkg *args:
     tox -e {{ pkg }} -- {{ args }}
 
-# Lint all Python packages
+# Lint all Python packages (check + format check)
 lint:
-    uvx ruff check packages/extended-data-types/src/ packages/lifecyclelogging/src/ packages/directed-inputs-class/src/ packages/vendor-connectors/src/
+    uvx ruff check packages/
+    uvx ruff format --check packages/
 
 # Format all Python packages
 format:
-    uvx ruff format packages/extended-data-types/src/ packages/lifecyclelogging/src/ packages/directed-inputs-class/src/ packages/vendor-connectors/src/
+    uvx ruff format packages/
 
-# Type-check all Python packages
+# Type-check Python packages
 typecheck:
-    uvx mypy packages/extended-data-types/src/ packages/lifecyclelogging/src/ packages/directed-inputs-class/src/ packages/vendor-connectors/src/
+    tox -e typecheck
+
+# Run all Python tests with coverage XML output (for SonarCloud)
+coverage:
+    tox -e edt,logging,inputs,connectors
 
 # Sync all Python dependencies
 sync:
@@ -31,7 +36,7 @@ sync:
 
 # ── Go ────────────────────────────────────────────────
 
-# Run Go tests
+# Run Go tests for secretssync
 test-go *args:
     cd packages/secretssync && go test ./... {{ args }}
 
@@ -74,3 +79,18 @@ ci: lint typecheck test test-go
 
 # Run full CI pipeline including docs
 ci-full: ci docs-build
+
+# Run tests with coverage for local SonarCloud prep
+sonar: coverage test-go
+
+# ── Housekeeping ─────────────────────────────────────
+
+# Remove build artifacts, caches, and coverage files
+clean:
+    rm -rf .tox
+    rm -rf build/ dist/
+    rm -f coverage.xml
+    find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name '*.egg-info' -exec rm -rf {} + 2>/dev/null || true
+    find . -name coverage.xml -exec rm -f {} + 2>/dev/null || true
+    find . -name '.coverage' -exec rm -f {} + 2>/dev/null || true

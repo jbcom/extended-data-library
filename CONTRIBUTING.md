@@ -1,158 +1,126 @@
----
-version: 1.0.1
-last_updated: 2026-01-03T02:21:30Z
-sync_type: always
----
+# Contributing to Extended Data Library
 
-# Contributing to Control Center
+Thank you for your interest in contributing! This monorepo contains multiple packages -- please read through these guidelines to get started.
 
-Thank you for your interest in contributing! We are **stewards and servants of the open source community FIRST**.
+## Prerequisites
 
-## Our Standards
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
+- [just](https://github.com/casey/just) (optional, for task running)
+- Go 1.25+ (only if working on secretssync)
 
-We **mandate** these standards because we believe in leading by example:
+## Development Setup
 
-### Conventional Commits (REQUIRED)
+```bash
+# Clone the repository
+git clone https://github.com/jbcom/extended-data-library.git
+cd extended-data-library
 
-Every commit MUST follow [Conventional Commits](https://www.conventionalcommits.org/):
+# Install all dependencies (uv handles workspace resolution)
+uv sync
+```
+
+## Running Tests
+
+```bash
+# All Python packages via tox
+tox -e edt,logging,inputs,connectors
+
+# Single package
+tox -e edt            # extended-data-types
+tox -e logging        # lifecyclelogging
+tox -e inputs         # directed-inputs-class
+tox -e connectors     # vendor-connectors
+
+# Using just
+just test
+
+# Go (secretssync)
+cd packages/secretssync && go test ./...
+```
+
+## Linting and Formatting
+
+```bash
+# Via tox
+tox -e lint
+
+# Directly
+uvx ruff check packages/
+uvx ruff format packages/
+
+# Using just
+just lint
+```
+
+## Type Checking
+
+```bash
+uvx mypy packages/extended-data-types/src/
+uvx mypy packages/lifecyclelogging/src/
+```
+
+## Commit Conventions
+
+All commits **must** follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
 ```
 
-#### Types
+### Types
 
-| Type | Description | Triggers Release |
-|------|-------------|------------------|
+| Type | Description | Release |
+|------|-------------|---------|
 | `feat` | New feature | Minor bump |
 | `fix` | Bug fix | Patch bump |
 | `docs` | Documentation only | No |
-| `style` | Formatting, no code change | No |
-| `refactor` | Code change without feat/fix | No |
-| `perf` | Performance improvement | Patch bump |
+| `refactor` | Code restructuring | No |
 | `test` | Adding/fixing tests | No |
-| `build` | Build system or dependencies | No |
-| `ci` | CI/CD configuration | No |
 | `chore` | Maintenance tasks | No |
-| `deps` | Dependency updates | Patch bump |
-| `revert` | Revert previous commit | Patch bump |
+| `feat!` | Breaking change | Major bump |
 
-#### Breaking Changes
+### Scopes
 
-Add `!` after type or include `BREAKING CHANGE:` in footer:
+Use the package scope when the change is package-specific:
 
-```
-feat!: remove deprecated API
+| Scope | Package |
+|-------|---------|
+| `edt` | extended-data-types |
+| `logging` | lifecyclelogging |
+| `inputs` | directed-inputs-class |
+| `connectors` | vendor-connectors |
+| `secretssync` | secretssync |
 
-BREAKING CHANGE: The old API has been removed. Use the new API instead.
-```
-
-#### Examples
+### Examples
 
 ```bash
-# Good
-feat(reviewer): add support for multi-file review
-fix(curator): handle empty issue body gracefully
+feat(edt): add TOML round-trip support
+fix(logging): handle empty context markers
 docs: update installation instructions
-refactor(clients): simplify Ollama error handling
-deps: bump cobra to v1.10.2
-
-# Bad
-Fixed bug                    # No type
-feat: Add new feature        # Wrong case (use lowercase)
-fix: fixed the thing.        # No trailing period
-Update code                  # Not conventional
+test(inputs): add coverage for stdin JSON parsing
 ```
 
-### Semantic Versioning (AUTOMATIC)
+## Pull Request Process
 
-We use [Release Please](https://github.com/googleapis/release-please) for automated versioning:
+1. Create a feature branch from `main` (`feat/`, `fix/`, `docs/`, etc.)
+2. Make your changes with tests
+3. Ensure CI passes locally (`tox -e lint` and `tox -e <package>`)
+4. Submit a Pull Request with a clear title using conventional commit format
+5. Address all review feedback
 
-- `feat:` → Minor version bump (0.1.0 → 0.2.0)
-- `fix:`, `perf:`, `deps:` → Patch version bump (0.1.0 → 0.1.1)
-- `feat!:` or `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
+## Project Structure
 
-### Pre-commit Hooks (REQUIRED)
-
-Install pre-commit hooks before contributing:
-
-```bash
-# Install pre-commit
-pip install pre-commit
-
-# Install hooks
-pre-commit install
-pre-commit install --hook-type commit-msg
-
-# Run on all files
-pre-commit run --all-files
+```
+packages/
+  extended-data-types/   Foundation utilities (Python)
+  lifecyclelogging/      Structured logging (Python)
+  directed-inputs-class/ Input handling (Python)
+  vendor-connectors/     Cloud connectors (Python)
+  secretssync/           Secret sync pipeline (Go)
 ```
 
-### Code Quality
-
-- **Go**: Run `make lint` before committing
-- **Tests**: Run `make test` and ensure all pass
-- **Format**: Run `make fmt` or let pre-commit handle it
-
-## Development Workflow
-
-### 1. Fork and Clone
-
-```bash
-git clone https://github.com/YOUR_USERNAME/control-center.git
-cd control-center
-```
-
-### 2. Create Feature Branch
-
-```bash
-git checkout -b feat/your-feature
-```
-
-### 3. Make Changes
-
-```bash
-# Build
-make build
-
-# Test
-make test
-
-# Lint
-make lint
-```
-
-### 4. Commit with Conventional Format
-
-```bash
-git add .
-git commit -m "feat(scope): add your feature"
-```
-
-### 5. Push and Create PR
-
-```bash
-git push origin feat/your-feature
-```
-
-Then create a Pull Request on GitHub.
-
-## Pull Request Guidelines
-
-1. **Title**: Use conventional commit format
-2. **Description**: Explain what and why, not how
-3. **Tests**: Add tests for new functionality
-4. **Docs**: Update documentation if needed
-5. **Review**: Address all AI and human feedback
-
-## Getting Help
-
-- **Issues**: [GitHub Issues](https://github.com/jbcom/control-center/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jbcom/control-center/discussions)
+Each Python package lives in `packages/<name>/` with its own `pyproject.toml`, `src/`, and `tests/` directories. The root `pyproject.toml` defines the uv workspace.
 
 ## License
 

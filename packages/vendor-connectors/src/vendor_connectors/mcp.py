@@ -24,7 +24,8 @@ import inspect
 import json
 import sys
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from vendor_connectors.registry import get_connector, list_connectors
 
