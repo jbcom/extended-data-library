@@ -8,12 +8,15 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Extended Data',
-      tagline: 'Enterprise Python Infrastructure',
+      tagline: 'Production Python Infrastructure',
       customCss: ['./src/styles/custom.css'],
       logo: {
-        src: './src/assets/houston.webp',
+        light: './src/assets/logo-dark.svg',
+        dark: './src/assets/logo.svg',
         alt: 'Extended Data',
+        replacesTitle: false,
       },
+      favicon: '/favicon.svg',
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/jbcom/extended-data-library' },
       ],
@@ -22,14 +25,29 @@ export default defineConfig({
           tag: 'meta',
           attrs: {
             property: 'og:title',
-            content: 'Extended Data - Enterprise Python Infrastructure',
+            content: 'Extended Data - Production Python Infrastructure',
           },
         },
         {
           tag: 'meta',
           attrs: {
             property: 'og:description',
-            content: 'Battle-tested Python utilities for serialization, input handling, logging, and vendor integrations.',
+            content: 'Battle-tested Python libraries for serialization, input handling, structured logging, and vendor integrations. Built for production.',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            name: 'twitter:card',
+            content: 'summary_large_image',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'icon',
+            href: '/favicon.svg',
+            type: 'image/svg+xml',
           },
         },
       ],
@@ -80,7 +98,7 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Enterprise',
+          label: 'Ecosystem',
           items: [
             { label: 'jbcom Hub', link: 'https://jbcom.github.io', attrs: { target: '_blank' } },
             { label: 'Agentic (AI)', link: 'https://agentic.dev', attrs: { target: '_blank' } },

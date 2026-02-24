@@ -1,72 +1,61 @@
 ---
 title: Extended Data
-description: Enterprise Python infrastructure that scales
+description: Production-grade Python infrastructure for data serialization, input handling, structured logging, and vendor integrations
 template: splash
 hero:
-  tagline: "The Infrastructure & Libs division of jbcom enterprise — battle-tested Python utilities powering production systems"
+  tagline: "Production-grade Python libraries that handle the boring infrastructure so you can build what matters. Serialization, input handling, logging, and 10+ vendor integrations — all type-safe and battle-tested."
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/logo.svg
   actions:
     - text: Get Started
       link: /getting-started/
       icon: right-arrow
-    - text: View on GitHub
-      link: https://github.com/extended-data-library
+    - text: GitHub
+      link: https://github.com/jbcom/extended-data-library
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid, Tabs, TabItem, Code, LinkCard } from '@astrojs/starlight/components';
 
-## 🏢 Part of the jbcom Enterprise
+## The Problem
 
-**Extended Data** provides the foundational Python infrastructure used across the entire [jbcom ecosystem](https://jbcom.github.io). These libraries are designed to work seamlessly together while remaining independently useful.
+Every Python project reinvents the same infrastructure: YAML parsing, environment variable handling, structured logging, API client management. You copy-paste from old projects, fix edge cases again, and hope the types are right.
 
-<CardGrid>
-  <LinkCard
-    title="Agentic"
-    description="AI/Agent infrastructure for LangChain, CrewAI, and MCP"
-    href="https://agentic.dev"
-  />
-  <LinkCard
-    title="Strata"
-    description="Procedural 3D graphics for React Three Fiber"
-    href="https://strata.game"
-  />
-</CardGrid>
+**Extended Data** is the answer. Five packages that handle the infrastructure layer of your Python applications — each independently useful, all designed to work together.
 
 ---
 
-## 📦 Core Packages
+## Core Packages
 
 <CardGrid stagger>
   <Card title="Extended Data Types" icon="document">
-    **Supercharge your Python data types!** YAML, JSON, TOML, Base64 encoding, string transformations, list/map utilities, and state management.
-    
+    Safe, typed serialization for YAML, JSON, TOML, and Base64. String transformations, deep merge, flatten, and state utilities like `is_nothing()` and `first_non_empty()`.
+
     ```bash
     pip install extended-data-types
     ```
   </Card>
-  
-  <Card title="Directed Inputs Class" icon="setting">
-    **Transparent input handling** with decorator-based API. Load from environment, stdin, or config with automatic type coercion.
-    
+
+  <Card title="Directed Inputs" icon="setting">
+    Decorator-based input handling. Load from environment variables, stdin, or config — with automatic type coercion. No inheritance required.
+
     ```bash
     pip install directed-inputs-class
     ```
   </Card>
-  
+
   <Card title="Lifecycle Logging" icon="add-document">
-    **Rich structured logging** with verbosity control, message storage, markers, and Gunicorn integration.
-    
+    Structured logging with verbosity control, message storage, context markers, and Gunicorn integration. Rich console output included.
+
     ```bash
     pip install lifecyclelogging
     ```
   </Card>
-  
+
   <Card title="Vendor Connectors" icon="rocket">
-    **Universal vendor connectors** for AWS, GCP, GitHub, Slack, Vault, Zoom, Meshy AI, Anthropic, and Cursor — with LangChain tools and MCP servers.
-    
+    Unified connectors for AWS, GCP, GitHub, Slack, Vault, Zoom, Meshy AI, Anthropic, and Cursor. Each with Direct API + LangChain Tools + MCP Server interfaces.
+
     ```bash
     pip install vendor-connectors
     ```
@@ -75,211 +64,150 @@ import { Card, CardGrid, Tabs, TabItem, Code, LinkCard } from '@astrojs/starligh
 
 ---
 
-## ⚡ Quick Examples
+## See It in Action
 
-### Extended Data Types — Serialization & Transformations
+<Tabs>
+  <TabItem label="Serialization">
+    ```python
+    from extended_data_types import encode_yaml, decode_json, deep_merge
 
-```python
-from extended_data_types import (
-    encode_yaml, decode_yaml,
-    encode_json, decode_json,
-    base64_encode, base64_decode,
-    to_camel_case, to_snake_case,
-    deep_merge, flatten_map,
-    is_nothing, first_non_empty,
-)
+    config = {"name": "myapp", "features": ["yaml", "json"]}
+    yaml_str = encode_yaml(config)
 
-# YAML encoding/decoding
-config = {"name": "app", "features": ["yaml", "json"]}
-yaml_str = encode_yaml(config)
-data = decode_yaml(yaml_str)
+    # Deep merge with overrides
+    base = {"db": {"host": "localhost", "port": 5432}}
+    override = {"db": {"port": 5433}, "debug": True}
+    merged = deep_merge(base, override)
+    # {"db": {"host": "localhost", "port": 5433}, "debug": True}
+    ```
+  </TabItem>
+  <TabItem label="Input Handling">
+    ```python
+    from directed_inputs_class import directed_inputs
 
-# Case transformations
-to_camel_case("user_account_settings")  # → "userAccountSettings"
-to_snake_case("HTTPResponse")           # → "http_response"
+    @directed_inputs(from_env=True, env_prefix="APP_")
+    class Config:
+        def get_settings(self, debug: bool = False, port: int = 8080):
+            return {"debug": debug, "port": port}
 
-# Deep merge dictionaries
-base = {"a": 1, "b": {"c": 2}}
-override = {"b": {"d": 3}, "e": 4}
-result = deep_merge(base, override)
-# → {"a": 1, "b": {"c": 2, "d": 3}, "e": 4}
+    # APP_DEBUG=true APP_PORT=3000 python app.py
+    config = Config()
+    config.get_settings()  # {"debug": True, "port": 3000}
+    ```
+  </TabItem>
+  <TabItem label="Logging">
+    ```python
+    from lifecyclelogging import Logging
 
-# State utilities
-first_non_empty(None, "", "fallback")  # → "fallback"
-is_nothing([])  # → True
-```
+    logger = Logging(enable_console=True, enable_verbose_output=True)
+    logger.logged_statement("Server starting", log_level="info")
+    logger.logged_statement(
+        "Request",
+        json_data={"method": "POST", "path": "/api"},
+        storage_marker="REQUESTS",
+        log_level="debug",
+    )
+    ```
+  </TabItem>
+  <TabItem label="Vendor APIs">
+    ```python
+    from vendor_connectors import VendorConnectors
 
-### Directed Inputs — Automatic Parameter Injection
+    vc = VendorConnectors()
 
-```python
-from directed_inputs_class import directed_inputs, input_config
+    # Credentials loaded automatically from environment
+    github = vc.get_github_client(github_owner="myorg")
+    s3 = vc.get_aws_client("s3")
+    anthropic = vc.get_anthropic_client()
 
-@directed_inputs(from_env=True, env_prefix="APP_")
-class UserService:
-    """Methods automatically receive inputs from environment."""
-    
-    def get_user(self, user_id: str, limit: int = 100) -> dict:
-        # user_id populated from APP_USER_ID if not provided
-        return {"id": user_id, "limit": limit}
-    
-    @input_config("api_key", source_name="API_KEY", required=True)
-    def secure_call(self, api_key: str) -> str:
-        # Raises ValueError if API_KEY not set
-        return f"Authenticated with {api_key[:4]}..."
-
-# Usage
-service = UserService()
-user = service.get_user()  # Loads from environment
-```
-
-### Lifecycle Logging — Rich Output with Control
-
-```python
-from lifecyclelogging import Logging
-
-logger = Logging(
-    enable_console=True,
-    enable_verbose_output=True,
-    verbosity_threshold=2,
-)
-
-# Basic logging with rich formatting
-logger.logged_statement("Server starting", log_level="info")
-
-# With attached JSON data
-logger.logged_statement(
-    "Request received",
-    json_data={"method": "POST", "path": "/api"},
-    log_level="debug"
-)
-
-# Verbosity control
-logger.logged_statement(
-    "Detailed trace", 
-    verbose=True, 
-    verbosity=3,  # Suppressed if threshold < 3
-    log_level="debug"
-)
-
-# Message storage for later retrieval
-logger.logged_statement(
-    "Critical event",
-    storage_marker="EVENTS",
-    log_level="warning"
-)
-events = logger.stored_messages["EVENTS"]
-```
-
-### Vendor Connectors — Three Interfaces
-
-```python
-from vendor_connectors import VendorConnectors
-
-# Unified access to all connectors
-vc = VendorConnectors()
-
-# Cloud providers
-s3 = vc.get_aws_client("s3")
-google = vc.get_google_client()
-
-# Services
-github = vc.get_github_client(github_owner="myorg")
-slack = vc.get_slack_client()
-
-# AI/Agent connectors
-anthropic = vc.get_anthropic_client()
-cursor = vc.get_cursor_client()
-```
-
-**Each connector supports 3 interfaces:**
-
-```python
-# 1. Direct Python API
-from vendor_connectors import meshy
-model = meshy.text3d.generate("a medieval sword")
-
-# 2. LangChain Tools (works with CrewAI, LangGraph, etc.)
-from vendor_connectors.meshy.tools import get_tools
-tools = get_tools()  # Standard StructuredTools
-
-# 3. MCP Server (for Claude Desktop, Cline)
-from vendor_connectors.meshy.mcp import run_server
-run_server()
-```
+    # Each connector also supports LangChain and MCP
+    from vendor_connectors.meshy.tools import get_tools
+    tools = get_tools()  # StructuredTools for LangChain/CrewAI
+    ```
+  </TabItem>
+</Tabs>
 
 ---
 
-## 🔗 How They Work Together
+## Architecture
 
-All Extended Data packages share common patterns from `directed-inputs-class`:
+All packages share a common pattern via `directed-inputs-class`:
 
-```python
-from vendor_connectors import GithubConnector
-
-# Credentials loaded automatically from:
-# 1. Direct parameters
-# 2. Environment variables (GITHUB_TOKEN)
-# 3. stdin JSON
-# 4. Config files
-
-github = GithubConnector(github_owner="extended-data-library")
-# No explicit token needed if GITHUB_TOKEN is set!
+```
+                     vendor-connectors
+           AWS | GCP | GitHub | Slack | Vault | AI
+          ─────────────────────────────────────────
+                  directed-inputs-class
+             Transparent credential & config loading
+          ─────────────────────────────────────────
+     extended-data-types     |     lifecyclelogging
+      Serialization & Utils  |    Structured Logging
 ```
 
-The `VendorConnectors` class provides:
-- **Client caching** — Same parameters return same instance
-- **Transparent credential loading** — Works across all interfaces
-- **Consistent patterns** — Same API shape for every vendor
+Credentials are loaded automatically from environment variables, stdin, or config files. No boilerplate. No manual plumbing.
 
 ---
 
-## 📚 Documentation
+## Why Extended Data?
 
 <CardGrid>
-  <LinkCard
-    title="Getting Started"
-    description="Installation and basic setup for all packages"
-    href="/getting-started/"
-  />
-  <LinkCard
-    title="Extended Data Types"
-    description="YAML, JSON, Base64, strings, lists, maps"
-    href="/core/data-types/"
-  />
-  <LinkCard
-    title="Directed Inputs"
-    description="Decorator-based input handling"
-    href="/packages/inputs/"
-  />
-  <LinkCard
-    title="Lifecycle Logging"
-    description="Rich structured logging"
-    href="/packages/logging/"
-  />
-  <LinkCard
-    title="Vendor Connectors"
-    description="AWS, GCP, GitHub, Slack, AI APIs"
-    href="/api/vendor-connectors/"
-  />
+  <Card title="Type-Safe" icon="approve-check">
+    Full type annotations, `py.typed` markers, and strict mypy compliance. Your IDE autocompletes everything.
+  </Card>
+  <Card title="Zero Config" icon="setting">
+    Sensible defaults. Install, import, use. Override when you need to.
+  </Card>
+  <Card title="Composable" icon="puzzle">
+    Use one package or all five. They share patterns but don't force coupling.
+  </Card>
+  <Card title="Production-Proven" icon="rocket">
+    CI/CD on every commit. 90%+ test coverage. Used in real production systems.
+  </Card>
 </CardGrid>
 
 ---
 
-## 🎯 Design Principles
+## Install Everything
 
-1. **Type-Safe** — Full type hints and `py.typed` markers
-2. **Zero Config** — Sensible defaults that work out of the box
-3. **Composable** — Use packages independently or together
-4. **Battle-Tested** — CI/CD, 90%+ coverage, production-proven
-5. **Modern Python** — Targets Python 3.10+
+```bash
+pip install extended-data-types directed-inputs-class lifecyclelogging vendor-connectors
+```
+
+Or install individually — each package works on its own.
 
 ---
 
-## 📈 Quick Stats
+## Packages at a Glance
 
-| Package | PyPI | Python | Status |
-|---------|------|--------|--------|
-| [extended-data-types](https://pypi.org/project/extended-data-types/) | ![PyPI](https://img.shields.io/pypi/v/extended-data-types.svg) | 3.10+ | [![CI](https://github.com/extended-data-library/core/workflows/CI/badge.svg)](https://github.com/extended-data-library/core/actions) |
-| [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | ![PyPI](https://img.shields.io/pypi/v/directed-inputs-class.svg) | 3.10+ | [![CI](https://github.com/extended-data-library/inputs/workflows/CI/badge.svg)](https://github.com/extended-data-library/inputs/actions) |
-| [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | ![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg) | 3.10+ | [![CI](https://github.com/extended-data-library/logging/workflows/CI/badge.svg)](https://github.com/extended-data-library/logging/actions) |
-| [vendor-connectors](https://pypi.org/project/vendor-connectors/) | ![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg) | 3.10+ | [![CI](https://github.com/extended-data-library/vendor-connectors/workflows/CI/badge.svg)](https://github.com/extended-data-library/vendor-connectors/actions) |
+| Package | PyPI | Python |
+|---------|------|--------|
+| [extended-data-types](https://pypi.org/project/extended-data-types/) | ![PyPI](https://img.shields.io/pypi/v/extended-data-types.svg) | 3.10+ |
+| [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | ![PyPI](https://img.shields.io/pypi/v/directed-inputs-class.svg) | 3.10+ |
+| [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | ![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg) | 3.10+ |
+| [vendor-connectors](https://pypi.org/project/vendor-connectors/) | ![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg) | 3.10+ |
+| [secretssync](https://github.com/jbcom/extended-data-library/tree/main/packages/secretssync) | Go binary | Go 1.25+ |
+
+---
+
+<CardGrid>
+  <LinkCard
+    title="Getting Started"
+    description="Installation, setup, and your first code with Extended Data"
+    href="/getting-started/"
+  />
+  <LinkCard
+    title="Extended Data Types"
+    description="Serialization, transformations, data structures, and state utilities"
+    href="/core/data-types/"
+  />
+  <LinkCard
+    title="Directed Inputs"
+    description="Decorator-based input handling with automatic type coercion"
+    href="/packages/inputs/"
+  />
+  <LinkCard
+    title="Vendor Connectors"
+    description="AWS, GCP, GitHub, Slack, AI APIs — with LangChain and MCP"
+    href="/api/vendor-connectors/"
+  />
+</CardGrid>
