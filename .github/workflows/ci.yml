@@ -49,6 +49,7 @@ jobs:
       inputs: ${{ steps.filter.outputs.inputs }}
       connectors: ${{ steps.filter.outputs.connectors }}
       go: ${{ steps.filter.outputs.go }}
+      docs: ${{ steps.filter.outputs.docs }}
       python_any: ${{ steps.filter.outputs.python_any }}
     steps:
       - uses: actions/checkout@v4
@@ -80,6 +81,9 @@ jobs:
               - 'tox.ini'
             go:
               - 'packages/secretssync/**'
+            docs:
+              - 'docs/**'
+              - 'packages/*/src/**'
             python_any:
               - 'packages/extended-data-types/**'
               - 'packages/lifecyclelogging/**'
@@ -325,6 +329,116 @@ jobs:
         run: go vet ./...
 
   # ==========================================================================
+  # Test: docs (unit tests + Astro build)
+  # ==========================================================================
+  test-docs:
+    name: Test docs
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
+
+      - name: Build Sphinx API docs
+        run: tox -e docs
+
+      - name: Add Starlight frontmatter to API docs
+        run: |
+          python3 -c "
+          import glob
+          for f in sorted(glob.glob('docs/src/content/docs/api/*.md')):
+              with open(f) as fh:
+                  content = fh.read()
+              if not content.startswith('---'):
+                  title = content.split('\n')[0].lstrip('# ')
+                  with open(f, 'w') as fh:
+                      fh.write(f'---\ntitle: \"{title}\"\n---\n\n{content}')
+          "
+
+      - name: Install docs dependencies
+        working-directory: docs
+        run: npm ci || npm install
+
+      - name: Run unit tests
+        working-directory: docs
+        run: npm test
+
+      - name: Build Astro site
+        working-directory: docs
+        run: npm run build
+
+  # ==========================================================================
+  # Test: docs E2E (Playwright)
+  # ==========================================================================
+  test-docs-e2e:
+    name: Test docs E2E
+    needs: [changes, test-docs]
+    if: needs.changes.outputs.docs == 'true' && needs.test-docs.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv --with tox-gh
+
+      - name: Build Sphinx API docs
+        run: tox -e docs
+
+      - name: Add Starlight frontmatter to API docs
+        run: |
+          python3 -c "
+          import glob
+          for f in sorted(glob.glob('docs/src/content/docs/api/*.md')):
+              with open(f) as fh:
+                  content = fh.read()
+              if not content.startswith('---'):
+                  title = content.split('\n')[0].lstrip('# ')
+                  with open(f, 'w') as fh:
+                      fh.write(f'---\ntitle: \"{title}\"\n---\n\n{content}')
+          "
+
+      - name: Install docs dependencies
+        working-directory: docs
+        run: npm ci || npm install
+
+      - name: Install Playwright browsers
+        working-directory: docs
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: docs
+        run: npx playwright test
+
+  # ==========================================================================
   # SonarCloud: extended-data-types
   # ==========================================================================
   sonar-edt:
@@ -442,6 +556,8 @@ jobs:
       - test-inputs
       - test-connectors
       - test-go
+      - test-docs
+      - test-docs-e2e
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -453,10 +569,13 @@ jobs:
           INPUTS: ${{ needs.test-inputs.result }}
           CONNECTORS: ${{ needs.test-connectors.result }}
           GO: ${{ needs.test-go.result }}
+          DOCS: ${{ needs.test-docs.result }}
+          DOCS_E2E: ${{ needs.test-docs-e2e.result }}
         run: |
           results=(
             "$LINT" "$TYPECHECK"
             "$EDT" "$LOGGING" "$INPUTS" "$CONNECTORS" "$GO"
+            "$DOCS" "$DOCS_E2E"
           )
           for result in "${results[@]}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
