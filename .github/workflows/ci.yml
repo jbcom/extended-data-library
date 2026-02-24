@@ -15,9 +15,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Minimal workflow-level permissions; jobs declare only what they need.
-permissions:
-  contents: read
+# No workflow-level permissions; each job declares its own.
+permissions: {}
 
 jobs:
   # ==========================================================================
@@ -43,6 +42,8 @@ jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       edt: ${{ steps.filter.outputs.edt }}
       logging: ${{ steps.filter.outputs.logging }}
@@ -100,6 +101,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -126,6 +129,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -152,6 +157,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.edt == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -192,6 +199,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.logging == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -232,6 +241,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.inputs == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -272,6 +283,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.connectors == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -312,6 +325,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -336,6 +351,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.docs == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -381,6 +398,8 @@ jobs:
     needs: [changes, test-docs]
     if: needs.changes.outputs.docs == 'true' && needs.test-docs.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -426,6 +445,8 @@ jobs:
     needs: [changes, test-edt]
     if: always() && needs.changes.outputs.edt == 'true' && needs.test-edt.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -452,6 +473,8 @@ jobs:
     needs: [changes, test-logging]
     if: always() && needs.changes.outputs.logging == 'true' && needs.test-logging.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -478,6 +501,8 @@ jobs:
     needs: [changes, test-inputs]
     if: always() && needs.changes.outputs.inputs == 'true' && needs.test-inputs.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -504,6 +529,8 @@ jobs:
     needs: [changes, test-connectors]
     if: always() && needs.changes.outputs.connectors == 'true' && needs.test-connectors.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6

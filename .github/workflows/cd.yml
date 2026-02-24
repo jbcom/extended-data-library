@@ -9,9 +9,8 @@ concurrency:
   group: cd-${{ github.ref }}
   cancel-in-progress: false
 
-# Minimal workflow-level permissions; jobs declare only what they need.
-permissions:
-  contents: read
+# No workflow-level permissions; each job declares its own.
+permissions: {}
 
 jobs:
   # ==========================================================================
@@ -21,6 +20,8 @@ jobs:
     name: Detect doc changes
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       docs: ${{ steps.filter.outputs.docs }}
     steps:
