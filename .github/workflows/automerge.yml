@@ -30,3 +30,4 @@ jobs:
           --auto --squash
           --subject "[skip actions] $PR_TITLE"
           --repo "${{ github.repository }}"
+          || true
