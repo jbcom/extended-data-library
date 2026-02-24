@@ -1,0 +1,321 @@
+---
+title: Getting Started
+description: Install and configure Extended Data packages
+---
+
+import { Tabs, TabItem, Card, CardGrid, Aside, Steps } from '@astrojs/starlight/components';
+
+## Installation
+
+Extended Data provides four main packages that work together or independently:
+
+<Tabs>
+  <TabItem label="All Packages">
+    ```bash
+    # Install all Extended Data packages
+    pip install extended-data-types directed-inputs-class lifecyclelogging vendor-connectors
+    ```
+  </TabItem>
+  <TabItem label="Individual">
+    ```bash
+    # Core data type utilities
+    pip install extended-data-types
+
+    # Input handling
+    pip install directed-inputs-class
+
+    # Structured logging
+    pip install lifecyclelogging
+
+    # Vendor API connectors
+    pip install vendor-connectors
+    ```
+  </TabItem>
+  <TabItem label="With Extras">
+    ```bash
+    # Vendor connectors with all integrations
+    pip install vendor-connectors[all]
+
+    # Or specific extras
+    pip install vendor-connectors[aws]      # AWS boto3
+    pip install vendor-connectors[meshy]    # Meshy AI 3D
+    pip install vendor-connectors[mcp]      # MCP server support
+    pip install vendor-connectors[webhooks] # Webhook handling
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Quick Start
+
+<Steps>
+
+1. **Install the core package**
+
+   ```bash
+   pip install extended-data-types
+   ```
+
+2. **Use utilities in your code**
+
+   ```python
+   from extended_data_types import encode_yaml, decode_yaml, is_nothing
+
+   # Serialize data
+   config = {"name": "myapp", "debug": True}
+   yaml_str = encode_yaml(config)
+   print(yaml_str)
+   # name: myapp
+   # debug: true
+
+   # Check for empty/null values
+   if not is_nothing(config.get("name")):
+       print("Name is set!")
+   ```
+
+3. **Add logging**
+
+   ```bash
+   pip install lifecyclelogging
+   ```
+
+   ```python
+   from lifecyclelogging import Logging
+
+   logger = Logging(enable_console=True)
+   logger.logged_statement("Application started", log_level="info")
+   ```
+
+4. **Add input handling**
+
+   ```bash
+   pip install directed-inputs-class
+   ```
+
+   ```python
+   from directed_inputs_class import directed_inputs
+
+   @directed_inputs(from_env=True)
+   class Config:
+       def get_setting(self, debug: bool = False, port: int = 8080):
+           return {"debug": debug, "port": port}
+
+   # DEBUG=true PORT=3000 python app.py
+   config = Config()
+   print(config.get_setting())  # {"debug": True, "port": 3000}
+   ```
+
+</Steps>
+
+---
+
+## Package Overview
+
+### Extended Data Types
+
+Core utility library providing:
+
+<CardGrid>
+  <Card title="Serialization" icon="document">
+    - YAML encoding/decoding with custom tags
+    - JSON via orjson for speed
+    - TOML support
+    - Base64 with wrapping
+  </Card>
+  <Card title="Transformations" icon="pencil">
+    - Case conversion (camel, snake, kebab, pascal)
+    - String humanization and titleization
+    - Pluralization and singularization
+    - Number ordinalization
+  </Card>
+  <Card title="Data Structures" icon="list-format">
+    - Deep merge dictionaries
+    - Flatten nested structures
+    - Filter lists and maps
+    - Stack operations
+  </Card>
+  <Card title="State Utilities" icon="approve-check">
+    - `is_nothing()` — Check for empty/null
+    - `first_non_empty()` — Coalesce values
+    - `all_non_empty()` / `any_non_empty()`
+  </Card>
+</CardGrid>
+
+```python
+from extended_data_types import (
+    # Serialization
+    encode_yaml, decode_yaml,
+    encode_json, decode_json,
+    encode_toml, decode_toml,
+    base64_encode, base64_decode,
+    
+    # String transformations
+    to_camel_case, to_snake_case, to_kebab_case, to_pascal_case,
+    humanize, titleize, pluralize, singularize, ordinalize,
+    
+    # Data structures
+    deep_merge, flatten_map, flatten_list,
+    filter_map, filter_list,
+    
+    # State
+    is_nothing, first_non_empty, all_non_empty, any_non_empty,
+)
+```
+
+---
+
+### Directed Inputs Class
+
+Transparent input handling with:
+
+- **Decorator API** — `@directed_inputs` on any class
+- **Automatic type coercion** — Strings → `bool`, `int`, `float`, `Path`, `datetime`
+- **Multi-source loading** — Environment, stdin JSON, dictionaries
+- **Per-method config** — `@input_config` for fine-grained control
+
+```python
+import os
+from directed_inputs_class import directed_inputs, input_config
+
+os.environ["API_KEY"] = "secret123"
+os.environ["TIMEOUT"] = "30"
+
+@directed_inputs(from_env=True)
+class Service:
+    @input_config("api_key", required=True)
+    def call_api(self, api_key: str, timeout: int = 60) -> dict:
+        # api_key loaded from API_KEY (required)
+        # timeout loaded from TIMEOUT, coerced to int
+        return {"key": api_key[:4], "timeout": timeout}
+
+service = Service()
+print(service.call_api())  # {"key": "secr", "timeout": 30}
+```
+
+---
+
+### Lifecycle Logging
+
+Enhanced Python logging with:
+
+- **Rich console output** — Colors and formatting
+- **File output** — Configurable paths
+- **Verbosity control** — Threshold-based filtering
+- **Message storage** — Retrieve logged messages programmatically
+- **Gunicorn integration** — Works seamlessly in WSGI apps
+
+```python
+from lifecyclelogging import Logging
+
+logger = Logging(
+    enable_console=True,
+    enable_file=True,
+    log_file_path="app.log",
+    enable_verbose_output=True,
+    verbosity_threshold=2,
+)
+
+# Standard logging
+logger.logged_statement("Starting up", log_level="info")
+
+# With context and data
+logger.logged_statement(
+    "Request processed",
+    context_marker="API",
+    json_data={"method": "POST", "status": 200},
+    log_level="info"
+)
+
+# Stored for later retrieval
+logger.logged_statement(
+    "Error occurred",
+    storage_marker="ERRORS",
+    log_level="error"
+)
+errors = logger.stored_messages["ERRORS"]
+```
+
+---
+
+### Vendor Connectors
+
+Universal connectors with three interfaces each:
+
+| Connector | Direct API | LangChain Tools | MCP Server |
+|-----------|------------|-----------------|------------|
+| **AWS** | ✅ | — | — |
+| **Google Cloud** | ✅ | — | — |
+| **GitHub** | ✅ | ✅ | — |
+| **Slack** | ✅ | — | — |
+| **Vault** | ✅ | — | — |
+| **Zoom** | ✅ | — | — |
+| **Meshy AI** | ✅ | ✅ | ✅ |
+| **Anthropic** | ✅ | — | — |
+| **Cursor** | ✅ | — | — |
+
+```python
+from vendor_connectors import VendorConnectors
+
+vc = VendorConnectors()
+
+# Cloud
+aws_s3 = vc.get_aws_client("s3")
+gcp = vc.get_google_client()
+
+# Services
+github = vc.get_github_client(github_owner="myorg")
+slack = vc.get_slack_client()
+
+# AI
+anthropic = vc.get_anthropic_client()
+cursor = vc.get_cursor_client()
+```
+
+---
+
+## Environment Variables
+
+<Aside type="tip">
+All packages inherit from `DirectedInputsClass`, so they automatically load credentials from environment variables.
+</Aside>
+
+### Common Variables
+
+| Variable | Package | Description |
+|----------|---------|-------------|
+| `ANTHROPIC_API_KEY` | vendor-connectors | Anthropic Claude API |
+| `CURSOR_API_KEY` | vendor-connectors | Cursor Background Agents |
+| `AWS_ACCESS_KEY_ID` | vendor-connectors | AWS credentials |
+| `AWS_SECRET_ACCESS_KEY` | vendor-connectors | AWS credentials |
+| `GITHUB_TOKEN` | vendor-connectors | GitHub API |
+| `SLACK_BOT_TOKEN` | vendor-connectors | Slack bot |
+| `VAULT_ADDR` | vendor-connectors | HashiCorp Vault |
+| `MESHY_API_KEY` | vendor-connectors | Meshy AI |
+
+---
+
+## Next Steps
+
+<CardGrid>
+  <Card title="Extended Data Types" icon="document">
+    Deep dive into serialization, transformations, and utilities.
+    
+    [Read the docs →](/core/data-types/)
+  </Card>
+  <Card title="Directed Inputs" icon="setting">
+    Master the decorator API and input handling.
+    
+    [Read the docs →](/packages/inputs/)
+  </Card>
+  <Card title="Lifecycle Logging" icon="add-document">
+    Configure rich logging for your applications.
+    
+    [Read the docs →](/packages/logging/)
+  </Card>
+  <Card title="Vendor Connectors" icon="rocket">
+    Connect to cloud providers and AI services.
+    
+    [Read the docs →](/api/vendor-connectors/)
+  </Card>
+</CardGrid>

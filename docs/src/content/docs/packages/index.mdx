@@ -1,0 +1,137 @@
+---
+title: Package Overview
+description: All packages in the Extended Data ecosystem
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Extended Data Packages
+
+The Extended Data ecosystem provides four production-ready Python packages that work together seamlessly or independently.
+
+<CardGrid>
+  <LinkCard
+    title="Extended Data Types"
+    description="Core utilities: YAML, JSON, TOML, Base64, string transformations, list/map operations"
+    href="/core/data-types/"
+  />
+  <LinkCard
+    title="Directed Inputs Class"
+    description="Decorator-based input handling with automatic type coercion"
+    href="/packages/inputs/"
+  />
+  <LinkCard
+    title="Lifecycle Logging"
+    description="Rich structured logging with verbosity control and message storage"
+    href="/packages/logging/"
+  />
+  <LinkCard
+    title="Vendor Connectors"
+    description="Universal connectors for AWS, GCP, GitHub, Slack, AI APIs"
+    href="/api/vendor-connectors/"
+  />
+</CardGrid>
+
+---
+
+## Installation
+
+```bash
+# Install all packages
+pip install extended-data-types directed-inputs-class lifecyclelogging vendor-connectors
+
+# Or install individually
+pip install extended-data-types      # Core utilities
+pip install directed-inputs-class    # Input handling
+pip install lifecyclelogging         # Logging
+pip install vendor-connectors[all]   # All vendor connectors
+```
+
+---
+
+## How They Work Together
+
+All Extended Data packages share common patterns:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    vendor-connectors                         │
+│  AWS, GCP, GitHub, Slack, Vault, Zoom, Meshy, Anthropic     │
+├─────────────────────────────────────────────────────────────┤
+│                 directed-inputs-class                        │
+│     Transparent credential loading from env/stdin/config     │
+├─────────────────────────────────────────────────────────────┤
+│    extended-data-types    │      lifecyclelogging           │
+│   Serialization, Utils    │    Structured Logging           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Example: Full Stack Usage
+
+```python
+from lifecyclelogging import Logging
+from directed_inputs_class import directed_inputs
+from extended_data_types import encode_yaml, deep_merge
+from vendor_connectors import VendorConnectors
+
+# Logging setup
+logger = Logging(enable_console=True, enable_file=True)
+
+# Service with automatic input handling
+@directed_inputs(from_env=True, env_prefix="APP_")
+class ConfigService:
+    def __init__(self):
+        self.vc = VendorConnectors()
+        self.logger = logger
+    
+    def load_config(self, config_path: str = "config.yaml") -> dict:
+        """Load and merge configuration from multiple sources."""
+        self.logger.logged_statement(
+            f"Loading config from {config_path}",
+            context_marker="CONFIG",
+            log_level="info"
+        )
+        
+        # Use vendor connectors to fetch remote config
+        github = self.vc.get_github_client(github_owner="myorg")
+        remote_config = github.get_file_contents(config_path)
+        
+        # Merge with local overrides using extended-data-types
+        local_config = {"debug": True, "log_level": "DEBUG"}
+        merged = deep_merge(remote_config, local_config)
+        
+        self.logger.logged_statement(
+            "Config loaded successfully",
+            json_data=merged,
+            log_level="debug"
+        )
+        
+        return merged
+
+# Usage
+service = ConfigService()
+config = service.load_config()
+print(encode_yaml(config))
+```
+
+---
+
+## Package Details
+
+| Package | PyPI | Python | License |
+|---------|------|--------|---------|
+| [extended-data-types](https://pypi.org/project/extended-data-types/) | ![PyPI](https://img.shields.io/pypi/v/extended-data-types.svg) | 3.10+ | MIT |
+| [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | ![PyPI](https://img.shields.io/pypi/v/directed-inputs-class.svg) | 3.10+ | MIT |
+| [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | ![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg) | 3.10+ | MIT |
+| [vendor-connectors](https://pypi.org/project/vendor-connectors/) | ![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg) | 3.10+ | MIT |
+
+---
+
+## Source Repositories
+
+| Package | Repository |
+|---------|------------|
+| Extended Data Types | [extended-data-library/core](https://github.com/extended-data-library/core) |
+| Directed Inputs Class | [extended-data-library/inputs](https://github.com/extended-data-library/inputs) |
+| Lifecycle Logging | [extended-data-library/logging](https://github.com/extended-data-library/logging) |
+| Vendor Connectors | [extended-data-library/vendor-connectors](https://github.com/extended-data-library/vendor-connectors) |
