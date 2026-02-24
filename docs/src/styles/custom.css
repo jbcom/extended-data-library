@@ -1,32 +1,524 @@
-/* 
-  extended-data-library Documentation Portal
-  
-  BRANDING HIERARCHY:
-  1. Enterprise base (jbcom.github.io) - fonts, core colors, layout
-  2. Org theme - accent colors (below)
-  3. Org customizations - unique to this org
-  
-  Owner: Jon Bogaty (jbcom)
-  Part of the jbcom Enterprise ecosystem
+/*
+  Extended Data Library — Documentation Theme
+  A distinctive dark theme with amber-gold accents
+  Domain: extended-data.dev
 */
 
-/* ===== LAYER 1: Enterprise Base ===== */
-@import url('https://raw.githubusercontent.com/jbcom/jbcom.github.io/main/enterprise-branding/starlight-base.css');
+/* ===== Fonts ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* ===== LAYER 2: Org Theme (Amber) ===== */
-/* 
-  Extended Data Division - Branding Override
-  Org: extended-data-library
-*/
-
+/* ===== Core Theme: Dark Mode ===== */
 :root {
-  /* Amber Theme */
-  --sl-color-accent-low: #451a03;
+  /* Brand: Amber-Gold */
+  --sl-color-accent-low: #2a1700;
   --sl-color-accent: #f59e0b;
   --sl-color-accent-high: #fef3c7;
-  --sl-color-text-accent: #f59e0b;
+  --sl-color-text-accent: #fbbf24;
+
+  /* Custom brand tokens */
+  --ed-amber: #f59e0b;
+  --ed-amber-light: #fbbf24;
+  --ed-amber-glow: rgba(245, 158, 11, 0.15);
+  --ed-amber-border: rgba(245, 158, 11, 0.25);
+  --ed-surface: rgba(255, 255, 255, 0.03);
+  --ed-surface-hover: rgba(255, 255, 255, 0.06);
+  --ed-border: rgba(255, 255, 255, 0.08);
+  --ed-radius: 12px;
 }
 
-/* ===== LAYER 3: Org-Specific Customizations ===== */
-/* Add styles unique to extended-data-library below */
+/* Light mode overrides (keep consistent) */
+:root[data-theme='light'] {
+  --sl-color-accent-low: #fffbeb;
+  --sl-color-accent: #d97706;
+  --sl-color-accent-high: #451a03;
+  --sl-color-text-accent: #b45309;
+  --ed-amber: #d97706;
+  --ed-amber-light: #f59e0b;
+  --ed-amber-glow: rgba(217, 119, 6, 0.1);
+  --ed-amber-border: rgba(217, 119, 6, 0.2);
+  --ed-surface: rgba(0, 0, 0, 0.02);
+  --ed-surface-hover: rgba(0, 0, 0, 0.04);
+  --ed-border: rgba(0, 0, 0, 0.08);
+}
 
+/* ===== Typography ===== */
+:root {
+  --sl-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+  --sl-text-sm: 0.875rem;
+}
+
+/* Tighter heading tracking */
+h1, h2, h3, h4 {
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+/* ===== Logo ===== */
+.site-title {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  font-size: 1.15rem !important;
+}
+
+/* ===== Hero / Splash Page ===== */
+.hero {
+  padding-block: 4rem !important;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+/* Hero title: gradient text */
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.1 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 50%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero tagline */
+.hero .tagline {
+  font-size: 1.2rem !important;
+  line-height: 1.6 !important;
+  max-width: 38rem;
+  color: var(--sl-color-gray-3) !important;
+}
+
+/* Hero actions: styled buttons */
+.hero .action {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  transition: all 0.2s ease !important;
+}
+
+.hero .action.primary {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+  color: #000 !important;
+  border: none !important;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.hero .action.primary:hover {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+.hero .action.minimal {
+  border: 1px solid var(--ed-amber-border) !important;
+  color: var(--ed-amber-light) !important;
+}
+
+.hero .action.minimal:hover {
+  background: var(--ed-amber-glow) !important;
+  border-color: var(--ed-amber) !important;
+}
+
+/* Hero image: glow effect */
+.hero img {
+  filter: drop-shadow(0 0 40px rgba(245, 158, 11, 0.2));
+}
+
+/* ===== Starlight Cards ===== */
+.card {
+  background: var(--ed-surface) !important;
+  border: 1px solid var(--ed-border) !important;
+  border-radius: var(--ed-radius) !important;
+  transition: all 0.25s ease !important;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--ed-amber-border) !important;
+  background: var(--ed-surface-hover) !important;
+  box-shadow: 0 0 24px var(--ed-amber-glow);
+  transform: translateY(-2px);
+}
+
+.card .title {
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Card icon glow */
+.card .icon {
+  color: var(--ed-amber) !important;
+}
+
+/* Link cards */
+.sl-link-card {
+  background: var(--ed-surface) !important;
+  border: 1px solid var(--ed-border) !important;
+  border-radius: var(--ed-radius) !important;
+  transition: all 0.25s ease !important;
+}
+
+.sl-link-card:hover {
+  border-color: var(--ed-amber-border) !important;
+  box-shadow: 0 0 20px var(--ed-amber-glow);
+  transform: translateY(-2px);
+}
+
+/* ===== Sidebar ===== */
+
+/* Sidebar group labels */
+.sidebar-content .top-level > li > details > summary,
+.sidebar-content .top-level > li > a {
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  color: var(--sl-color-gray-3) !important;
+}
+
+/* Active sidebar item: amber indicator */
+[aria-current="page"],
+[aria-current="page"]:hover {
+  background: var(--ed-amber-glow) !important;
+  color: var(--ed-amber-light) !important;
+  border-left: 2px solid var(--ed-amber) !important;
+  font-weight: 600 !important;
+}
+
+/* ===== Code Blocks ===== */
+pre:not(.astro-code) {
+  border: 1px solid var(--ed-border) !important;
+  border-radius: var(--ed-radius) !important;
+}
+
+.astro-code,
+.expressive-code {
+  border-radius: var(--ed-radius) !important;
+  border: 1px solid var(--ed-border) !important;
+}
+
+/* Code inline */
+:not(pre) > code {
+  background: var(--ed-surface) !important;
+  border: 1px solid var(--ed-border);
+  border-radius: 5px;
+  padding: 0.15em 0.35em;
+  font-size: 0.875em;
+}
+
+/* ===== Tables ===== */
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--ed-border) !important;
+  border-radius: var(--ed-radius) !important;
+  overflow: hidden;
+}
+
+th {
+  background: var(--ed-surface) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em;
+  color: var(--sl-color-gray-3) !important;
+}
+
+td, th {
+  border-bottom: 1px solid var(--ed-border) !important;
+  border-right: none !important;
+}
+
+tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ===== Asides (Tips, Notes, etc.) ===== */
+.starlight-aside {
+  border-radius: var(--ed-radius) !important;
+  border-left-width: 3px !important;
+}
+
+/* ===== Content separators ===== */
+hr {
+  border-color: var(--ed-border) !important;
+  margin-block: 2.5rem !important;
+}
+
+/* ===== Main content area ===== */
+.main-pane {
+  max-width: 52rem;
+}
+
+/* ===== Custom badge/pill styling ===== */
+.sl-badge {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Steps component ===== */
+.sl-steps > li::before {
+  background: linear-gradient(135deg, var(--ed-amber), #d97706) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+/* ===== Footer ===== */
+.page-footer {
+  border-top: 1px solid var(--ed-border) !important;
+}
+
+/* ===== Tabs ===== */
+starlight-tabs [role="tablist"] {
+  border-bottom: 1px solid var(--ed-border) !important;
+}
+
+starlight-tabs [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--ed-amber) !important;
+  color: var(--ed-amber-light) !important;
+  font-weight: 600;
+}
+
+/* ===== Ambient glow on splash pages ===== */
+[data-type="splash"] .main-frame {
+  position: relative;
+}
+
+[data-type="splash"] .main-frame::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-type="splash"] .main-frame::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== PyPI Badge Styling ===== */
+img[alt="PyPI"],
+img[alt="Python"],
+img[alt="CI"] {
+  display: inline-block !important;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 72rem) {
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem) !important;
+  }
+}
+
+@media (max-width: 50rem) {
+  .hero {
+    padding-block: 2rem !important;
+  }
+
+  .hero h1 {
+    font-size: 2rem !important;
+  }
+}
+
+/* ===== Print ===== */
+@media print {
+  .hero .action {
+    display: none !important;
+  }
+}
+
+/* ===== Scrollbar styling ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ed-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ed-amber-border);
+}
+
+/* ===== Selection ===== */
+::selection {
+  background: rgba(245, 158, 11, 0.3);
+  color: white;
+}
+
+/* ===== Smooth animations ===== */
+* {
+  scroll-behavior: smooth;
+}
+
+/* ===== API link indicators in sidebar ===== */
+.api-link::after {
+  content: 'API';
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--ed-amber-glow);
+  color: var(--ed-amber);
+  border: 1px solid var(--ed-amber-border);
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+/* ===== Enhanced Card Grid (inspired by Dark Grid / Bento) ===== */
+
+/* Card grid: tighter gap for bento feel */
+.card-grid {
+  gap: 1rem !important;
+}
+
+/* Glassmorphic card effect */
+.card {
+  position: relative;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Subtle gradient overlay on hover (from Dark Grid inspiration) */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ed-radius);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0) 0%, rgba(245, 158, 11, 0) 100%);
+  transition: background 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card:hover::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.03) 0%, rgba(251, 191, 36, 0.06) 100%);
+}
+
+/* ===== Staggered card grid animation ===== */
+.card-grid.stagger .card {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: card-fade-in 0.4s ease forwards;
+}
+
+.card-grid.stagger .card:nth-child(1) { animation-delay: 0s; }
+.card-grid.stagger .card:nth-child(2) { animation-delay: 0.08s; }
+.card-grid.stagger .card:nth-child(3) { animation-delay: 0.16s; }
+.card-grid.stagger .card:nth-child(4) { animation-delay: 0.24s; }
+.card-grid.stagger .card:nth-child(5) { animation-delay: 0.32s; }
+.card-grid.stagger .card:nth-child(6) { animation-delay: 0.4s; }
+
+@keyframes card-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Enhanced code blocks (terminal-style) ===== */
+
+/* Code block frame: filename bar styling */
+.expressive-code .frame {
+  border: 1px solid var(--ed-border) !important;
+  border-radius: var(--ed-radius) !important;
+  overflow: hidden;
+}
+
+.expressive-code .frame .header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--ed-border) !important;
+}
+
+/* Bash/shell code blocks: subtle terminal feel */
+.expressive-code[data-language="bash"] .frame,
+.expressive-code[data-language="shell"] .frame {
+  border-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+/* ===== Link card grid spacing ===== */
+.sl-link-card + .sl-link-card {
+  margin-top: 0 !important;
+}
+
+/* ===== Heading anchor links ===== */
+.heading-link {
+  color: var(--ed-amber) !important;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+h2:hover .heading-link,
+h3:hover .heading-link {
+  opacity: 0.6;
+}
+
+h2:hover .heading-link:hover,
+h3:hover .heading-link:hover {
+  opacity: 1;
+}
+
+/* ===== Splash page: architecture diagram enhancement ===== */
+[data-type="splash"] pre {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--ed-amber-border) !important;
+  border-radius: var(--ed-radius) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.6 !important;
+}
+
+/* ===== Navigation header enhancement ===== */
+header.header {
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--ed-border) !important;
+}
+
+/* ===== Mobile menu enhancement ===== */
+@media (max-width: 50rem) {
+  .sidebar-pane {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+/* ===== Content "h2" section headers ===== */
+.sl-markdown-content h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ed-border);
+  margin-bottom: 1.5rem;
+}
+
+/* ===== Splash page specific: wider content ===== */
+[data-type="splash"] .sl-markdown-content {
+  max-width: 72rem;
+  margin-inline: auto;
+}
