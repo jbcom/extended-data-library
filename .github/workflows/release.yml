@@ -57,15 +57,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Build package
-        working-directory: packages/extended-data-types
-        run: uv build
-
-      - name: Publish to PyPI
-        working-directory: packages/extended-data-types
+      - name: Build and publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --token "$UV_PUBLISH_TOKEN"
+        run: |
+          uv build --package extended-data-types
+          uv publish --token "$UV_PUBLISH_TOKEN"
 
   publish-logging:
     name: Publish lifecyclelogging
@@ -86,15 +83,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Build package
-        working-directory: packages/lifecyclelogging
-        run: uv build
-
-      - name: Publish to PyPI
-        working-directory: packages/lifecyclelogging
+      - name: Build and publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --token "$UV_PUBLISH_TOKEN"
+        run: |
+          uv build --package lifecyclelogging
+          uv publish --token "$UV_PUBLISH_TOKEN"
 
   publish-inputs:
     name: Publish directed-inputs-class
@@ -115,15 +109,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Build package
-        working-directory: packages/directed-inputs-class
-        run: uv build
-
-      - name: Publish to PyPI
-        working-directory: packages/directed-inputs-class
+      - name: Build and publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --token "$UV_PUBLISH_TOKEN"
+        run: |
+          uv build --package directed-inputs-class
+          uv publish --token "$UV_PUBLISH_TOKEN"
 
   publish-connectors:
     name: Publish vendor-connectors
@@ -144,15 +135,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Build package
-        working-directory: packages/vendor-connectors
-        run: uv build
-
-      - name: Publish to PyPI
-        working-directory: packages/vendor-connectors
+      - name: Build and publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --token "$UV_PUBLISH_TOKEN"
+        run: |
+          uv build --package vendor-connectors
+          uv publish --token "$UV_PUBLISH_TOKEN"
 
   # ==========================================================================
   # Go package release (GoReleaser handles binary builds + GitHub release assets)
