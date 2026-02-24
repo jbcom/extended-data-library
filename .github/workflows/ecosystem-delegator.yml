@@ -197,7 +197,7 @@ jobs:
           token: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - name: Run Claude on Issue
-        uses: anthropics/claude-code-action@154d0de144ff82240e1c3deedff56280381fd122 # main
+        uses: anthropics/claude-code-action@35a9e0292d36f1186f5d842b14eb575074e8b450 # main
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.CI_GITHUB_TOKEN }}
