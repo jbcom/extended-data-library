@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
   issues: write
   pull-requests: write
 
@@ -58,11 +59,9 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
 
       - name: Build and publish
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           uv build --package extended-data-types
-          uv publish --token "$UV_PUBLISH_TOKEN"
+          uv publish
 
   publish-logging:
     name: Publish lifecyclelogging
@@ -84,11 +83,9 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
 
       - name: Build and publish
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           uv build --package lifecyclelogging
-          uv publish --token "$UV_PUBLISH_TOKEN"
+          uv publish
 
   publish-inputs:
     name: Publish directed-inputs-class
@@ -110,11 +107,9 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
 
       - name: Build and publish
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           uv build --package directed-inputs-class
-          uv publish --token "$UV_PUBLISH_TOKEN"
+          uv publish
 
   publish-connectors:
     name: Publish vendor-connectors
@@ -136,11 +131,9 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
 
       - name: Build and publish
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           uv build --package vendor-connectors
-          uv publish --token "$UV_PUBLISH_TOKEN"
+          uv publish
 
   # ==========================================================================
   # Go package release (GoReleaser handles binary builds + GitHub release assets)
