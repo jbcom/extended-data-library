@@ -21,7 +21,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr review "${{ github.event.pull_request.number }}" --approve --repo "${{ github.repository }}" || true
 
-      - name: Enable auto-merge
+      - name: Merge dependabot PRs (skip actions)
+        if: github.actor == 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -29,5 +30,17 @@ jobs:
           gh pr merge "${{ github.event.pull_request.number }}"
           --auto --squash
           --subject "[skip actions] $PR_TITLE"
+          --repo "${{ github.repository }}"
+          || true
+
+      - name: Merge release-please PRs (allow actions)
+        if: github.actor == 'github-actions[bot]'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: >-
+          gh pr merge "${{ github.event.pull_request.number }}"
+          --auto --squash
+          --subject "$PR_TITLE"
           --repo "${{ github.repository }}"
           || true
