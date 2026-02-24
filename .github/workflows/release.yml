@@ -31,6 +31,7 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          token: ${{ secrets.CI_GITHUB_TOKEN }}
 
   # ==========================================================================
   # Python package publishing (triggered by release-please tags)
@@ -180,4 +181,4 @@ jobs:
           args: release --clean
           workdir: packages/secretssync
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
