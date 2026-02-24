@@ -23,38 +23,46 @@ def main() -> int:
     """Demonstrate AWS connector usage."""
     # Check for required environment variables
     if not os.getenv("AWS_ACCESS_KEY_ID"):
+        print("Error: AWS_ACCESS_KEY_ID environment variable is required.")
         return 1
 
     try:
         from vendor_connectors import AWSConnector, AWSConnectorFull
     except ImportError:
+        print("Error: Could not import vendor_connectors. Install with: pip install vendor-connectors[aws]")
         return 1
 
     # Basic connector - just session management
+    print("Creating basic AWS connector...")
     AWSConnector()
+    print("Basic connector created successfully.")
 
     # Full connector with all operations
+    print("\nCreating full AWS connector...")
     full_connector = AWSConnectorFull()
+    print("Full connector created successfully.")
 
     # List S3 buckets
+    print("\n--- S3 Buckets ---")
     try:
         buckets = full_connector.list_buckets()
-        for _bucket in buckets[:5]:  # Show first 5
-            pass
+        for bucket in buckets[:5]:  # Show first 5
+            print(f"  Bucket: {bucket}")
         if len(buckets) > 5:
-            pass
-    except Exception:
-        pass
+            print(f"  ... and {len(buckets) - 5} more buckets")
+    except Exception as e:
+        print(f"  Could not list buckets: {e}")
 
     # List organization accounts (if using Organizations)
+    print("\n--- Organization Accounts ---")
     try:
         accounts = full_connector.get_accounts()
-        for _account in accounts[:5]:
-            pass
+        for account in accounts[:5]:
+            print(f"  Account: {account}")
         if len(accounts) > 5:
-            pass
-    except Exception:
-        pass
+            print(f"  ... and {len(accounts) - 5} more accounts")
+    except Exception as e:
+        print(f"  Could not list accounts: {e}")
 
     return 0
 
