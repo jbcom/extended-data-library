@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.actor == 'dependabot[bot]' ||
-      github.actor == 'github-actions[bot]'
+      github.actor == 'github-actions[bot]' ||
+      contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
     steps:
       - name: Auto-approve PR
         env:
@@ -34,7 +35,9 @@ jobs:
           || true
 
       - name: Merge release-please PRs (allow actions)
-        if: github.actor == 'github-actions[bot]'
+        if: >-
+          github.actor == 'github-actions[bot]' ||
+          contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_TITLE: ${{ github.event.pull_request.title }}
