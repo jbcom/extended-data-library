@@ -16,7 +16,9 @@ class ReleaseCoordinator:
             # Try to load from local pyproject.toml
             try:
                 content = extended_data_types.read_file("pyproject.toml")
-                assert isinstance(content, (str, bytes, bytearray, memoryview))
+                if not isinstance(content, (str, bytes, bytearray, memoryview)):
+                    msg = "Failed to read pyproject.toml"
+                    raise TypeError(msg)
                 data = extended_data_types.decode_toml(content)
                 self.config = data.get("tool", {}).get("semantic_release", {})
             except (OSError, ValueError):
