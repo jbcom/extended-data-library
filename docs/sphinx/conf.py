@@ -1,15 +1,9 @@
 # Configuration file for the Sphinx documentation builder.
 # This config generates markdown output that feeds into Astro Starlight.
-
-import os
-import sys
-
-# Add each package's source to the path for autodoc
-packages_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "packages"))
-for pkg in ["extended-data-types", "lifecyclelogging", "directed-inputs-class", "vendor-connectors"]:
-    src_path = os.path.join(packages_dir, pkg, "src")
-    if os.path.isdir(src_path):
-        sys.path.insert(0, src_path)
+#
+# Uses sphinx-autodoc2 for source-based documentation extraction.
+# autodoc2 parses Python source with astroid (no imports needed),
+# making it reliable in CI where dependencies may not be installed.
 
 # -- Project information -----------------------------------------------------
 project = "Extended Data Library"
@@ -19,11 +13,8 @@ author = "Jon Bogaty"
 # -- General configuration ---------------------------------------------------
 extensions = [
     "myst_parser",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    "autodoc2",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
-    "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
 ]
 
@@ -36,36 +27,58 @@ source_suffix = {
     ".rst": "restructuredtext",
 }
 
-# -- Extension configuration -------------------------------------------------
+# -- autodoc2 configuration -------------------------------------------------
+# Point autodoc2 at each package's source directory.
+# Paths must be relative to this conf.py file's directory.
 
-# autodoc settings
-autodoc_default_options = {
-    "members": True,
-    "member-order": "bysource",
-    "special-members": "__init__",
-    "undoc-members": True,
-    "exclude-members": "__weakref__",
-    "show-inheritance": True,
-}
-autodoc_typehints = "description"
-autodoc_class_signature = "separated"
+autodoc2_packages = [
+    {
+        "path": "../../packages/extended-data-types/src/extended_data_types",
+        "module": "extended_data_types",
+        "exclude_dirs": ["__pycache__"],
+    },
+    {
+        "path": "../../packages/lifecyclelogging/src/lifecyclelogging",
+        "module": "lifecyclelogging",
+        "exclude_dirs": ["__pycache__"],
+    },
+    {
+        "path": "../../packages/directed-inputs-class/src/directed_inputs_class",
+        "module": "directed_inputs_class",
+        "exclude_dirs": ["__pycache__"],
+    },
+    {
+        "path": "../../packages/vendor-connectors/src/vendor_connectors",
+        "module": "vendor_connectors",
+        "exclude_dirs": ["__pycache__"],
+    },
+]
 
-# autosummary settings
-autosummary_generate = True
+# Render as MyST Markdown (compatible with Starlight via sphinx-markdown-builder)
+autodoc2_render_plugin = "myst"
 
-# napoleon settings (Google/NumPy style docstrings)
+# Hide inherited members and undocumented dunder methods by default
+autodoc2_hidden_objects = ["inherited", "dunder"]
+
+# Merge class and __init__ docstrings
+autodoc2_class_docstring = "merge"
+
+# Include per-module summary tables
+autodoc2_module_summary = True
+
+# -- Napoleon configuration (Google-style docstrings) ----------------------
 napoleon_google_docstring = True
-napoleon_numpy_docstring = True
+napoleon_numpy_docstring = False
 napoleon_include_init_with_doc = True
 napoleon_use_param = True
 napoleon_use_rtype = True
 
-# intersphinx settings
+# -- intersphinx configuration ---------------------------------------------
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
 
-# myst_parser settings
+# -- myst_parser configuration ---------------------------------------------
 myst_enable_extensions = [
     "colon_fence",
     "deflist",
