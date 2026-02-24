@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "directed-inputs-class"
-version = "1.2.0"
+version = "2.0.0"
 description = "Directed inputs class consumes and processes inputs from sources beyond args and kwargs"
 requires-python = ">=3.10"
 license = { text = "MIT" }
