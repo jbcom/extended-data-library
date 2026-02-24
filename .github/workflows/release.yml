@@ -1,0 +1,182 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      edt--release_created: ${{ steps.release.outputs['packages/extended-data-types--release_created'] }}
+      edt--tag_name: ${{ steps.release.outputs['packages/extended-data-types--tag_name'] }}
+      logging--release_created: ${{ steps.release.outputs['packages/lifecyclelogging--release_created'] }}
+      logging--tag_name: ${{ steps.release.outputs['packages/lifecyclelogging--tag_name'] }}
+      inputs--release_created: ${{ steps.release.outputs['packages/directed-inputs-class--release_created'] }}
+      inputs--tag_name: ${{ steps.release.outputs['packages/directed-inputs-class--tag_name'] }}
+      connectors--release_created: ${{ steps.release.outputs['packages/vendor-connectors--release_created'] }}
+      connectors--tag_name: ${{ steps.release.outputs['packages/vendor-connectors--tag_name'] }}
+      secretssync--release_created: ${{ steps.release.outputs['packages/secretssync--release_created'] }}
+      secretssync--tag_name: ${{ steps.release.outputs['packages/secretssync--tag_name'] }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # ==========================================================================
+  # Python package publishing (triggered by release-please tags)
+  # ==========================================================================
+
+  publish-edt:
+    name: Publish extended-data-types
+    needs: release-please
+    if: needs.release-please.outputs['edt--release_created'] == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs['edt--tag_name'] }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Build package
+        working-directory: packages/extended-data-types
+        run: uv build
+
+      - name: Publish to PyPI
+        working-directory: packages/extended-data-types
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --token "$UV_PUBLISH_TOKEN"
+
+  publish-logging:
+    name: Publish lifecyclelogging
+    needs: release-please
+    if: needs.release-please.outputs['logging--release_created'] == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs['logging--tag_name'] }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Build package
+        working-directory: packages/lifecyclelogging
+        run: uv build
+
+      - name: Publish to PyPI
+        working-directory: packages/lifecyclelogging
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --token "$UV_PUBLISH_TOKEN"
+
+  publish-inputs:
+    name: Publish directed-inputs-class
+    needs: release-please
+    if: needs.release-please.outputs['inputs--release_created'] == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs['inputs--tag_name'] }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Build package
+        working-directory: packages/directed-inputs-class
+        run: uv build
+
+      - name: Publish to PyPI
+        working-directory: packages/directed-inputs-class
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --token "$UV_PUBLISH_TOKEN"
+
+  publish-connectors:
+    name: Publish vendor-connectors
+    needs: release-please
+    if: needs.release-please.outputs['connectors--release_created'] == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs['connectors--tag_name'] }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Build package
+        working-directory: packages/vendor-connectors
+        run: uv build
+
+      - name: Publish to PyPI
+        working-directory: packages/vendor-connectors
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --token "$UV_PUBLISH_TOKEN"
+
+  # ==========================================================================
+  # Go package release (GoReleaser handles binary builds + GitHub release assets)
+  # ==========================================================================
+
+  publish-secretssync:
+    name: Publish secretssync
+    needs: release-please
+    if: needs.release-please.outputs['secretssync--release_created'] == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs['secretssync--tag_name'] }}
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache-dependency-path: packages/secretssync/go.sum
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+          workdir: packages/secretssync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
