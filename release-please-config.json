@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": false,
+  "group-pull-request-title-pattern": "chore: release ${branch}",
+  "pull-request-title-pattern": "chore${scope}: release${component} ${version}",
+  "include-component-in-tag": true,
+  "tag-separator": "-",
+  "packages": {
+    "packages/extended-data-types": {
+      "component": "edt",
+      "release-type": "python",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/lifecyclelogging": {
+      "component": "logging",
+      "release-type": "python",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/directed-inputs-class": {
+      "component": "inputs",
+      "release-type": "python",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/vendor-connectors": {
+      "component": "connectors",
+      "release-type": "python",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/secretssync": {
+      "component": "secretssync",
+      "release-type": "go",
+      "changelog-path": "CHANGELOG.md",
+      "skip-github-release": true
+    }
+  },
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance Improvements" },
+    { "type": "deps", "section": "Dependencies", "hidden": true },
+    { "type": "refactor", "section": "Code Refactoring", "hidden": true },
+    { "type": "docs", "section": "Documentation", "hidden": true },
+    { "type": "chore", "section": "Miscellaneous", "hidden": true },
+    { "type": "test", "section": "Tests", "hidden": true },
+    { "type": "ci", "section": "CI/CD", "hidden": true }
+  ]
+}

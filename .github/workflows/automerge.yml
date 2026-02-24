@@ -1,0 +1,32 @@
+name: Automerge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: Auto-approve & merge
+    runs-on: ubuntu-latest
+    if: >-
+      github.actor == 'dependabot[bot]' ||
+      github.actor == 'release-please[bot]'
+    steps:
+      - name: Auto-approve PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr review "${{ github.event.pull_request.number }}" --approve --repo "${{ github.repository }}" || true
+
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: >-
+          gh pr merge "${{ github.event.pull_request.number }}"
+          --auto --squash
+          --subject "[skip actions] $PR_TITLE"
+          --repo "${{ github.repository }}"

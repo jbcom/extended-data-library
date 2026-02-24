@@ -1,7 +1,7 @@
 # Dependabot Configuration
 #
-# DIRECT PUSH MODE: Dependabot pushes directly to main (no PRs)
-# Branch rulesets allow Dependabot to bypass protections
+# PR MODE: Dependabot creates PRs that are auto-merged by automerge.yml
+# The automerge workflow adds [skip actions] to merge commits
 
 version: 2
 
@@ -13,6 +13,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "ci"
+    open-pull-requests-limit: 10
+    groups:
+      actions:
+        patterns: ["*"]
 
   # NPM/Node.js - root (Nx workspace)
   - package-ecosystem: "npm"
@@ -21,6 +25,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      npm-root:
+        patterns: ["*"]
 
   # NPM/Node.js - Astro docs site
   - package-ecosystem: "npm"
@@ -29,6 +37,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      npm-docs:
+        patterns: ["*"]
 
   # Python/pip - extended-data-types
   - package-ecosystem: "pip"
@@ -37,6 +49,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      pip-edt:
+        patterns: ["*"]
 
   # Python/pip - lifecyclelogging
   - package-ecosystem: "pip"
@@ -45,6 +61,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      pip-logging:
+        patterns: ["*"]
 
   # Python/pip - directed-inputs-class
   - package-ecosystem: "pip"
@@ -53,6 +73,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      pip-inputs:
+        patterns: ["*"]
 
   # Python/pip - vendor-connectors
   - package-ecosystem: "pip"
@@ -61,6 +85,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      pip-connectors:
+        patterns: ["*"]
 
   # Go modules - secretssync
   - package-ecosystem: "gomod"
@@ -69,3 +97,7 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      gomod-secretssync:
+        patterns: ["*"]
