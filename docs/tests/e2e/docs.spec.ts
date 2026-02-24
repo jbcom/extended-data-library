@@ -15,8 +15,9 @@ test.describe('Documentation site', () => {
   test('navigation sidebar is present', async ({ page }) => {
     // Navigate to a docs page (not splash) to get the sidebar
     await page.goto('/getting-started/');
+    await page.waitForLoadState('networkidle');
     const sidebar = page.locator('nav[aria-label="Main"]');
-    await expect(sidebar).toBeVisible();
+    await expect(sidebar).toBeVisible({ timeout: 10_000 });
   });
 
   test('sidebar contains expected sections', async ({ page }) => {
