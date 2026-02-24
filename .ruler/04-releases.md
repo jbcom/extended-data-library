@@ -24,7 +24,7 @@ feat(scope)!: breaking change  - major bump (X.0.0)
 |-------|---------|------------|
 | `edt` | extended-data-types | `edt-v` |
 | `logging` | lifecyclelogging | `logging-v` |
-| `dic` or `inputs` | directed-inputs-class | `inputs-v` |
+| `inputs` | directed-inputs-class | `inputs-v` |
 | `connectors` | vendor-connectors | `connectors-v` |
 | `secretssync` | secretssync | `secretssync-v` |
 

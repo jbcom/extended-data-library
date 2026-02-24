@@ -46,7 +46,13 @@ def test_package_discovery_basic():
 def test_release_coordinator_basic():
     """Basic test for release coordinator."""
     coordinator = ReleaseCoordinator()
-    assert coordinator.config is not None
+    # The coordinator auto-discovers the repo root via get_tld()
+    assert coordinator._repo_root is not None
+    # Validate release readiness returns structured result
+    readiness = coordinator.validate_release_readiness()
+    assert "ready" in readiness
+    assert "versions" in readiness
+    assert "errors" in readiness
 
 
 def test_status_monitor_basic():

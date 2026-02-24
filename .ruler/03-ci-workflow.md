@@ -32,28 +32,25 @@ gh run view <run-id> --log
 ### Build Failures
 
 ```bash
-# Python
-uv sync && uv run pytest
+# Python (workspace)
+uv sync && uv run pytest packages/<name>/tests/
 
-# TypeScript
-pnpm install && pnpm run build
+# Docs (Astro/Starlight)
+cd docs && npm install && npm run build
 
-# Go
-go mod download && go build ./...
+# Go (secretssync)
+cd packages/secretssync && go mod download && go build ./...
 ```
 
 ### Lint Failures
 
 ```bash
 # Python
-uvx ruff check --fix .
-uvx ruff format .
+uvx ruff check --fix packages/
+uvx ruff format packages/
 
-# TypeScript
-pnpm run lint:fix
-
-# Go
-golangci-lint run --fix
+# Docs
+cd docs && npm run lint:fix
 ```
 
 ### Test Failures
@@ -69,11 +66,9 @@ These secrets power CI/CD:
 
 | Secret | Purpose |
 |--------|---------|
-| `CI_GITHUB_TOKEN` | GitHub API access |
-| `PYPI_TOKEN` | PyPI publishing |
-| `NPM_TOKEN` | npm publishing |
-| `DOCKERHUB_USERNAME` | Docker Hub login |
-| `DOCKERHUB_TOKEN` | Docker Hub publishing |
+| `CI_GITHUB_TOKEN` | GitHub API access (PAT for release-please) |
+
+**Note:** PyPI publishing uses OIDC trusted publishers — no `PYPI_TOKEN` needed.
 
 ## Troubleshooting
 

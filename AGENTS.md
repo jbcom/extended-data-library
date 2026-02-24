@@ -3,22 +3,25 @@
 
 <!-- Source: .ruler/AGENTS.md -->
 
-# Extended Data Types - AI Agent Instructions
+# Extended Data Library - AI Agent Instructions
 
 This is the central source of truth for AI agent instructions in this repository.
 Rules defined here are distributed to all supported AI coding assistants via Ruler.
 
 ## Project Overview
 
-Extended Data Types is a Python utility library providing enhanced functionality for working with common data formats and types. It serves as a reliable, typed utility layer for Python applications.
+This is a **uv workspace monorepo** (extended-data-library) containing multiple packages for data processing, logging, configuration, and vendor integrations.
 
-### Core Purpose
+### Packages
 
-- **Serialization utilities**: Safe, typed helpers for YAML, JSON, TOML, HCL, and Base64
-- **File system operations**: Platform-aware path handling, Git discovery, encoding detection
-- **Data structure manipulation**: Enhanced list and dictionary operations
-- **String transformations**: Case conversion, humanization, pluralization
-- **Type utilities**: Safe type conversion and validation
+| Path | Package | Description |
+|------|---------|-------------|
+| `packages/extended-data-types` | extended-data-types | Python utility library (core) -- serialization, file system, data structures, strings, types |
+| `packages/lifecyclelogging` | lifecyclelogging | Structured logging |
+| `packages/directed-inputs-class` | directed-inputs-class | Input processing |
+| `packages/vendor-connectors` | vendor-connectors | Vendor API connectors (AWS, Google, GitHub, Slack, etc.) |
+| `packages/secretssync` | secretssync | Go CLI for secret syncing |
+| `docs/` | -- | Astro/Starlight documentation site |
 
 ### Key Design Principles
 
@@ -30,14 +33,18 @@ Extended Data Types is a Python utility library providing enhanced functionality
 
 ## Technology Stack
 
-- **Package manager**: `uv` (fast, Rust-based)
+- **Package manager**: `uv` (workspace mode, fast, Rust-based)
 - **Build backend**: `hatchling`
-- **Configuration**: `pyproject.toml`
-- **Python versions**: 3.9+
+- **Configuration**: `pyproject.toml` (root + per-package)
+- **Python versions**: 3.10+
+- **Go**: 1.25+ (secretssync only)
+- **Docs**: Astro + Starlight
 - **Linting & formatting**: `ruff`
 - **Type checking**: `mypy` (strict mode)
-- **Testing**: `pytest`
-- **CI/CD**: GitHub Actions with semantic-release
+- **Testing**: `pytest` (Python), `go test` (Go), `vitest` + `playwright` (docs)
+- **CI/CD**: GitHub Actions
+- **Releases**: `release-please` (NOT semantic-release)
+- **PyPI publishing**: OIDC trusted publishers
 
 
 
@@ -310,7 +317,7 @@ All packages use **Semantic Versioning (SemVer)**: `MAJOR.MINOR.PATCH`
 
 ## Conventional Commits
 
-Commits drive automatic version bumps:
+Commits drive automatic version bumps via **release-please**:
 
 ```
 feat(scope): new feature       - minor bump (x.Y.0)
@@ -320,15 +327,13 @@ feat(scope)!: breaking change  - major bump (X.0.0)
 
 ### Package Scopes
 
-| Scope | Package |
-|-------|---------|
-| `edt` | extended-data-types |
-| `logging` | lifecyclelogging |
-| `dic` | directed-inputs-class |
-| `bridge` | python-terraform-bridge |
-| `connectors` | vendor-connectors |
-| `agentic` | agentic-control |
-| `vss` | vault-secret-sync |
+| Scope | Package | Tag Prefix |
+|-------|---------|------------|
+| `edt` | extended-data-types | `edt-v` |
+| `logging` | lifecyclelogging | `logging-v` |
+| `inputs` | directed-inputs-class | `inputs-v` |
+| `connectors` | vendor-connectors | `connectors-v` |
+| `secretssync` | secretssync | `secretssync-v` |
 
 ## Release Process
 
@@ -337,33 +342,57 @@ Push to main with conventional commit
         |
 CI runs tests & lint
         |
-Semantic release analyzes commits
+release-please analyzes commits
         |
-Version bumped automatically
+Release PR created/updated (version bumps + changelogs)
         |
-Package published (PyPI/npm/Docker)
+Release PR merged
         |
-Synced to public repo
+Tags created automatically
+        |
+Publish jobs triggered (PyPI / GoReleaser)
 ```
+
+### Workflows
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `release.yml` | Push to main | release-please PR management + package publishing |
+| `automerge.yml` | PR opened by bots | Auto-approve + squash-merge dependabot/release-please PRs |
+| `cd.yml` | Push to main | Documentation deployment to GitHub Pages |
+
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `release-please-config.json` | Package definitions, release types, changelog config |
+| `.release-please-manifest.json` | Current version tracking for each package |
+
+## Dependabot
+
+Dependabot creates grouped PRs (one per ecosystem) that are automatically merged by the automerge workflow. Merge commits include `[skip actions]` to prevent cascading workflow runs.
 
 ## What NOT to Do
 
-- **Never** manually edit `__version__` or `package.json` version
-- **Never** create tags by hand
+- **Never** manually edit version numbers in `pyproject.toml` or the manifest
+- **Never** create tags by hand (release-please manages tags)
 - **Never** skip CI for releases
-- **Never** suggest alternative versioning schemes
+- **Never** merge release PRs with the "merge" strategy (always squash)
 
 ## Checking Release Status
 
 ```bash
-# Check if release will happen
-semantic-release --noop version --print
-
 # Check recent releases
 gh release list --limit 5
 
+# Check open release PRs
+gh pr list --label "autorelease: pending"
+
 # Check CI status
 gh run list --limit 3
+
+# View release-please manifest
+cat .release-please-manifest.json
 ```
 
 
@@ -381,36 +410,52 @@ Write clean, tested, production-ready code. No shortcuts, no placeholders.
 1. **Read the requirements** from specs or issues
 2. **Write tests first** (TDD approach)
 3. **Implement the feature** completely
-4. **Run linting**: `uvx ruff check src/ tests/`
-5. **Run tests**: `uv run pytest tests/`
+4. **Run linting**: `uvx ruff check packages/`
+5. **Run tests**: `uv run pytest packages/<name>/tests/ -v`
 6. **Commit** with conventional commits
 
 ## Testing Commands
 
 ```bash
-# Install dependencies
-uv sync --extra tests
+# Install all workspace dependencies
+uv sync
 
-# Run tests
-uv run pytest tests/ -v
+# Run tests for a specific package
+uv run pytest packages/extended-data-types/tests/ -v
+uv run pytest packages/lifecyclelogging/tests/ -v
+uv run pytest packages/directed-inputs-class/tests/ -v
+uv run pytest packages/vendor-connectors/tests/ -v
 
-# Run with coverage
-uv run pytest tests/ --cov=src/ --cov-report=term-missing
+# Go tests
+cd packages/secretssync && go test ./...
+
+# Run with coverage for a specific package
+uv run pytest packages/<name>/tests/ --cov=packages/<name>/src/ --cov-report=term-missing
 
 # Linting
-uvx ruff check src/ tests/
-uvx ruff format src/ tests/
+uvx ruff check packages/
+uvx ruff format packages/
 
-# Type checking
-uvx mypy src/
+# Type checking for a specific package
+uvx mypy packages/<name>/src/
 ```
 
 ## Commit Messages
 
-Use conventional commits:
+Use conventional commits with package scopes matching release-please:
 - `feat(scope): description` - minor bump
 - `fix(scope): description` - patch bump
 - `feat!: breaking change` - major bump
+
+### Package Scopes
+
+| Scope | Package |
+|-------|---------|
+| `edt` | extended-data-types |
+| `logging` | lifecyclelogging |
+| `inputs` | directed-inputs-class |
+| `connectors` | vendor-connectors |
+| `secretssync` | secretssync |
 
 ## Quality Standards
 

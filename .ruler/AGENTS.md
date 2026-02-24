@@ -1,19 +1,22 @@
-# Extended Data Types - AI Agent Instructions
+# Extended Data Library - AI Agent Instructions
 
 This is the central source of truth for AI agent instructions in this repository.
 Rules defined here are distributed to all supported AI coding assistants via Ruler.
 
 ## Project Overview
 
-Extended Data Types is a Python utility library providing enhanced functionality for working with common data formats and types. It serves as a reliable, typed utility layer for Python applications.
+This is a **uv workspace monorepo** (extended-data-library) containing multiple packages for data processing, logging, configuration, and vendor integrations.
 
-### Core Purpose
+### Packages
 
-- **Serialization utilities**: Safe, typed helpers for YAML, JSON, TOML, HCL, and Base64
-- **File system operations**: Platform-aware path handling, Git discovery, encoding detection
-- **Data structure manipulation**: Enhanced list and dictionary operations
-- **String transformations**: Case conversion, humanization, pluralization
-- **Type utilities**: Safe type conversion and validation
+| Path | Package | Description |
+|------|---------|-------------|
+| `packages/extended-data-types` | extended-data-types | Python utility library (core) -- serialization, file system, data structures, strings, types |
+| `packages/lifecyclelogging` | lifecyclelogging | Structured logging |
+| `packages/directed-inputs-class` | directed-inputs-class | Input processing |
+| `packages/vendor-connectors` | vendor-connectors | Vendor API connectors (AWS, Google, GitHub, Slack, etc.) |
+| `packages/secretssync` | secretssync | Go CLI for secret syncing |
+| `docs/` | -- | Astro/Starlight documentation site |
 
 ### Key Design Principles
 
@@ -25,11 +28,15 @@ Extended Data Types is a Python utility library providing enhanced functionality
 
 ## Technology Stack
 
-- **Package manager**: `uv` (fast, Rust-based)
+- **Package manager**: `uv` (workspace mode, fast, Rust-based)
 - **Build backend**: `hatchling`
-- **Configuration**: `pyproject.toml`
-- **Python versions**: 3.9+
+- **Configuration**: `pyproject.toml` (root + per-package)
+- **Python versions**: 3.10+
+- **Go**: 1.25+ (secretssync only)
+- **Docs**: Astro + Starlight
 - **Linting & formatting**: `ruff`
 - **Type checking**: `mypy` (strict mode)
-- **Testing**: `pytest`
-- **CI/CD**: GitHub Actions with semantic-release
+- **Testing**: `pytest` (Python), `go test` (Go), `vitest` + `playwright` (docs)
+- **CI/CD**: GitHub Actions
+- **Releases**: `release-please` (NOT semantic-release)
+- **PyPI publishing**: OIDC trusted publishers
