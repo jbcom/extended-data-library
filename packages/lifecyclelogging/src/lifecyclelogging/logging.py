@@ -526,7 +526,8 @@ class Logging:
             if sort_by_field:
                 sorted_results: dict[str, Any] = {}
                 field_value_counts: dict[str, int] = {}
-                assert isinstance(data, dict)
+                if not isinstance(data, dict):
+                    raise TypeError("Expected dict for this operation")
                 for top_level_key, top_level_value in data.items():
                     field_data = top_level_value.get(sort_by_field)
                     if is_nothing(field_data):
@@ -545,7 +546,8 @@ class Logging:
                 data = sorted_results
 
             if transform_fn is not None:
-                assert isinstance(data, dict)
+                if not isinstance(data, dict):
+                    raise TypeError("Expected dict for this operation")
                 if prefix:
                     for top_level_key, top_level_value in data.items():
                         if not isinstance(top_level_value, Mapping):
@@ -604,7 +606,8 @@ class Logging:
                 return base64.b64encode(str(r).encode("utf-8")).decode("utf-8")
 
             if encode_all_values_to_base64:
-                assert isinstance(data, dict)
+                if not isinstance(data, dict):
+                    raise TypeError("Expected dict for this operation")
                 self.logger.info("Encoding all top-level values in results with base64")
                 data = {
                     top_level_key: encode_result_with_base64(top_level_value)
