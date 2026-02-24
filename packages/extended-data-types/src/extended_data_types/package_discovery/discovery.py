@@ -47,6 +47,7 @@ class EcosystemPackageDiscovery:
 
         try:
             content = extended_data_types.read_file(pyproject_path)
+            assert isinstance(content, (str, bytes, bytearray, memoryview))
             data = extended_data_types.decode_toml(content)
             project = data.get("project", {})
             return {

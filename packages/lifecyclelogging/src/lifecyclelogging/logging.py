@@ -427,7 +427,7 @@ class Logging:
         Returns:
             A new dict with all keys transformed.
         """
-        result = {}
+        result: dict[str, Any] = {}
         for key, value in data.items():
             transformed_key = transform_fn(key)
             if isinstance(value, Mapping):
@@ -520,13 +520,14 @@ class Logging:
             prefix_allowlist = list(prefix_allowlist) if prefix_allowlist else []
             prefix_denylist = list(prefix_denylist) if prefix_denylist else []
 
-            if results is None:
-                results = {}
+            # Convert to mutable dict for internal processing
+            data: dict[str, Any] | str = dict(results) if results is not None else {}
 
             if sort_by_field:
-                sorted_results = {}
+                sorted_results: dict[str, Any] = {}
                 field_value_counts: dict[str, int] = {}
-                for top_level_key, top_level_value in results.items():
+                assert isinstance(data, dict)
+                for top_level_key, top_level_value in data.items():
                     field_data = top_level_value.get(sort_by_field)
                     if is_nothing(field_data):
                         raise ExitRunError(
@@ -541,16 +542,17 @@ class Logging:
                     else:
                         field_value_counts[new_key] = 0
                     sorted_results[new_key] = top_level_value
-                results = sorted_results
+                data = sorted_results
 
             if transform_fn is not None:
+                assert isinstance(data, dict)
                 if prefix:
-                    for top_level_key, top_level_value in results.items():
+                    for top_level_key, top_level_value in data.items():
                         if not isinstance(top_level_value, Mapping):
-                            results[top_level_key] = top_level_value
+                            data[top_level_key] = top_level_value
                             continue
 
-                        transformed_result = {}
+                        transformed_result: dict[str, Any] = {}
                         for field_name, field_data in top_level_value.items():
                             transformed_key = transform_fn(field_name)
 
@@ -579,12 +581,12 @@ class Logging:
                             else:
                                 transformed_result[transformed_key] = field_data
 
-                        results[top_level_key] = transformed_result
+                        data[top_level_key] = transformed_result
                 else:
-                    results = self._transform_nested_keys(results, transform_fn)
+                    data = self._transform_nested_keys(data, transform_fn)
 
             if not exit_on_completion:
-                return results
+                return data
 
             if "default" not in format_opts:
                 format_opts["default"] = str
@@ -602,29 +604,30 @@ class Logging:
                 return base64.b64encode(str(r).encode("utf-8")).decode("utf-8")
 
             if encode_all_values_to_base64:
+                assert isinstance(data, dict)
                 self.logger.info("Encoding all top-level values in results with base64")
-                results = {
+                data = {
                     top_level_key: encode_result_with_base64(top_level_value)
-                    for top_level_key, top_level_value in deepcopy(results).items()
+                    for top_level_key, top_level_value in deepcopy(data).items()
                 }
-                self.log_results(results, "results_values_base64_encoded")
+                self.log_results(data, "results_values_base64_encoded")
 
             if encode_to_base64:
                 self.logger.info("Encoding results with base64")
-                results = encode_result_with_base64(results)
-                self.log_results(results, "results_base64_encoded")
+                data = encode_result_with_base64(data)
+                self.log_results(data, "results_base64_encoded")
 
             if key:
                 self.logger.info("Wrapping results in key %s", key)
-                results = {key: results}
+                data = {key: data}
 
-            if not isinstance(results, str):
+            if not isinstance(data, str):
                 self.logger.info("Dumping results to JSON")
-                results = orjson.dumps(results, default=str).decode("utf-8")
+                data = orjson.dumps(data, default=str).decode("utf-8")
 
-            sys.stdout.write(results)
+            sys.stdout.write(data)
             sys.exit(0)
         except ExitRunError as exc:
-            err_msg = f"Failed to dump results because of a formatting error:\n\n{results}"
+            err_msg = f"Failed to dump results because of a formatting error:\n\n{data}"
             self.logger.critical(err_msg, exc_info=True)
             raise RuntimeError(err_msg) from exc

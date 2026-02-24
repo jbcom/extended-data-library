@@ -15,7 +15,9 @@ class ReleaseCoordinator:
         if semantic_release_config is None:
             # Try to load from local pyproject.toml
             try:
-                data = extended_data_types.decode_toml(extended_data_types.read_file("pyproject.toml"))
+                content = extended_data_types.read_file("pyproject.toml")
+                assert isinstance(content, (str, bytes, bytearray, memoryview))
+                data = extended_data_types.decode_toml(content)
                 self.config = data.get("tool", {}).get("semantic_release", {})
             except (OSError, ValueError):
                 self.config = {}

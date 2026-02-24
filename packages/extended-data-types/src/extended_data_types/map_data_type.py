@@ -12,7 +12,7 @@ from typing import Any, TypeVar
 
 import inflection
 
-from deepmerge import Merger
+from deepmerge import Merger  # type: ignore[attr-defined]
 from sortedcontainers import SortedDict
 
 from extended_data_types.type_utils import convert_special_types

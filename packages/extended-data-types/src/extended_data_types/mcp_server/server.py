@@ -160,7 +160,7 @@ def get_category(function_name: str) -> str:
     return "Other"
 
 
-@server.list_tools()
+@server.list_tools()  # type: ignore[untyped-decorator]
 async def handle_list_tools() -> list[dict[str, Any]]:
     """List available tools."""
     return [
@@ -212,7 +212,7 @@ async def handle_list_tools() -> list[dict[str, Any]]:
     ]
 
 
-@server.call_tool()
+@server.call_tool()  # type: ignore[untyped-decorator]
 async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[dict[str, Any]]:
     """Handle tool calls."""
     functions = get_library_functions()
