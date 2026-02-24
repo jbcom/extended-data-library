@@ -22,6 +22,8 @@ def main() -> int:
     """Demonstrate Meshy AI 3D generation."""
     # Check for required environment variables
     if not os.getenv("MESHY_API_KEY"):
+        print("Error: MESHY_API_KEY environment variable is required.")
+        print("Get an API key at https://meshy.ai")
         return 1
 
     # Import Meshy modules
@@ -29,6 +31,7 @@ def main() -> int:
 
     # Generate a simple 3D model
     prompt = "a medieval sword with ornate handle"
+    print(f"Generating 3D model for prompt: '{prompt}'")
 
     try:
         # Start the generation (preview mode for faster results)
@@ -37,16 +40,23 @@ def main() -> int:
             art_style="realistic",
             mode="preview",  # Use 'refine' for higher quality
         )
+        print(f"Generation started with ID: {result.id}")
 
         # Poll for completion
         while result.status in ("PENDING", "IN_PROGRESS"):
+            print(f"  Status: {result.status} - waiting...")
             time.sleep(5)
             result = text3d.get(result.id)
 
-        if result.status == "SUCCEEDED" or hasattr(result, "task_error"):
-            pass
+        if result.status == "SUCCEEDED":
+            print(f"Generation succeeded! Result: {result}")
+        elif hasattr(result, "task_error"):
+            print(f"Generation failed with error: {result.task_error}")
+        else:
+            print(f"Generation ended with status: {result.status}")
 
-    except Exception:
+    except Exception as e:
+        print(f"Error during generation: {e}")
         return 1
 
     return 0

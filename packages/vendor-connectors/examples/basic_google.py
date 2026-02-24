@@ -22,39 +22,50 @@ def main() -> int:
     """Demonstrate Google connector usage."""
     # Check for required environment variables
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
+        print("Error: GOOGLE_SERVICE_ACCOUNT environment variable is required.")
         return 1
 
     try:
         from vendor_connectors import GoogleConnector, GoogleConnectorFull
     except ImportError:
+        print("Error: Could not import vendor_connectors. Install with: pip install vendor-connectors[google]")
         return 1
 
     # Basic connector
+    print("Creating basic Google connector...")
     GoogleConnector()
+    print("Basic connector created successfully.")
 
     # Full connector with all operations
+    print("\nCreating full Google connector...")
     full_connector = GoogleConnectorFull()
+    print("Full connector created successfully.")
 
     # List projects
+    print("\n--- Google Cloud Projects ---")
     try:
         projects = full_connector.list_projects()
-        for _project in projects[:5]:
-            pass
+        for project in projects[:5]:
+            print(f"  Project: {project}")
         if len(projects) > 5:
-            pass
-    except Exception:
-        pass
+            print(f"  ... and {len(projects) - 5} more projects")
+    except Exception as e:
+        print(f"  Could not list projects: {e}")
 
     # List workspace users (if domain configured)
     if os.getenv("GOOGLE_DOMAIN"):
+        print("\n--- Workspace Users ---")
         try:
             users = full_connector.list_users()
             for user in users[:5]:
-                user.get("primaryEmail", "Unknown")
+                email = user.get("primaryEmail", "Unknown")
+                print(f"  User: {email}")
             if len(users) > 5:
-                pass
-        except Exception:
-            pass
+                print(f"  ... and {len(users) - 5} more users")
+        except Exception as e:
+            print(f"  Could not list users: {e}")
+    else:
+        print("\nSkipping Workspace users (GOOGLE_DOMAIN not set).")
 
     return 0
 

@@ -29,6 +29,7 @@ def main() -> int:
         missing.append("ANTHROPIC_API_KEY")
 
     if missing:
+        print(f"Error: Missing required environment variables: {', '.join(missing)}")
         return 1
 
     try:
@@ -37,10 +38,13 @@ def main() -> int:
 
         from vendor_connectors.meshy.tools import get_tools
     except ImportError:
+        print("Error: Could not import required packages.")
+        print("Install with: pip install vendor-connectors[meshy,langchain] langchain-anthropic")
         return 1
 
     # Get Meshy tools for LangChain
     tools = get_tools()
+    print(f"Loaded {len(tools)} Meshy tools for LangChain.")
 
     # Create the LLM
     llm = ChatAnthropic(model="claude-sonnet-4-20250514", temperature=0)
@@ -50,6 +54,7 @@ def main() -> int:
 
     # Run a query
     query = "Generate a 3D model of a red sports car in preview mode"
+    print(f"\nSending query: '{query}'")
 
     try:
         result = agent.invoke({"messages": [("user", query)]})
@@ -57,11 +62,14 @@ def main() -> int:
         # Print the response
         for message in result["messages"]:
             if hasattr(message, "content") and message.content:
-                message.__class__.__name__.replace("Message", "")
+                role = message.__class__.__name__.replace("Message", "")
                 if len(message.content) > 500:
-                    pass
+                    print(f"\n[{role}] {message.content[:500]}... (truncated)")
+                else:
+                    print(f"\n[{role}] {message.content}")
 
-    except Exception:
+    except Exception as e:
+        print(f"Error running agent: {e}")
         return 1
 
     return 0

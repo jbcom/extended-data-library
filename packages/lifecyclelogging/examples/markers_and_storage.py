@@ -56,7 +56,7 @@ def main() -> None:
     # Access stored messages
     for messages in logger.stored_messages.values():
         for _msg in messages:
-            pass
+            print(_msg)
 
 
 if __name__ == "__main__":

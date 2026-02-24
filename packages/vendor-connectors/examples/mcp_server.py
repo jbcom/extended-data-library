@@ -41,18 +41,23 @@ def main() -> int:
     """Run the Meshy MCP server."""
     # Check for required environment variables
     if not os.getenv("MESHY_API_KEY"):
+        print("Error: MESHY_API_KEY environment variable is required.")
         return 1
 
     try:
         from vendor_connectors.meshy.mcp import run_server
     except ImportError:
+        print("Error: Could not import MCP server. Install with: pip install vendor-connectors[meshy,mcp]")
         return 1
 
+    print("Starting Meshy MCP server...")
     try:
         # Run the server (blocks until stopped)
         run_server()
     except KeyboardInterrupt:
         pass
+
+    print("\nMCP server stopped.")
 
     return 0
 

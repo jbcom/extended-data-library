@@ -50,6 +50,7 @@ Thumbs.db
 *.log
 .cache/
 coverage.xml
+coverage.out
 
 # Node.js
 node_modules/
@@ -63,9 +64,12 @@ docs/_build/
 docs/.astro/
 docs/test-results/
 docs/playwright-report/
-# Sphinx-generated API docs (regenerated at build time)
+# Auto-generated API docs (regenerated at build time)
 docs/src/content/docs/api/*.md
 docs/src/content/docs/api/.doctrees/
+
+# Screenshots (browser automation artifacts)
+*.png
 
 # START Ruler Generated Files
 /.aider.conf.yml
