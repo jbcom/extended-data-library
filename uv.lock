@@ -962,7 +962,7 @@ wheels = [
 
 [[package]]
 name = "directed-inputs-class"
-version = "1.2.0"
+version = "2.0.0"
 source = { editable = "packages/directed-inputs-class" }
 dependencies = [
     { name = "case-insensitive-dictionary" },
@@ -1162,7 +1162,7 @@ dev = [
 
 [[package]]
 name = "extended-data-types"
-version = "5.4.0"
+version = "6.0.0"
 source = { editable = "packages/extended-data-types" }
 dependencies = [
     { name = "deepmerge" },
@@ -2370,7 +2370,7 @@ wheels = [
 
 [[package]]
 name = "lifecyclelogging"
-version = "1.0.0"
+version = "2.0.0"
 source = { editable = "packages/lifecyclelogging" }
 dependencies = [
     { name = "extended-data-types" },
@@ -6465,7 +6465,7 @@ wheels = [
 
 [[package]]
 name = "vendor-connectors"
-version = "0.2.0"
+version = "1.0.0"
 source = { editable = "packages/vendor-connectors" }
 dependencies = [
     { name = "deepmerge" },
