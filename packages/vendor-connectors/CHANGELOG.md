@@ -4,6 +4,22 @@
 
 <!-- version list -->
 
+## [1.0.0](https://github.com/jbcom/extended-data-library/compare/connectors-v0.2.0...connectors-v1.0.0) (2026-02-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Repository restructured as monorepo. Import paths unchanged but package installation from source requires uv workspace.
+
+### Features
+
+* consolidate extended-data-library org into monorepo ([a6a0f63](https://github.com/jbcom/extended-data-library/commit/a6a0f63fe5a2cc4658b6ae59205890658ca66e16))
+
+
+### Bug Fixes
+
+* **ci:** remove semantic-release, add docs testing, fix CD ([#49](https://github.com/jbcom/extended-data-library/issues/49)) ([055eded](https://github.com/jbcom/extended-data-library/commit/055eded0026932058b522cd3f82a9524bb61204e))
+
 ## v0.2.0 (2025-12-07)
 
 ### Features

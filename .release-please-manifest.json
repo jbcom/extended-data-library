@@ -1,7 +1,7 @@
 {
-  "packages/extended-data-types": "5.4.0",
-  "packages/lifecyclelogging": "1.0.0",
-  "packages/directed-inputs-class": "1.2.0",
-  "packages/vendor-connectors": "0.2.0",
-  "packages/secretssync": "0.1.0"
+  "packages/extended-data-types": "6.0.0",
+  "packages/lifecyclelogging": "2.0.0",
+  "packages/directed-inputs-class": "2.0.0",
+  "packages/vendor-connectors": "1.0.0",
+  "packages/secretssync": "1.0.0"
 }
