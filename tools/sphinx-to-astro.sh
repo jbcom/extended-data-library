@@ -2,23 +2,27 @@
 set -euo pipefail
 
 # sphinx-to-astro.sh
-# Build Sphinx API docs (via autodoc2) as markdown and place them into the
-# Astro Starlight content directory so that the static site generator can
-# pick them up.
+# Post-process Sphinx autodoc2 markdown output for Astro Starlight.
+#
+# Prerequisites: run `tox -e docs` first (builds Sphinx API docs into
+# docs/src/content/docs/api/).  This script only does post-processing:
+#   1. Clean up Sphinx build artifacts
+#   2. Replace unsupported code block languages
+#   3. Add YAML frontmatter required by Starlight
+#   4. Remove placeholder .mdx files superseded by generated .md
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SPHINX_SRC="${REPO_ROOT}/docs/sphinx"
 ASTRO_API_DIR="${REPO_ROOT}/docs/src/content/docs/api"
 
-echo "==> Building Sphinx autodoc2 API docs (markdown output)"
-echo "    Source:  ${SPHINX_SRC}"
-echo "    Output:  ${ASTRO_API_DIR}"
+echo "==> Post-processing Sphinx autodoc2 output for Starlight"
+echo "    API dir: ${ASTRO_API_DIR}"
 
-# Ensure output directory exists
-mkdir -p "${ASTRO_API_DIR}"
-
-# Build Sphinx docs as markdown into the Astro content directory
-sphinx-build -E -b markdown "${SPHINX_SRC}" "${ASTRO_API_DIR}"
+# Verify that tox -e docs has been run
+if [ ! -d "${ASTRO_API_DIR}/apidocs" ]; then
+    echo "ERROR: ${ASTRO_API_DIR}/apidocs not found."
+    echo "       Run 'tox -e docs' first to generate the Sphinx API docs."
+    exit 1
+fi
 
 # Clean up Sphinx build artefacts that Astro does not need
 rm -rf "${ASTRO_API_DIR}/.buildinfo" \
