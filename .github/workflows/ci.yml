@@ -438,12 +438,12 @@ jobs:
         run: npx playwright test
 
   # ==========================================================================
-  # SonarCloud: extended-data-types
+  # SonarCloud: monorepo scan (single project: jbcom_extended-data-library)
   # ==========================================================================
-  sonar-edt:
-    name: SonarCloud edt
-    needs: [changes, test-edt]
-    if: always() && needs.changes.outputs.edt == 'true' && needs.test-edt.result == 'success'
+  sonar:
+    name: SonarCloud
+    needs: [changes, test-edt, test-logging, test-inputs, test-connectors]
+    if: always() && needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -457,98 +457,28 @@ jobs:
         with:
           name: coverage-edt
           path: packages/extended-data-types
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5
-        with:
-          projectBaseDir: packages/extended-data-types
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: lifecyclelogging
-  # ==========================================================================
-  sonar-logging:
-    name: SonarCloud logging
-    needs: [changes, test-logging]
-    if: always() && needs.changes.outputs.logging == 'true' && needs.test-logging.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 0
+        continue-on-error: true
 
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-logging
           path: packages/lifecyclelogging
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5
-        with:
-          projectBaseDir: packages/lifecyclelogging
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: directed-inputs-class
-  # ==========================================================================
-  sonar-inputs:
-    name: SonarCloud inputs
-    needs: [changes, test-inputs]
-    if: always() && needs.changes.outputs.inputs == 'true' && needs.test-inputs.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 0
+        continue-on-error: true
 
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-inputs
           path: packages/directed-inputs-class
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5
-        with:
-          projectBaseDir: packages/directed-inputs-class
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: vendor-connectors
-  # ==========================================================================
-  sonar-connectors:
-    name: SonarCloud connectors
-    needs: [changes, test-connectors]
-    if: always() && needs.changes.outputs.connectors == 'true' && needs.test-connectors.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 0
+        continue-on-error: true
 
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-connectors
           path: packages/vendor-connectors
+        continue-on-error: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5
-        with:
-          projectBaseDir: packages/vendor-connectors
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
