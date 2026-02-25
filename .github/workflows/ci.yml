@@ -15,9 +15,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  pull-requests: write
+# No workflow-level permissions; each job declares its own.
+permissions: {}
 
 jobs:
   # ==========================================================================
@@ -31,9 +30,9 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/labeler@v6
+      - uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
         with:
           configuration-path: .github/labeler.yml
 
@@ -43,6 +42,8 @@ jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       edt: ${{ steps.filter.outputs.edt }}
       logging: ${{ steps.filter.outputs.logging }}
@@ -52,9 +53,9 @@ jobs:
       docs: ${{ steps.filter.outputs.docs }}
       python_any: ${{ steps.filter.outputs.python_any }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
         id: filter
         with:
           filters: |
@@ -100,14 +101,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -126,14 +129,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -152,21 +157,23 @@ jobs:
     needs: changes
     if: needs.changes.outputs.edt == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -179,7 +186,7 @@ jobs:
 
       - name: Upload coverage artifact
         if: matrix.python-version == '3.13'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: coverage-edt
           path: packages/extended-data-types/coverage.xml
@@ -192,21 +199,23 @@ jobs:
     needs: changes
     if: needs.changes.outputs.logging == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -219,7 +228,7 @@ jobs:
 
       - name: Upload coverage artifact
         if: matrix.python-version == '3.13'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: coverage-logging
           path: packages/lifecyclelogging/coverage.xml
@@ -232,21 +241,23 @@ jobs:
     needs: changes
     if: needs.changes.outputs.inputs == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -259,7 +270,7 @@ jobs:
 
       - name: Upload coverage artifact
         if: matrix.python-version == '3.13'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: coverage-inputs
           path: packages/directed-inputs-class/coverage.xml
@@ -272,21 +283,23 @@ jobs:
     needs: changes
     if: needs.changes.outputs.connectors == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -299,7 +312,7 @@ jobs:
 
       - name: Upload coverage artifact
         if: matrix.python-version == '3.13'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: coverage-connectors
           path: packages/vendor-connectors/coverage.xml
@@ -312,10 +325,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
         with:
           go-version: "1.25"
           cache-dependency-path: packages/secretssync/go.sum
@@ -336,19 +351,21 @@ jobs:
     needs: changes
     if: needs.changes.outputs.docs == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: "22"
 
@@ -358,18 +375,8 @@ jobs:
       - name: Build Sphinx API docs
         run: tox -e docs
 
-      - name: Add Starlight frontmatter to API docs
-        run: |
-          python3 -c "
-          import glob
-          for f in sorted(glob.glob('docs/src/content/docs/api/*.md')):
-              with open(f) as fh:
-                  content = fh.read()
-              if not content.startswith('---'):
-                  title = content.split('\n')[0].lstrip('# ')
-                  with open(f, 'w') as fh:
-                      fh.write(f'---\ntitle: \"{title}\"\n---\n\n{content}')
-          "
+      - name: Post-process API docs for Starlight
+        run: bash tools/sphinx-to-astro.sh
 
       - name: Install docs dependencies
         working-directory: docs
@@ -391,19 +398,21 @@ jobs:
     needs: [changes, test-docs]
     if: needs.changes.outputs.docs == 'true' && needs.test-docs.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: "22"
 
@@ -413,18 +422,8 @@ jobs:
       - name: Build Sphinx API docs
         run: tox -e docs
 
-      - name: Add Starlight frontmatter to API docs
-        run: |
-          python3 -c "
-          import glob
-          for f in sorted(glob.glob('docs/src/content/docs/api/*.md')):
-              with open(f) as fh:
-                  content = fh.read()
-              if not content.startswith('---'):
-                  title = content.split('\n')[0].lstrip('# ')
-                  with open(f, 'w') as fh:
-                      fh.write(f'---\ntitle: \"{title}\"\n---\n\n{content}')
-          "
+      - name: Post-process API docs for Starlight
+        run: bash tools/sphinx-to-astro.sh
 
       - name: Install docs dependencies
         working-directory: docs
@@ -439,108 +438,50 @@ jobs:
         run: npx playwright test
 
   # ==========================================================================
-  # SonarCloud: extended-data-types
+  # SonarCloud: monorepo scan (single project: jbcom_extended-data-library)
   # ==========================================================================
-  sonar-edt:
-    name: SonarCloud edt
-    needs: [changes, test-edt]
-    if: always() && needs.changes.outputs.edt == 'true' && needs.test-edt.result == 'success'
+  sonar:
+    name: SonarCloud
+    needs: [changes, test-edt, test-logging, test-inputs, test-connectors]
+    if: always() && needs.changes.outputs.python_any == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-edt
           path: packages/extended-data-types
+        continue-on-error: true
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
-        with:
-          projectBaseDir: packages/extended-data-types
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: lifecyclelogging
-  # ==========================================================================
-  sonar-logging:
-    name: SonarCloud logging
-    needs: [changes, test-logging]
-    if: always() && needs.changes.outputs.logging == 'true' && needs.test-logging.result == 'success'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-logging
           path: packages/lifecyclelogging
+        continue-on-error: true
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
-        with:
-          projectBaseDir: packages/lifecyclelogging
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: directed-inputs-class
-  # ==========================================================================
-  sonar-inputs:
-    name: SonarCloud inputs
-    needs: [changes, test-inputs]
-    if: always() && needs.changes.outputs.inputs == 'true' && needs.test-inputs.result == 'success'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-inputs
           path: packages/directed-inputs-class
+        continue-on-error: true
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
-        with:
-          projectBaseDir: packages/directed-inputs-class
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  # ==========================================================================
-  # SonarCloud: vendor-connectors
-  # ==========================================================================
-  sonar-connectors:
-    name: SonarCloud connectors
-    needs: [changes, test-connectors]
-    if: always() && needs.changes.outputs.connectors == 'true' && needs.test-connectors.result == 'success'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: coverage-connectors
           path: packages/vendor-connectors
+        continue-on-error: true
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
-        with:
-          projectBaseDir: packages/vendor-connectors
+        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ==========================================================================
   # CI gate - single status check for branch protection

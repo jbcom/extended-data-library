@@ -62,27 +62,27 @@ export default defineConfig({
           label: 'Extended Data Types',
           items: [
             { label: 'Overview', slug: 'core/data-types' },
-            { label: 'API Reference', slug: 'api/extended-data-types', attrs: { class: 'api-link' } },
+            { label: 'API Reference', link: '/api/apidocs/extended_data_types/extended_data_types/', attrs: { class: 'api-link' } },
           ],
         },
         {
           label: 'Lifecycle Logging',
           items: [
             { label: 'Overview', slug: 'packages/logging' },
-            { label: 'API Reference', slug: 'api/lifecyclelogging', attrs: { class: 'api-link' } },
+            { label: 'API Reference', link: '/api/apidocs/lifecyclelogging/lifecyclelogging/', attrs: { class: 'api-link' } },
           ],
         },
         {
           label: 'Directed Inputs',
           items: [
             { label: 'Overview', slug: 'packages/inputs' },
-            { label: 'API Reference', slug: 'api/directed-inputs-class', attrs: { class: 'api-link' } },
+            { label: 'API Reference', link: '/api/apidocs/directed_inputs_class/directed_inputs_class/', attrs: { class: 'api-link' } },
           ],
         },
         {
           label: 'Vendor Connectors',
           items: [
-            { label: 'Overview & API', slug: 'api/vendor-connectors' },
+            { label: 'API Reference', link: '/api/apidocs/vendor_connectors/vendor_connectors/', attrs: { class: 'api-link' } },
           ],
         },
         {
@@ -96,6 +96,10 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'packages' },
           ],
+        },
+        {
+          label: 'API Reference',
+          autogenerate: { directory: 'api/apidocs' },
         },
         {
           label: 'Ecosystem',

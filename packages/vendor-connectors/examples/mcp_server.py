@@ -24,7 +24,7 @@ Usage:
             "meshy": {
                 "command": "meshy-mcp",
                 "env": {
-                    "MESHY_API_KEY": "your-api-key"
+                    "MESHY_API_KEY": "<your-key-here>"
                 }
             }
         }

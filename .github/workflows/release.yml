@@ -5,16 +5,16 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: write
-  id-token: write
-  issues: write
-  pull-requests: write
+# No workflow-level permissions; each job declares its own.
+permissions: {}
 
 jobs:
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       edt--release_created: ${{ steps.release.outputs['packages/extended-data-types--release_created'] }}
@@ -28,7 +28,7 @@ jobs:
       secretssync--release_created: ${{ steps.release.outputs['packages/secretssync--release_created'] }}
       secretssync--tag_name: ${{ steps.release.outputs['packages/secretssync--tag_name'] }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
         with:
           config-file: release-please-config.json
@@ -44,16 +44,19 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs['edt--release_created'] == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ needs.release-please.outputs['edt--tag_name'] }}
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -68,16 +71,19 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs['logging--release_created'] == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ needs.release-please.outputs['logging--tag_name'] }}
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -92,16 +98,19 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs['inputs--release_created'] == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ needs.release-please.outputs['inputs--tag_name'] }}
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -116,16 +125,19 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs['connectors--release_created'] == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ needs.release-please.outputs['connectors--tag_name'] }}
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.13"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7
         with:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
@@ -144,19 +156,22 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs['secretssync--release_created'] == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ needs.release-please.outputs['secretssync--tag_name'] }}
           fetch-depth: 0
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
         with:
           go-version: "1.25"
           cache-dependency-path: packages/secretssync/go.sum
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v7
+        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7
         with:
           distribution: goreleaser
           version: latest

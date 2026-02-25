@@ -64,9 +64,11 @@ docs/_build/
 docs/.astro/
 docs/test-results/
 docs/playwright-report/
-# Auto-generated API docs (regenerated at build time)
+# Auto-generated API docs (regenerated at build time by sphinx-autodoc2)
 docs/src/content/docs/api/*.md
+docs/src/content/docs/api/apidocs/
 docs/src/content/docs/api/.doctrees/
+docs/sphinx/apidocs/
 
 # Screenshots (browser automation artifacts)
 *.png
