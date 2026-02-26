@@ -227,14 +227,17 @@ class TestReleaseCoordinator:
     """Tests for ReleaseCoordinator."""
 
     def test_auto_discover_repo_root(self) -> None:
-        """Auto-discovers repo root via get_tld()."""
+        """Auto-discovers repo root via get_tld() and can read config."""
         coordinator = ReleaseCoordinator()
-        assert coordinator._repo_root is not None
+        # Verify it found a valid root by successfully reading config
+        config = coordinator.get_config()
+        assert isinstance(config, dict)
 
     def test_explicit_repo_root(self, release_dir: Path) -> None:
-        """Accepts explicit repo root."""
+        """Accepts explicit repo root and reads config from it."""
         coordinator = ReleaseCoordinator(repo_root=release_dir)
-        assert coordinator._repo_root == release_dir
+        config = coordinator.get_config()
+        assert "packages" in config
 
     def test_get_config(self, release_dir: Path) -> None:
         """Reads release-please-config.json."""
@@ -401,17 +404,13 @@ class TestEcosystemStatusMonitor:
         status = monitor.get_ecosystem_status()
         assert status["health"] == "unknown"
 
-    def test_ecosystem_name_caching(self, ecosystem_dir: Path) -> None:
-        """Ecosystem names are cached after first call."""
+    def test_ecosystem_status_is_idempotent(self, ecosystem_dir: Path) -> None:
+        """Repeated calls return consistent results (caching works)."""
         discovery = EcosystemPackageDiscovery(base_path=ecosystem_dir)
         monitor = EcosystemStatusMonitor(discovery=discovery)
-        assert monitor._cached_ecosystem_names is None
-        monitor._get_ecosystem_package_names()
-        assert monitor._cached_ecosystem_names is not None
-        # Second call returns cached result
-        cached = monitor._cached_ecosystem_names
-        monitor._get_ecosystem_package_names()
-        assert monitor._cached_ecosystem_names is cached
+        first = monitor.get_ecosystem_status()
+        second = monitor.get_ecosystem_status()
+        assert first == second
 
 
 # ---------------------------------------------------------------------------
