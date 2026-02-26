@@ -197,7 +197,7 @@ def _format_function_entry(name: str, obj: Any) -> str:
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool()
+@mcp.tool()  # type: ignore[untyped-decorator]
 def resolve_function_id(query: str) -> str:
     """Search for extended-data-types functions by name or description.
 
@@ -216,12 +216,10 @@ def resolve_function_id(query: str) -> str:
 
     if not matches:
         return f"No functions matching '{query}'."
-    return f"## Functions matching '{query}' ({len(matches)} results)\n\n" + "\n".join(
-        matches
-    )
+    return f"## Functions matching '{query}' ({len(matches)} results)\n\n" + "\n".join(matches)
 
 
-@mcp.tool()
+@mcp.tool()  # type: ignore[untyped-decorator]
 def get_function_docs(function_name: str) -> str:
     """Get full documentation for an extended-data-types function.
 
@@ -241,11 +239,7 @@ def get_function_docs(function_name: str) -> str:
     module = getattr(obj, "__module__", "unknown")
 
     # Related functions in the same category
-    related = [
-        n
-        for n in CATEGORIES.get(category, [])
-        if n != function_name and n in functions
-    ]
+    related = [n for n in CATEGORIES.get(category, []) if n != function_name and n in functions]
 
     lines = [
         f"# {function_name}{sig}",
@@ -263,7 +257,7 @@ def get_function_docs(function_name: str) -> str:
     return "\n".join(lines)
 
 
-@mcp.tool()
+@mcp.tool()  # type: ignore[untyped-decorator]
 def list_all_functions(category: str | None = None) -> str:
     """List all functions in the extended-data-types library by category.
 
@@ -290,9 +284,7 @@ def list_all_functions(category: str | None = None) -> str:
             lines.append(f"- **{name}**{sig} — {doc_line}")
         lines.append("")
 
-    total = sum(
-        1 for cat_funcs in CATEGORIES.values() for f in cat_funcs if f in functions
-    )
+    total = sum(1 for cat_funcs in CATEGORIES.values() for f in cat_funcs if f in functions)
     header = f"# extended-data-types API ({total} functions)\n\n"
     if category:
         header = f"# extended-data-types — {category}\n\n"
