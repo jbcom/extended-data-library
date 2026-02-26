@@ -7,60 +7,176 @@ import pytest
 import extended_data_types
 
 from extended_data_types.mcp_server.server import (
-    get_category,
-    get_library_functions,
+    CATEGORIES,
+    _get_category,
+    _get_library_functions,
+    _get_signature,
+    get_function_docs,
+    list_all_functions,
+    mcp,
+    resolve_function_id,
 )
 
 
-def test_get_library_functions():
-    """Verify that all functions in __all__ are captured."""
-    funcs = get_library_functions()
-    for name in extended_data_types.__all__:
-        # Skip if it's a constant or non-callable (though mostly they are classes/functions)
-        attr = getattr(extended_data_types, name)
-        if callable(attr):
-            assert name in funcs
+# ---------------------------------------------------------------------------
+# Unit tests for helper functions
+# ---------------------------------------------------------------------------
 
 
-def test_categories_coverage():
-    """Verify that most functions are categorized."""
-    funcs = get_library_functions()
-    uncategorized = [name for name in funcs if get_category(name) == "Other"]
+class TestGetLibraryFunctions:
+    """Tests for _get_library_functions."""
 
-    # We expect some to be uncategorized, but let's see how many
-    # For now, just ensure the function works
-    assert isinstance(get_category("encode_yaml"), str)
-    assert get_category("encode_yaml") == "Serialization"
-    assert uncategorized is not None
+    def test_loads_all_callable_exports(self) -> None:
+        funcs = _get_library_functions()
+        for name in extended_data_types.__all__:
+            attr = getattr(extended_data_types, name)
+            if callable(attr):
+                assert name in funcs, f"{name} missing from loaded functions"
 
+    def test_excludes_none_and_modules(self) -> None:
+        funcs = _get_library_functions()
+        assert all(v is not None for v in funcs.values())
 
-@pytest.mark.asyncio
-async def test_server_tools_list():
-    """Verify the server lists the expected tools."""
-    from extended_data_types.mcp_server.server import handle_list_tools
-
-    tools = await handle_list_tools()
-    names = [t["name"] for t in tools]
-    assert "resolve-function-id" in names
-    assert "get-function-docs" in names
-    assert "list-all-functions" in names
+    def test_returns_dict(self) -> None:
+        assert isinstance(_get_library_functions(), dict)
 
 
-@pytest.mark.asyncio
-async def test_resolve_function_id():
-    """Test function resolution."""
-    from extended_data_types.mcp_server.server import handle_call_tool
+class TestGetCategory:
+    """Tests for _get_category."""
 
-    result = await handle_call_tool("resolve-function-id", {"query": "encode_yaml"})
-    assert "encode_yaml" in result[0]["text"]
-    assert "Serialization" in result[0]["text"]
+    @pytest.mark.parametrize(
+        "name,expected",
+        [
+            ("encode_yaml", "Serialization"),
+            ("read_file", "File Operations"),
+            ("to_snake_case", "String Transformations"),
+            ("deep_merge", "Map Operations"),
+            ("is_nothing", "State Utilities"),
+            ("FilePath", "Data Types"),
+            ("DevelopmentIntegration", "Ecosystem"),
+        ],
+    )
+    def test_known_categories(self, name: str, expected: str) -> None:
+        assert _get_category(name) == expected
+
+    def test_unknown_returns_other(self) -> None:
+        assert _get_category("nonexistent_function") == "Other"
 
 
-@pytest.mark.asyncio
-async def test_get_function_docs():
-    """Test doc extraction."""
-    from extended_data_types.mcp_server.server import handle_call_tool
+class TestGetSignature:
+    """Tests for _get_signature."""
 
-    result = await handle_call_tool("get-function-docs", {"functionName": "encode_yaml"})
-    assert "Function: encode_yaml" in result[0]["text"]
-    assert "YAML" in result[0]["text"]
+    def test_function_signature(self) -> None:
+        sig = _get_signature(extended_data_types.encode_yaml)
+        assert "raw_data" in sig
+
+    def test_class_without_signature(self) -> None:
+        sig = _get_signature(extended_data_types.FilePath)
+        assert isinstance(sig, str)
+
+
+class TestCategoriesCoverage:
+    """Tests for category completeness."""
+
+    def test_all_categorized_names_exist_in_library(self) -> None:
+        funcs = _get_library_functions()
+        for cat, names in CATEGORIES.items():
+            for name in names:
+                assert name in funcs, f"{name} in category '{cat}' not in library"
+
+    def test_no_uncategorized_functions(self) -> None:
+        funcs = _get_library_functions()
+        all_categorized = {n for names in CATEGORIES.values() for n in names}
+        # mcp_server_main is intentionally excluded from categories
+        skip = {"mcp_server_main"}
+        uncategorized = {n for n in funcs if n not in all_categorized} - skip
+        assert not uncategorized, f"Uncategorized functions: {uncategorized}"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests for MCP tools (call functions directly)
+# ---------------------------------------------------------------------------
+
+
+class TestResolveFunctionId:
+    """Tests for the resolve_function_id tool."""
+
+    def test_finds_yaml_functions(self) -> None:
+        text = resolve_function_id("yaml")
+        assert "encode_yaml" in text
+        assert "decode_yaml" in text
+
+    def test_finds_by_description(self) -> None:
+        text = resolve_function_id("merge")
+        assert "deep_merge" in text
+
+    def test_no_matches(self) -> None:
+        text = resolve_function_id("zzz_nonexistent_zzz")
+        assert "No functions matching" in text
+
+    def test_result_contains_category(self) -> None:
+        text = resolve_function_id("encode_yaml")
+        assert "Serialization" in text
+
+    def test_result_count(self) -> None:
+        text = resolve_function_id("yaml")
+        assert "results" in text
+
+
+class TestGetFunctionDocs:
+    """Tests for the get_function_docs tool."""
+
+    def test_returns_full_docs(self) -> None:
+        text = get_function_docs("encode_yaml")
+        assert "encode_yaml" in text
+        assert "Category:" in text
+        assert "Module:" in text
+
+    def test_includes_related_functions(self) -> None:
+        text = get_function_docs("encode_yaml")
+        assert "Related functions" in text
+        assert "decode_yaml" in text
+
+    def test_unknown_function(self) -> None:
+        text = get_function_docs("nonexistent")
+        assert "not found" in text
+
+    def test_includes_docstring(self) -> None:
+        text = get_function_docs("deep_merge")
+        assert "deep_merge" in text
+
+
+class TestListAllFunctions:
+    """Tests for the list_all_functions tool."""
+
+    def test_lists_all_categories(self) -> None:
+        text = list_all_functions()
+        assert "Serialization" in text
+        assert "File Operations" in text
+        assert "Map Operations" in text
+
+    def test_filter_by_category(self) -> None:
+        text = list_all_functions(category="Serialization")
+        assert "Serialization" in text
+        assert "Map Operations" not in text
+
+    def test_shows_function_count(self) -> None:
+        text = list_all_functions()
+        assert "functions" in text.lower()
+
+    def test_all_functions_present(self) -> None:
+        text = list_all_functions()
+        assert "encode_yaml" in text
+        assert "deep_merge" in text
+        assert "FilePath" in text
+
+
+class TestMCPServerRegistration:
+    """Tests for MCP server tool registration."""
+
+    def test_server_name(self) -> None:
+        assert mcp.name == "extended-data-types"
+
+    def test_has_instructions(self) -> None:
+        assert mcp.instructions is not None
+        assert "extended-data-types" in mcp.instructions
