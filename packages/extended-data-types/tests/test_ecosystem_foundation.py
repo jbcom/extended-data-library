@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import pytest
+
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -111,24 +111,21 @@ def ecosystem_dir(tmp_path: Path) -> Path:
     pkg_a = base / "package-a"
     pkg_a.mkdir()
     (pkg_a / "pyproject.toml").write_text(
-        '[project]\nname = "package-a"\nversion = "1.0.0"\n'
-        'dependencies = ["requests"]\n'
+        '[project]\nname = "package-a"\nversion = "1.0.0"\ndependencies = ["requests"]\n'
     )
 
     # Package B: depends on package-a
     pkg_b = base / "package-b"
     pkg_b.mkdir()
     (pkg_b / "pyproject.toml").write_text(
-        '[project]\nname = "package-b"\nversion = "2.0.0"\n'
-        'dependencies = ["package-a>=1.0"]\n'
+        '[project]\nname = "package-b"\nversion = "2.0.0"\ndependencies = ["package-a>=1.0"]\n'
     )
 
     # Package C: depends on package-a with different version spec
     pkg_c = base / "package-c"
     pkg_c.mkdir()
     (pkg_c / "pyproject.toml").write_text(
-        '[project]\nname = "package-c"\nversion = "3.0.0"\n'
-        'dependencies = ["package-a>=1.0,<2.0"]\n'
+        '[project]\nname = "package-c"\nversion = "3.0.0"\ndependencies = ["package-a>=1.0,<2.0"]\n'
     )
 
     # Non-package directory (no pyproject.toml)
@@ -145,18 +142,16 @@ def release_dir(tmp_path: Path) -> Path:
 
     # release-please-config.json
     (repo / "release-please-config.json").write_text(
-        '{\n'
+        "{\n"
         '  "packages": {\n'
         '    "packages/foo": {"component": "foo", "release-type": "python"},\n'
         '    "packages/bar": {"component": "bar", "release-type": "python"}\n'
-        '  }\n'
-        '}\n'
+        "  }\n"
+        "}\n"
     )
 
     # .release-please-manifest.json
-    (repo / ".release-please-manifest.json").write_text(
-        '{"packages/foo": "1.0.0", "packages/bar": "2.0.0"}\n'
-    )
+    (repo / ".release-please-manifest.json").write_text('{"packages/foo": "1.0.0", "packages/bar": "2.0.0"}\n')
 
     return repo
 
@@ -368,8 +363,7 @@ class TestEcosystemStatusMonitor:
             d = base / name
             d.mkdir()
             (d / "pyproject.toml").write_text(
-                f'[project]\nname = "{name}"\nversion = "1.0.0"\n'
-                'dependencies = ["shared-lib>=1.0"]\n'
+                f'[project]\nname = "{name}"\nversion = "1.0.0"\ndependencies = ["shared-lib>=1.0"]\n'
             )
         discovery = EcosystemPackageDiscovery(base_path=base)
         monitor = EcosystemStatusMonitor(discovery=discovery)
@@ -394,9 +388,7 @@ class TestEcosystemStatusMonitor:
         base.mkdir()
         d = base / "solo"
         d.mkdir()
-        (d / "pyproject.toml").write_text(
-            '[project]\nname = "solo"\nversion = "1.0.0"\ndependencies = []\n'
-        )
+        (d / "pyproject.toml").write_text('[project]\nname = "solo"\nversion = "1.0.0"\ndependencies = []\n')
         discovery = EcosystemPackageDiscovery(base_path=base)
         monitor = EcosystemStatusMonitor(discovery=discovery)
         status = monitor.get_ecosystem_status()
@@ -521,9 +513,7 @@ class TestDevelopmentIntegration:
         """Ruff config in ruff.toml is detected."""
         project = tmp_path / "ruff-file"
         project.mkdir()
-        (project / "pyproject.toml").write_text(
-            '[project]\nname = "test"\nversion = "0.1.0"\n'
-        )
+        (project / "pyproject.toml").write_text('[project]\nname = "test"\nversion = "0.1.0"\n')
         (project / "ruff.toml").write_text("line-length = 88\n")
 
         di = DevelopmentIntegration()
@@ -535,9 +525,7 @@ class TestDevelopmentIntegration:
         """Mypy config in mypy.ini is detected."""
         project = tmp_path / "mypy-ini"
         project.mkdir()
-        (project / "pyproject.toml").write_text(
-            '[project]\nname = "test"\nversion = "0.1.0"\n'
-        )
+        (project / "pyproject.toml").write_text('[project]\nname = "test"\nversion = "0.1.0"\n')
         (project / "mypy.ini").write_text("[mypy]\nstrict = true\n")
 
         di = DevelopmentIntegration()
