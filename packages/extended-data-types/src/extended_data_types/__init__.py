@@ -119,7 +119,7 @@ from extended_data_types.type_utils import (
 from extended_data_types.yaml_utils import decode_yaml, encode_yaml, is_yaml_data
 
 
-__version__ = "6.0.0"
+__version__ = "6.1.0"
 
 __all__ = [
     "DevelopmentIntegration",

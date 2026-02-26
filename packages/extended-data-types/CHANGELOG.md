@@ -4,6 +4,20 @@
 
 <!-- version list -->
 
+## [6.1.0](https://github.com/jbcom/extended-data-library/compare/edt-v6.0.0...edt-v6.1.0) (2026-02-26)
+
+
+### Features
+
+* **docs:** switch to sphinx-autodoc2 for source-based API docs ([#74](https://github.com/jbcom/extended-data-library/issues/74)) ([6edc542](https://github.com/jbcom/extended-data-library/commit/6edc5426fd91ae39459d43ae26da8db4774287ed))
+* **edt:** implement ecosystem foundation and align docs for monorepo ([#72](https://github.com/jbcom/extended-data-library/issues/72)) ([018b08a](https://github.com/jbcom/extended-data-library/commit/018b08aa0f474a08bb43756035444c64e57433f6))
+* **edt:** rewrite MCP server with FastMCP and full test coverage ([#75](https://github.com/jbcom/extended-data-library/issues/75)) ([a0d9a1d](https://github.com/jbcom/extended-data-library/commit/a0d9a1d9eb24b9492b696a67eeaf022b77da103b))
+
+
+### Bug Fixes
+
+* **edt:** fix release-please blocking and add 44 ecosystem tests ([#77](https://github.com/jbcom/extended-data-library/issues/77)) ([0253a05](https://github.com/jbcom/extended-data-library/commit/0253a05368839c077db7b8df87ae95aa6232ce21))
+
 ## [6.0.0](https://github.com/jbcom/extended-data-library/compare/edt-v5.4.0...edt-v6.0.0) (2026-02-24)
 
 

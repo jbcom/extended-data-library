@@ -4,6 +4,13 @@
 
 <!-- version list -->
 
+## [2.1.0](https://github.com/jbcom/extended-data-library/compare/logging-v2.0.0...logging-v2.1.0) (2026-02-26)
+
+
+### Features
+
+* **docs:** switch to sphinx-autodoc2 for source-based API docs ([#74](https://github.com/jbcom/extended-data-library/issues/74)) ([6edc542](https://github.com/jbcom/extended-data-library/commit/6edc5426fd91ae39459d43ae26da8db4774287ed))
+
 ## [2.0.0](https://github.com/jbcom/extended-data-library/compare/logging-v1.0.0...logging-v2.0.0) (2026-02-24)
 
 
