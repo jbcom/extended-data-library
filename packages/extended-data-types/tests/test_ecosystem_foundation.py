@@ -297,7 +297,7 @@ class TestReleaseCoordinator:
         coordinator = ReleaseCoordinator(repo_root=repo)
         result = coordinator.validate_release_readiness()
         assert result["ready"] is False
-        assert len(result["errors"]) > 0
+        assert any("config" in e.lower() for e in result["errors"])
 
     def test_validate_readiness_returns_structured_result(self) -> None:
         """Readiness result has all expected keys (live repo test)."""
@@ -353,10 +353,10 @@ class TestEcosystemStatusMonitor:
         graph = monitor.get_dependency_graph()
         assert isinstance(graph, dict)
         # package-b and package-c depend on package-a
-        if "package-b" in graph:
-            assert "package-a" in graph["package-b"]
-        if "package-c" in graph:
-            assert "package-a" in graph["package-c"]
+        assert "package-b" in graph, "package-b should be in dependency graph"
+        assert "package-a" in graph["package-b"]
+        assert "package-c" in graph, "package-c should be in dependency graph"
+        assert "package-a" in graph["package-c"]
 
     def test_version_consistency_consistent(self, tmp_path: Path) -> None:
         """Consistent versions across packages."""
@@ -454,11 +454,12 @@ class TestDevelopmentIntegration:
         assert result["issues"] == []
 
     def test_validate_non_compliant_project(self, non_compliant_project: Path) -> None:
-        """Non-compliant project fails checks."""
+        """Non-compliant project fails checks for missing build-system and tests."""
         di = DevelopmentIntegration()
         result = di.validate_project_structure(non_compliant_project)
         assert result["valid"] is False
-        assert len(result["issues"]) > 0
+        issues_text = " ".join(result["issues"]).lower()
+        assert "build" in issues_text or "test" in issues_text
 
     def test_configure_development_environment(self, sample_project: Path) -> None:
         """Compliant project has all configs detected."""
@@ -470,11 +471,12 @@ class TestDevelopmentIntegration:
         assert result["configs"]["mypy"]["found"] is True
 
     def test_configure_missing_tools(self, non_compliant_project: Path) -> None:
-        """Missing tool configs are reported."""
+        """Missing tool configs are reported with specifics."""
         di = DevelopmentIntegration()
         result = di.configure_development_environment(non_compliant_project)
         assert result["configured"] is False
-        assert len(result["issues"]) > 0
+        issues_text = " ".join(result["issues"]).lower()
+        assert "ruff" in issues_text or "mypy" in issues_text or "missing" in issues_text
 
     def test_get_project_info(self, sample_project: Path) -> None:
         """Project info is correctly extracted from pyproject.toml."""
