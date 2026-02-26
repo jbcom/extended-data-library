@@ -20,7 +20,7 @@ from extended_data_types import (
 @settings(max_examples=50, deadline=None)
 def test_property_1_mcp_doc_completeness(name):
     """**Feature: ecosystem-foundation, Property 1: MCP Server Function Documentation Completeness**"""
-    from extended_data_types.mcp_server.server import get_library_functions
+    from extended_data_types.mcp_server.server import _get_library_functions as get_library_functions
 
     funcs = get_library_functions()
     attr = getattr(extended_data_types, name)
