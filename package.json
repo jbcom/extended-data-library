@@ -14,9 +14,9 @@
     "affected": "nx affected"
   },
   "devDependencies": {
-    "nx": "^22.5.4",
+    "nx": "^22.6.1",
     "@nxlv/python": "^22.1.1",
     "@nx-go/nx-go": "^3.3.0",
-    "typescript": "^5.5.0"
+    "typescript": "^6.0.2"
   }
 }

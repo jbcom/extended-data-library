@@ -16,12 +16,12 @@
     "test:e2e:install": "playwright install --with-deps chromium"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.38.1",
-    "astro": "^6.0.5",
+    "@astrojs/starlight": "^0.38.2",
+    "astro": "^6.0.8",
     "sharp": "^0.34.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.1"
   }
 }
