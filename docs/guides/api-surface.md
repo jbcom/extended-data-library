@@ -131,4 +131,4 @@ constructors, representers, or preserving YAML-native wrappers during export.
 - [Quickstart](../getting-started/quickstart.md)
 - [Serialization Guide](./serialization.md)
 - [Transformations Guide](./transformations.md)
-- [API Reference](../api/index.rst)
+- [API Reference](../api/index.md)
