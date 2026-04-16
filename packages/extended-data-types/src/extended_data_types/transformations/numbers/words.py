@@ -297,10 +297,6 @@ def words_to_fraction(text: str) -> str:
     else:
         fraction_tokens = tokens
 
-    if not fraction_tokens:
-        msg = "Fraction words must include a fractional part"
-        raise ValueError(msg)
-
     numerator_tokens = fraction_tokens[:-1]
     denom_word = fraction_tokens[-1]
 
@@ -312,9 +308,6 @@ def words_to_fraction(text: str) -> str:
         numerator = 1
 
     denominator = _denominator_from_word(denom_word)
-    if denominator <= 0:
-        msg = "Denominator must be positive"
-        raise ValueError(msg)
 
     frac = Fraction(numerator, denominator)
     if whole:
@@ -322,8 +315,9 @@ def words_to_fraction(text: str) -> str:
     if negative:
         frac *= -1
 
-    whole_part = frac.numerator // frac.denominator
-    remainder = Fraction(abs(frac.numerator % frac.denominator), frac.denominator)
+    abs_fraction = abs(frac)
+    whole_part = abs_fraction.numerator // abs_fraction.denominator
+    remainder = Fraction(abs_fraction.numerator % abs_fraction.denominator, abs_fraction.denominator)
     sign = "-" if frac < 0 else ""
 
     if remainder.numerator == 0:

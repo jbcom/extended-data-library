@@ -41,6 +41,12 @@ def test_is_partial_match(a: str, b: str, check_prefix_only: bool, expected: boo
     assert is_partial_match(a, b, check_prefix_only=check_prefix_only) == expected
 
 
+def test_is_partial_match_returns_false_for_empty_inputs() -> None:
+    """Treat missing or empty values as non-matches."""
+    assert is_partial_match(None, "hello") is False
+    assert is_partial_match("hello", "") is False
+
+
 @pytest.mark.parametrize(
     ("a", "b", "expected"),
     [
@@ -66,3 +72,29 @@ def test_is_non_empty_match(a: any, b: any, expected: bool) -> None:
         The result of is_non_empty_match matches the expected boolean value.
     """
     assert is_non_empty_match(a, b) == expected
+
+
+def test_is_non_empty_match_handles_unorderable_lists_without_mutation() -> None:
+    """Compare composite list contents without mutating or relying on sortability."""
+    left = [{"b": 2}, {"a": 1}]
+    right = [{"a": 1}, {"b": 2}]
+
+    assert is_non_empty_match(left, right) is True
+    assert left == [{"b": 2}, {"a": 1}]
+    assert right == [{"a": 1}, {"b": 2}]
+
+
+def test_is_non_empty_match_handles_sets_and_tuples() -> None:
+    """Normalize additional composite container types through shared primitives."""
+    assert is_non_empty_match({"b", "a"}, {"a", "b"}) is True
+    assert is_non_empty_match(({"a": 1}, ["b"]), ({"a": 1}, ["b"])) is True
+
+
+def test_is_non_empty_match_handles_cyclic_lists() -> None:
+    """Cycle detection should keep composite comparisons from recursing forever."""
+    left: list[object] = []
+    right: list[object] = []
+    left.append(left)
+    right.append(right)
+
+    assert is_non_empty_match(left, right) is True

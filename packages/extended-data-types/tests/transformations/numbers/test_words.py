@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from extended_data_types.transformations.numbers import words as words_module
 from extended_data_types.transformations.numbers.words import (
     fraction_to_words,
     number_to_words,
@@ -36,10 +37,13 @@ def test_number_to_words() -> None:
     # Test with different options
     assert number_to_words(42, capitalize=True) == "Forty-two"
     assert number_to_words(1042, conjunction="") == "one thousand forty-two"
+    assert number_to_words(342, conjunction="plus") == "three hundred plus forty-two"
 
     # Test invalid input
     with pytest.raises(ValueError):
         number_to_words(float("inf"))
+    with pytest.raises(ValueError):
+        number_to_words(float("nan"))
 
 
 def test_words_to_number() -> None:
@@ -64,12 +68,15 @@ def test_words_to_number() -> None:
     # Test with different formats
     assert words_to_number("Forty-Two") == 42
     assert words_to_number("one thousand forty-two") == 1042
+    assert words_to_number("thousand") == 1000
 
     # Test invalid input
     with pytest.raises(ValueError):
         words_to_number("invalid")
     with pytest.raises(ValueError):
         words_to_number("")
+    with pytest.raises(ValueError, match="digits after 'minus'"):
+        words_to_number("minus")
 
 
 def test_ordinal_to_words() -> None:
@@ -91,6 +98,8 @@ def test_ordinal_to_words() -> None:
         ordinal_to_words(0)
     with pytest.raises(ValueError):
         ordinal_to_words(-1)
+    with pytest.raises(TypeError):
+        ordinal_to_words(1.5)  # type: ignore[arg-type]
 
 
 def test_words_to_ordinal() -> None:
@@ -110,10 +119,16 @@ def test_words_to_ordinal() -> None:
     # Test invalid input
     with pytest.raises(ValueError):
         words_to_ordinal("zeroth")
+    with pytest.raises(ValueError, match="positive integer"):
+        words_to_ordinal("zero")
     with pytest.raises(ValueError):
         words_to_ordinal("invalid")
     with pytest.raises(ValueError):
         words_to_ordinal("")
+    with pytest.raises(ValueError, match="cannot be negative"):
+        words_to_ordinal("minus first")
+    assert words_to_ordinal("twentieths") == 20
+    assert words_to_ordinal("hundredths") == 100
 
 
 def test_fraction_to_words() -> None:
@@ -122,10 +137,13 @@ def test_fraction_to_words() -> None:
     assert fraction_to_words("1/4") == "one quarter"
     assert fraction_to_words("3/4") == "three quarters"
     assert fraction_to_words("2/3") == "two thirds"
+    assert fraction_to_words("2/13") == "two thirteenths"
 
     # Test mixed numbers
     assert fraction_to_words("1 1/2") == "one and a half"
     assert fraction_to_words("2 3/4") == "two and three quarters"
+    assert fraction_to_words("-3/2") == "minus one and a half"
+    assert fraction_to_words("0/5") == "zero"
 
     # Test with different options
     assert fraction_to_words("1/2", capitalize=True) == "One half"
@@ -149,6 +167,10 @@ def test_words_to_fraction() -> None:
     # Test mixed numbers
     assert words_to_fraction("one and a half") == "1 1/2"
     assert words_to_fraction("two and three quarters") == "2 3/4"
+    assert words_to_fraction("minus one half") == "-1/2"
+    assert words_to_fraction("minus five thirds") == "-1 2/3"
+    assert words_to_fraction("two halves") == "1"
+    assert words_to_fraction("five thirds") == "1 2/3"
 
     # Test with different formats
     assert words_to_fraction("One Half") == "1/2"
@@ -158,3 +180,47 @@ def test_words_to_fraction() -> None:
         words_to_fraction("invalid")
     with pytest.raises(ValueError):
         words_to_fraction("")
+    with pytest.raises(ValueError, match="value after 'minus'"):
+        words_to_fraction("minus")
+    with pytest.raises(ValueError, match="fractional part"):
+        words_to_fraction("one and")
+
+
+def test_number_word_internal_helpers_cover_edge_paths() -> None:
+    """Exercise internal parsing branches that public helpers pre-validate away."""
+    with pytest.raises(ValueError, match="non-empty string"):
+        words_module._NumberParser([]).number()
+    with pytest.raises(ValueError, match="followed by digits"):
+        words_module._NumberParser(["point"]).number()
+    with pytest.raises(ValueError, match="Invalid decimal digit"):
+        words_module._NumberParser(["one", "point", "ten"]).number()
+    with pytest.raises(ValueError, match="Unrecognized number word"):
+        words_module._NumberParser(["bogus"]).integer()
+
+    assert words_module._replace_ordinals_with_cardinals(["thirds", "twentieths", "millionths", "plain"]) == [
+        "three",
+        "twenty",
+        "million",
+        "plain",
+    ]
+    assert words_module._replace_ordinals_with_cardinals(["twentieth"]) == ["twenty"]
+
+    assert words_module._denominator_word(6, plural=True) == "sixths"
+
+    def _mock_plural_denominator(*_args, **_kwargs) -> str:
+        return "sixths"
+
+    original_num2words = words_module.num2words
+    words_module.num2words = _mock_plural_denominator  # type: ignore[assignment]
+    try:
+        assert words_module._denominator_word(6, plural=True) == "sixths"
+    finally:
+        words_module.num2words = original_num2words  # type: ignore[assignment]
+    assert words_module._denominator_from_word("halves") == 2
+    assert words_module._denominator_from_word("quarters") == 4
+    with pytest.raises(ValueError, match="Unrecognized denominator word"):
+        words_module._denominator_from_word("bogus")
+
+    with pytest.raises(TypeError, match="must be a string"):
+        words_module._parse_fraction_string(3.14)
+    assert words_module._parse_fraction_string("3 / 4") == words_module.Fraction(3, 4)

@@ -1,10 +1,4 @@
-"""File Data Type Utilities.
-
-This module provides utilities for working with file paths, Git repositories,
-and file extensions. It includes functions for retrieving the parent Git repository,
-cloning repositories to temporary directories, reading/writing files, and checking
-file extensions and encodings.
-"""
+"""File Data Type Utilities."""
 
 from __future__ import annotations
 
@@ -19,6 +13,8 @@ from typing import Any, TypeAlias
 import validators
 
 from git import GitCommandError, InvalidGitRepositoryError, NoSuchPathError, Repo
+
+from extended_data_types.serialization_utils import normalize_data_encoding
 
 
 FilePath: TypeAlias = str | os.PathLike[str]
@@ -148,15 +144,9 @@ def get_encoding_for_file_path(file_path: FilePath) -> str:
     Returns:
         str: The encoding type as a string (e.g., "yaml", "json", "hcl", "toml", or "raw").
     """
-    suffix = Path(file_path).suffix
-    if suffix in [".yaml", ".yml"]:
-        return "yaml"
-    elif suffix == ".json":
-        return "json"
-    elif suffix in [".hcl", ".tf"]:
-        return "hcl"
-    elif suffix in [".toml", ".tml"]:
-        return "toml"
+    suffix = normalize_data_encoding(Path(file_path).suffix.removeprefix("."))
+    if suffix in {"yaml", "json", "hcl", "toml"}:
+        return suffix
     return "raw"
 
 
@@ -306,7 +296,7 @@ def read_file(
 
 
 def decode_file(
-    file_data: str,
+    file_data: str | memoryview | bytes | bytearray,
     file_path: FilePath | None = None,
     suffix: str | None = None,
 ) -> Any:
@@ -315,7 +305,8 @@ def decode_file(
     Supports YAML, JSON, TOML, and HCL2 formats.
 
     Args:
-        file_data (str): The file contents to decode.
+        file_data (str | memoryview | bytes | bytearray): The file contents to decode.
+            This function does not read paths.
         file_path (FilePath | None): Optional file path to infer format from extension.
         suffix (str | None): Explicit format suffix (e.g., "yaml", "json", "toml", "hcl").
             Takes precedence over file_path extension.
@@ -324,27 +315,15 @@ def decode_file(
         Any: The decoded data structure, or the original string if format is unknown.
     """
     # Lazy imports to avoid circular dependencies
-    from extended_data_types.hcl2_utils import decode_hcl2
-    from extended_data_types.json_utils import decode_json
-    from extended_data_types.toml_utils import decode_toml
-    from extended_data_types.yaml_utils import decode_yaml
+    from extended_data_types.import_utils import unwrap_raw_data_from_import
 
     if suffix is None and file_path is not None:
-        suffix = Path(file_path).suffix.lstrip(".").lower()
+        suffix = get_encoding_for_file_path(file_path)
+    else:
+        suffix = normalize_data_encoding(suffix)
 
-    # Map suffixes to decoder functions
-    decoder_map = {
-        "yml": decode_yaml,
-        "yaml": decode_yaml,
-        "json": decode_json,
-        "toml": decode_toml,
-        "hcl": decode_hcl2,
-        "tf": decode_hcl2,
-    }
-
-    decoder = decoder_map.get(suffix) if suffix else None
-    if decoder is not None:
-        return decoder(file_data)
+    if suffix is not None and suffix in {"yaml", "json", "toml", "hcl", "raw"}:
+        return unwrap_raw_data_from_import(file_data, encoding=suffix)
     return file_data
 
 
@@ -361,7 +340,7 @@ def write_file(
     Args:
         file_path (FilePath): The path to write to.
         data (Any): The data to write. Will be encoded based on file extension or encoding param.
-        encoding (str | None): Explicit encoding format ("yaml", "json", "toml", "raw").
+        encoding (str | None): Explicit encoding format ("yaml", "json", "toml", "hcl", "raw").
             If None, inferred from file extension.
         charset (str): Character encoding for the file. Defaults to "utf-8".
         allow_empty (bool): Whether to allow writing empty data. Defaults to False.
@@ -376,12 +355,11 @@ def write_file(
     if is_nothing(data) and not allow_empty:
         return None
 
-    if encoding is None:
-        encoding = get_encoding_for_file_path(file_path)
+    resolved_encoding = get_encoding_for_file_path(file_path) if encoding is None else normalize_data_encoding(encoding)
 
     # Encode the data
-    if encoding != "raw" and not isinstance(data, str):
-        data = wrap_raw_data_for_export(data, allow_encoding=encoding)
+    if resolved_encoding != "raw" and not isinstance(data, str):
+        data = wrap_raw_data_for_export(data, allow_encoding=resolved_encoding)
 
     local_path = resolve_local_path(file_path, tld=tld)
     local_path.parent.mkdir(parents=True, exist_ok=True)

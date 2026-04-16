@@ -205,6 +205,11 @@ def test_bytestostr_invalid_bytes() -> None:
         bytestostr(invalid_bytes)
 
 
+def test_bytestostr_falls_back_to_string_conversion() -> None:
+    """Convert non-bytes objects with a plain string fallback."""
+    assert bytestostr(123) == "123"
+
+
 def test_sanitize_key(test_key: str, sanitized_key: str) -> None:
     """Tests sanitizing a key by removing invalid characters.
 
@@ -229,6 +234,11 @@ def test_truncate(truncate_data: tuple[str, int, str]) -> None:
     """
     msg, max_length, expected = truncate_data
     assert truncate(msg, max_length) == expected
+
+
+def test_truncate_returns_single_character_when_ender_is_too_long() -> None:
+    """Return a single ender character when it cannot fully fit."""
+    assert truncate("abcdef", 3, ender="....") == "."
 
 
 def test_lower_first_char(lower_first_char_data: tuple[str, str]) -> None:

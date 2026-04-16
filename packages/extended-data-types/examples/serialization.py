@@ -10,9 +10,11 @@ from __future__ import annotations
 from extended_data_types import (
     base64_decode,
     base64_encode,
+    decode_hcl2,
     decode_json,
     decode_toml,
     decode_yaml,
+    encode_hcl2,
     encode_json,
     encode_toml,
     encode_yaml,
@@ -66,6 +68,32 @@ def demonstrate_toml() -> None:
     decode_toml(toml_str)
 
 
+def demonstrate_hcl() -> None:
+    """Demonstrate HCL encoding and decoding."""
+    print("\n=== HCL Utilities ===\n")
+
+    data = {
+        "locals": [{"region": "us-east-1"}],
+        "resource": [
+            {
+                "aws_s3_bucket": {
+                    "logs": {
+                        "bucket": "my-log-bucket",
+                        "acl": "private",
+                    },
+                },
+            },
+        ],
+    }
+
+    hcl_str = encode_hcl2(data)
+    print("Encoded HCL:")
+    print(hcl_str)
+
+    decoded = decode_hcl2(hcl_str)
+    print(f"Decoded data: {decoded}")
+
+
 def demonstrate_base64() -> None:
     """Demonstrate Base64 encoding and decoding."""
     # Simple string encoding
@@ -84,4 +112,5 @@ if __name__ == "__main__":
     demonstrate_yaml()
     demonstrate_json()
     demonstrate_toml()
+    demonstrate_hcl()
     demonstrate_base64()

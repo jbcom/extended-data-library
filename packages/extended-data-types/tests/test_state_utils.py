@@ -83,6 +83,24 @@ def test_are_nothing(values: tuple[Any, ...], kwargs: dict[str, Any], expected: 
     assert are_nothing(*values, **kwargs) == expected
 
 
+def test_are_nothing_handles_tuple_result_path() -> None:
+    """Exercise the tuple-return branch from all_non_empty."""
+    assert are_nothing(None, "", key=None) is True
+    assert are_nothing(None, "", key="value") is False
+
+
+def test_are_nothing_with_no_inputs_returns_true() -> None:
+    """Treat the absence of inputs as nothing."""
+    assert are_nothing() is True
+
+
+def test_are_nothing_fallback_branch_returns_false(mocker) -> None:
+    """Defensively return False for unexpected all_non_empty output types."""
+    mocker.patch("extended_data_types.state_utils.all_non_empty", return_value="unexpected")
+
+    assert are_nothing("value") is False
+
+
 @pytest.mark.parametrize(
     ("args", "kwargs", "expected"),
     [
@@ -189,3 +207,8 @@ def test_yield_non_empty() -> None:
     expected = [{"key2": "value"}, {"key3": "another"}]
     result = list(yield_non_empty(mapping, *keys))
     assert result == expected
+
+
+def test_is_nothing_treats_empty_sets_as_nothing() -> None:
+    """Sets containing only empty values should count as nothing."""
+    assert is_nothing({None, ""}) is True

@@ -10,10 +10,14 @@ Functions:
 
 from __future__ import annotations
 
+import datetime
+
+from pathlib import Path
+
 import pytest
 import tomlkit
 
-from extended_data_types.toml_utils import decode_toml
+from extended_data_types.toml_utils import decode_toml, encode_toml
 
 
 def test_decode_toml_invalid_format() -> None:
@@ -30,3 +34,42 @@ def test_decode_toml_invalid_format() -> None:
     invalid_toml = "title = 'Unclosed quote"
     with pytest.raises(tomlkit.exceptions.ParseError):
         decode_toml(invalid_toml)
+
+
+def test_decode_toml_bytes_success() -> None:
+    """Decode TOML from bytes."""
+    result = decode_toml(b'title = "Example"\n')
+    assert result == {"title": "Example"}
+
+
+def test_decode_toml_invalid_bytes() -> None:
+    """Raise a TOMLKitError when bytes cannot be decoded."""
+    with pytest.raises(tomlkit.exceptions.TOMLKitError, match="Failed to decode bytes to string"):
+        decode_toml(b"\x80")
+
+
+def test_encode_toml_converts_special_types() -> None:
+    """Convert special types before TOML encoding."""
+    result = encode_toml(
+        {
+            "date": datetime.date(2025, 1, 15),
+            "path": Path("/tmp/example.txt"),
+        }
+    )
+
+    assert 'date = "2025-01-15"' in result
+    assert 'path = "/tmp/example.txt"' in result
+
+
+def test_encode_toml_converts_tuple_like_composites() -> None:
+    """Normalize tuples and frozensets instead of stringifying them."""
+    result = encode_toml(
+        {
+            "items": ("alpha", "beta"),
+            "values": frozenset([1, 2]),
+        }
+    )
+
+    parsed = tomlkit.parse(result)
+    assert parsed["items"] == ["alpha", "beta"]
+    assert sorted(parsed["values"]) == [1, 2]

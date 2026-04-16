@@ -1,30 +1,36 @@
 # Extended Data Types Examples
 
-This directory contains working code samples demonstrating the capabilities of the `extended-data-types` library.
+This directory contains working code samples demonstrating the capabilities of
+the `extended-data-types` library. The examples intentionally mirror the public
+guides and are part of the documented contract, not throwaway snippets.
 
 ## Examples
 
 ### Basic Usage
 
 - [`basic_usage.py`](basic_usage.py) - Common operations with strings, lists, and maps
-- [`serialization.py`](serialization.py) - YAML, JSON, TOML, and Base64 encoding/decoding
+- [`composed_workflows.py`](composed_workflows.py) - Layered config, Terraform-style HCL, YAML-native tags, and payload pipelines
+- [`serialization.py`](serialization.py) - YAML, JSON, TOML, HCL, and Base64 encoding/decoding
 - [`file_operations.py`](file_operations.py) - File path utilities and Git repository helpers
 - [`string_transformations.py`](string_transformations.py) - Case conversion and string manipulation
+
+## Related Documentation
+
+- [Package docs](https://extendeddata.dev/core/data-types/)
+- [Getting started](https://extendeddata.dev/getting-started/)
+- [Packages overview](https://extendeddata.dev/packages/)
 
 ## Running Examples
 
 ```bash
-# Install the package
-pip install extended-data-types
+# From the monorepo root, run the full example suite
+tox -e edt-examples
 
-# Or for development
-uv sync
-
-# Run an example
-python examples/basic_usage.py
+# Or run a single example with the prepared tox environment
+.tox/edt-examples/bin/python packages/extended-data-types/examples/basic_usage.py
 ```
 
 ## Requirements
 
-- Python 3.9+
+- Python 3.10-3.14
 - extended-data-types package

@@ -18,10 +18,11 @@ and mock objects to simulate Git operations without requiring actual repositorie
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from git import GitCommandError, InvalidGitRepositoryError, Repo
+from git import GitCommandError, InvalidGitRepositoryError, NoSuchPathError, Repo
 
 from extended_data_types.file_data_type import (
     FilePath,
@@ -40,6 +41,9 @@ from extended_data_types.file_data_type import (
     resolve_local_path,
     write_file,
 )
+
+
+Self = Any
 
 
 @pytest.fixture
@@ -137,6 +141,27 @@ def test_clone_repository_to_temp(mocker, valid_repo_data: dict) -> None:
         clone_repository_to_temp(**valid_repo_data)
 
 
+@pytest.mark.parametrize(
+    ("side_effect", "message"),
+    [
+        (InvalidGitRepositoryError("bad repo"), "The repository is invalid or corrupt."),
+        (NoSuchPathError("/missing"), "The specified path does not exist."),
+        (
+            PermissionError("denied"),
+            "Permission denied: Check your GitHub token and repository access permissions.",
+        ),
+    ],
+)
+def test_clone_repository_to_temp_additional_errors(
+    mocker, valid_repo_data: dict, side_effect: Exception, message: str
+) -> None:
+    """Map additional git clone failures to consistent OSError messages."""
+    mocker.patch("extended_data_types.file_data_type.Repo.clone_from", side_effect=side_effect)
+
+    with pytest.raises(OSError, match=message):
+        clone_repository_to_temp(**valid_repo_data)
+
+
 def test_get_tld(mocker) -> None:
     """Tests retrieving the top-level directory of a Git repository.
 
@@ -192,8 +217,12 @@ def test_match_file_extensions(
     ("file_path", "expected_encoding"),
     [
         ("/path/to/file.yaml", "yaml"),
+        ("/path/to/file.yml", "yaml"),
         ("/path/to/file.json", "json"),
         ("/path/to/file.tf", "hcl"),
+        ("/path/to/file.tfvars", "hcl"),
+        ("/path/to/file.toml", "toml"),
+        ("/path/to/file.tml", "toml"),
         ("/path/to/file.unknown", "raw"),
     ],
 )
@@ -216,6 +245,7 @@ def test_get_encoding_for_file_path(file_path: FilePath, expected_encoding: str)
         ("/path/to/file.txt", 3),
         ("/", 0),
         ("/single_directory/", 1),
+        ("./nested/file.txt", 2),
     ],
 )
 def test_file_path_depth(file_path: FilePath, expected_depth: int) -> None:
@@ -263,6 +293,7 @@ def test_file_path_rel_to_root(file_path: FilePath, expected_rel_to_root: str) -
         ("/path/to/file.txt", False),
         ("relative/path.txt", False),
         ("ftp://example.com/file.txt", False),
+        ("", False),
     ],
 )
 def test_is_url(path: str, expected: bool) -> None:
@@ -347,6 +378,54 @@ def test_read_file_local_bytes(tmp_path: Path) -> None:
     assert result == b"\x00\x01\x02"
 
 
+def test_read_file_url_decoded(mocker) -> None:
+    """Read URL content as text with request headers."""
+
+    class MockResponse:
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        def read(self) -> bytes:
+            return b"hello from url"
+
+    mock_urlopen = mocker.patch(
+        "extended_data_types.file_data_type.urllib.request.urlopen",
+        return_value=MockResponse(),
+    )
+
+    result = read_file("https://example.com/data.txt", headers={"X-Test": "1"})
+
+    assert result == "hello from url"
+    request = mock_urlopen.call_args[0][0]
+    assert request.full_url == "https://example.com/data.txt"
+    assert request.headers["X-test"] == "1"
+
+
+def test_read_file_url_bytes(mocker) -> None:
+    """Read URL content as raw bytes."""
+
+    class MockResponse:
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        def read(self) -> bytes:
+            return b"\x00\x01\x02"
+
+    mocker.patch(
+        "extended_data_types.file_data_type.urllib.request.urlopen",
+        return_value=MockResponse(),
+    )
+
+    result = read_file("https://example.com/data.bin", decode=False)
+    assert result == b"\x00\x01\x02"
+
+
 def test_read_file_nonexistent(tmp_path: Path) -> None:
     """Tests reading a nonexistent file returns None.
 
@@ -409,6 +488,24 @@ def test_decode_file_infer_suffix() -> None:
     assert result == {"key": "value"}
 
 
+def test_decode_file_infer_hcl_suffix() -> None:
+    """Infer HCL decoding from a Terraform file path."""
+    result = decode_file('variable "region" { default = "us-east-1" }', file_path="/path/to/variables.tf")
+    assert result == {"variable": [{"region": {"default": "us-east-1"}}]}
+
+
+def test_decode_file_infer_toml_alias_suffix() -> None:
+    """Infer TOML decoding from legacy .tml suffixes."""
+    result = decode_file('title = "Example"\n', file_path="/path/to/config.tml")
+    assert result == {"title": "Example"}
+
+
+def test_decode_file_accepts_bytes_payload() -> None:
+    """Decode bytes-like payloads through the same file helper."""
+    result = decode_file(b'{"key":"value"}', file_path="/path/to/file.json")
+    assert result == {"key": "value"}
+
+
 def test_write_file_json(tmp_path: Path) -> None:
     """Tests writing data as JSON.
 
@@ -448,6 +545,58 @@ def test_write_file_yaml(tmp_path: Path) -> None:
     assert test_file.exists()
     content = test_file.read_text()
     assert "key:" in content or "key :" in content
+
+
+def test_write_file_hcl(tmp_path: Path) -> None:
+    """Write Terraform-style data to an HCL file."""
+    test_file = tmp_path / "main.tf"
+    data = {"locals": [{"region": "us-east-1"}]}
+
+    result = write_file(test_file, data, tld=tmp_path)
+
+    assert result == test_file.resolve()
+    assert test_file.exists()
+    content = test_file.read_text()
+    assert "locals {" in content
+    assert 'region = "us-east-1"' in content
+    assert decode_file(content, file_path=test_file) == data
+
+
+def test_write_file_tf_alias_encoding(tmp_path: Path) -> None:
+    """Explicit Terraform aliases should encode through the HCL writer."""
+    test_file = tmp_path / "generated.txt"
+    data = {"locals": [{"region": "us-east-1"}]}
+
+    result = write_file(test_file, data, encoding="tf", tld=tmp_path)
+
+    assert result == test_file.resolve()
+    content = test_file.read_text()
+    assert "locals {" in content
+    assert decode_file(content, suffix="hcl") == data
+
+
+def test_write_file_tfvars_infers_hcl(tmp_path: Path) -> None:
+    """Terraform variable files should use HCL inference automatically."""
+    test_file = tmp_path / "terraform.tfvars"
+    data = {"region": "us-east-1"}
+
+    result = write_file(test_file, data, tld=tmp_path)
+
+    assert result == test_file.resolve()
+    content = test_file.read_text()
+    assert 'region = "us-east-1"' in content
+    assert decode_file(content, file_path=test_file) == data
+
+
+def test_write_file_bytes(tmp_path: Path) -> None:
+    """Write raw bytes without re-encoding."""
+    test_file = tmp_path / "payload.bin"
+    data = b"\x00\x01\x02"
+
+    result = write_file(test_file, data, encoding="raw", tld=tmp_path)
+
+    assert result == test_file.resolve()
+    assert test_file.read_bytes() == data
 
 
 def test_write_file_creates_directories(tmp_path: Path) -> None:

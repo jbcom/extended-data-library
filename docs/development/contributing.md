@@ -1,71 +1,44 @@
 # Contributing
 
-Thank you for your interest in contributing to extended-data-types!
+Thanks for contributing to `extended-data-types`.
 
 ## Development Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/jbcom/extended-data-library.git
-cd extended-data-types
-
-# Install with all development dependencies
+cd extended-data-library
 uv sync --all-extras
 ```
 
-## Running Tests
+## Required Local Checks
 
 ```bash
-# Run tests
-uv run pytest
-
-# Run with coverage
-uv run pytest --cov=extended_data_types
+tox -e edt
+tox -e edt-examples
+tox -e lint
+tox -e typecheck
+tox -e docs
 ```
 
-## Code Style
+## Cross-Version Check
 
-This project uses:
-- [Ruff](https://docs.astral.sh/ruff/) for linting and formatting
-- Type hints throughout
+When a change touches compatibility-sensitive behavior, run the test suite
+across the full supported Python range:
 
 ```bash
-# Check code style
-uv run ruff check .
-uv run ruff format --check .
-
-# Auto-fix issues
-uv run ruff check --fix .
-uv run ruff format .
+tox -e py310-edt,py311-edt,py312-edt,py313-edt,py314-edt
 ```
 
-## Building Documentation
+## Documentation Alignment
 
-```bash
-# Install docs dependencies
-uv sync --extra docs
+- Keep `README.md`, the docs site, examples, and the documented API surface in sync.
+- Treat runnable examples as part of the public contract, not as optional extras.
+- Do not commit generated `docs/_build/` output.
 
-# Build docs
-cd docs
-uv run sphinx-build -b html . _build/html
+## Pull Requests
 
-# Or use make
-make html
-```
-
-## Pull Request Process
-
-1. Create a feature branch from `main`
-2. Make your changes with tests
-3. Ensure CI passes (lint + tests)
-4. Submit PR - an AI agent will review and merge
-
-## Commit Messages
-
-Use conventional commits:
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation changes
-- `refactor:` Code refactoring
-- `test:` Test changes
-- `chore:` Maintenance tasks
+1. Start from `main`.
+2. Keep changes focused and add or update tests for behavior changes.
+3. Keep documentation and examples aligned with the implemented API.
+4. Use conventional commit prefixes such as `feat:`, `fix:`, `docs:`,
+   `refactor:`, `test:`, and `chore:`.

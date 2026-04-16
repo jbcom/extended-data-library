@@ -9,8 +9,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from extended_data_types.json_utils import encode_json
 from extended_data_types.state_utils import is_nothing
+from extended_data_types.type_utils import make_hashable
 
 
 def is_partial_match(
@@ -64,18 +64,19 @@ def is_non_empty_match(a: Any, b: Any) -> bool:
     if isinstance(a, str):
         a = a.casefold()
         b = b.casefold()
-    # Handle mapping types by encoding to JSON with sorted keys
+    # Normalize composite structures without mutating caller-owned values.
     elif isinstance(a, Mapping):
-        a = encode_json(a, sort_keys=True)
-        b = encode_json(b, sort_keys=True)
-    # Handle lists by sorting, ensuring types within lists are comparable
+        a = make_hashable(a)
+        b = make_hashable(b)
     elif isinstance(a, list) and isinstance(b, list):
-        try:
-            a.sort()
-            b.sort()
-        except TypeError:
-            # If elements are not comparable, return False
-            return False
+        a = tuple(sorted((make_hashable(item) for item in a), key=repr))
+        b = tuple(sorted((make_hashable(item) for item in b), key=repr))
+    elif isinstance(a, (set, frozenset)) and isinstance(b, (set, frozenset)):
+        a = frozenset(make_hashable(item) for item in a)
+        b = frozenset(make_hashable(item) for item in b)
+    elif isinstance(a, tuple) and isinstance(b, tuple):
+        a = tuple(make_hashable(item) for item in a)
+        b = tuple(make_hashable(item) for item in b)
 
     # Return comparison result
     return a == b

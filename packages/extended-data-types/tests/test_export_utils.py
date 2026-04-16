@@ -17,13 +17,20 @@ import datetime
 import json
 import pathlib
 
+from collections import defaultdict
+
 import pytest
 
 from extended_data_types.export_utils import (
     make_raw_data_export_safe,
     wrap_raw_data_for_export,
 )
-from extended_data_types.yaml_utils import decode_yaml
+from extended_data_types.yaml_utils import (
+    LiteralScalarString,
+    YamlPairs,
+    YamlTagged,
+    decode_yaml,
+)
 
 
 @pytest.fixture
@@ -92,6 +99,79 @@ def test_wrap_raw_data_for_export_yaml_complex(complex_yaml_fixture: str) -> Non
     )
     assert 'AWSTemplateFormatVersion: "2010-09-09"' in result
     assert 'Type: "AWS::S3::Bucket"' in result
+
+
+def test_wrap_raw_data_for_export_hcl() -> None:
+    """Tests wrapping Terraform-style data as HCL."""
+    result = wrap_raw_data_for_export(
+        {"locals": [{"region": "us-east-1"}]},
+        allow_encoding="hcl",
+    )
+    assert "locals {" in result
+    assert 'region = "us-east-1"' in result
+
+
+def test_wrap_raw_data_for_export_tf_alias() -> None:
+    """Treat Terraform aliases as HCL during export."""
+    result = wrap_raw_data_for_export(
+        {"locals": [{"region": "us-east-1"}]},
+        allow_encoding="tf",
+    )
+    assert "locals {" in result
+    assert 'region = "us-east-1"' in result
+
+
+def test_wrap_raw_data_for_export_toml() -> None:
+    """Encode mappings as TOML when explicitly requested."""
+    result = wrap_raw_data_for_export(
+        {"package": {"name": "extended-data-types"}},
+        allow_encoding="toml",
+    )
+    assert "[package]" in result
+    assert 'name = "extended-data-types"' in result
+
+
+def test_wrap_raw_data_for_export_json_preserves_composite_structure() -> None:
+    """JSON export should structurally normalize tuples and frozensets."""
+    result = wrap_raw_data_for_export(
+        {
+            "items": ("a", "b"),
+            "values": frozenset([1, 2]),
+        },
+        allow_encoding="json",
+    )
+    decoded = json.loads(result)
+    assert decoded["items"] == ["a", "b"]
+    assert sorted(decoded["values"]) == [1, 2]
+
+
+def test_wrap_raw_data_for_export_raw_false_and_invalid_values() -> None:
+    """Cover raw output, boolean-like strings, and invalid encoding values."""
+    raw_data = {"key": "value"}
+
+    assert wrap_raw_data_for_export(raw_data, allow_encoding="raw") == str(raw_data)
+    assert wrap_raw_data_for_export(raw_data, allow_encoding="false") == str(raw_data)
+
+    with pytest.raises(ValueError, match="Invalid allow_encoding value: xml"):
+        wrap_raw_data_for_export(raw_data, allow_encoding="xml")
+
+
+def test_wrap_raw_data_for_export_boolean_string_preserves_yaml_native_data() -> None:
+    """Auto-encoding should keep YAML-native tagged values in YAML form."""
+    raw_data = {"bucket_name": YamlTagged("!Ref", "BucketName")}
+    result = wrap_raw_data_for_export(raw_data, allow_encoding="true")
+    assert "!Ref" in result
+    assert decode_yaml(result) == raw_data
+
+
+def test_make_raw_data_export_safe_handles_mapping_subclasses() -> None:
+    """Normalize nested values even when the input mapping is not a plain dict."""
+    data = defaultdict(dict)
+    data["config"]["path"] = pathlib.Path("/tmp/demo")
+
+    result = make_raw_data_export_safe(data)
+
+    assert result == {"config": {"path": "/tmp/demo"}}
 
 
 def test_make_raw_data_export_safe_tuple_with_datetime() -> None:
@@ -221,6 +301,41 @@ def test_make_raw_data_export_safe_empty_tuple() -> None:
     assert len(result["list_with_empty_tuple"][0]) == 0
 
 
+def test_make_raw_data_export_safe_preserves_yaml_wrappers() -> None:
+    """YAML-native wrappers should be preserved during YAML-safe conversion."""
+    raw_data = {
+        "tagged": YamlTagged(
+            "!Sub",
+            {
+                "path": pathlib.Path("/tmp/template.yml"),
+                "created": datetime.date(2025, 1, 15),
+            },
+        ),
+        "pairs": YamlPairs(
+            [
+                (
+                    "bucket",
+                    YamlTagged("!Ref", "BucketName"),
+                )
+            ]
+        ),
+    }
+
+    result = make_raw_data_export_safe(raw_data, export_to_yaml=True)
+
+    assert isinstance(result["tagged"], YamlTagged)
+    assert result["tagged"].tag == "!Sub"
+    assert result["tagged"].__wrapped__["path"] == "/tmp/template.yml"
+    assert result["tagged"].__wrapped__["created"] == "2025-01-15"
+
+    assert isinstance(result["pairs"], YamlPairs)
+    pair_key, pair_value = result["pairs"][0]
+    assert pair_key == "bucket"
+    assert isinstance(pair_value, YamlTagged)
+    assert pair_value.tag == "!Ref"
+    assert pair_value.__wrapped__ == "BucketName"
+
+
 def test_make_raw_data_export_safe_frozenset_with_datetime() -> None:
     """Tests that frozensets containing datetime objects are properly converted.
 
@@ -248,9 +363,20 @@ def test_make_raw_data_export_safe_frozenset_with_datetime() -> None:
     assert "2025-01-15T12:30:45" in result["frozenset_with_dates"]
     assert result["nested"]["frozenset_dates"][0] == "2025-01-15"
 
-    # Verify JSON serialization works
-    json_str = json.dumps(result)
-    assert json_str is not None
+
+def test_make_raw_data_export_safe_yaml_string_formatting() -> None:
+    """Apply YAML-safe string escaping and literal scalar conversion."""
+    result = make_raw_data_export_safe(
+        {
+            "expr": "${{ secrets.TOKEN }}",
+            "script": "echo start && echo done",
+        },
+        export_to_yaml=True,
+    )
+
+    assert result["expr"] == "${{secrets.TOKEN}}"
+    assert isinstance(result["script"], LiteralScalarString)
+    assert str(result["script"]) == "echo start && echo done"
 
 
 def test_make_raw_data_export_safe_frozenset_with_path() -> None:

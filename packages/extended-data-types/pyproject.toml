@@ -40,10 +40,10 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev"
-Issues = "https://github.com/extended-data-library/extended-data-types/issues"
-Source = "https://github.com/extended-data-library/extended-data-types"
-Changelog = "https://github.com/extended-data-library/extended-data-types/blob/main/packages/extended-data-types/CHANGELOG.md"
+Documentation = "https://extendeddata.dev/core/data-types/"
+Issues = "https://github.com/jbcom/extended-data-library/issues"
+Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types"
+Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/extended-data-types/CHANGELOG.md"
 
 [project.optional-dependencies]
 mcp = ["mcp>=1.0.0; python_version >= '3.10'"]
