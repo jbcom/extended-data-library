@@ -21,7 +21,7 @@ import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/compone
     pip install vendor-connectors
     ```
   </TabItem>
-  <TabItem label="Vendor Extras">
+  <TabItem label="Service Extras">
     ```bash
     pip install vendor-connectors[aws]
     pip install vendor-connectors[google]
@@ -53,16 +53,16 @@ The `crewai` extra currently resolves to `crewai[tools] >= 1.14.2rc1` because th
 
 <CardGrid>
   <Card title="Cloud Connectors" icon="seti:cloud">
-    AWS, Google Cloud, Vault, and other service APIs with consistent connector patterns.
+    Typed clients for AWS, Google Cloud, GitHub, Slack, Vault, Zoom, Anthropic, Cursor, and Meshy.
   </Card>
   <Card title="AI Tool Adapters" icon="seti:graphql">
-    LangChain and CrewAI-compatible tool wrappers built from the same connector primitives.
+    Framework-ready tools exposed from the same connector primitives through `get_tools(...)`.
   </Card>
   <Card title="MCP Servers" icon="seti:config">
-    MCP entry points for clients such as Claude Desktop where the connector surface benefits from a tool server.
+    MCP entry points where a tool server makes sense, including the Meshy workflow surface.
   </Card>
   <Card title="Typed Core" icon="seti:python">
-    Shared input handling, retries, validation, and logging on top of the rest of the monorepo primitives.
+    Shared retries, validation, logging, and input handling inherited from the rest of the monorepo.
   </Card>
 </CardGrid>
 
@@ -80,6 +80,15 @@ slack = vc.get_slack_client()
 anthropic = vc.get_anthropic_client()
 ```
 
+### Framework Tools
+
+```python
+from vendor_connectors.meshy.tools import get_tools
+
+langchain_tools = get_tools("langchain")
+crewai_tools = get_tools("crewai")
+```
+
 ### Meshy MCP
 
 ```bash
@@ -87,37 +96,17 @@ pip install vendor-connectors[meshy,mcp]
 meshy-mcp
 ```
 
-### LangChain Tools
-
-```python
-from vendor_connectors.meshy.tools import get_langchain_tools
-
-tools = get_langchain_tools()
-```
-
-### CrewAI Tools
-
-```python
-from vendor_connectors.meshy.tools import get_crewai_tools
-
-tools = get_crewai_tools()
-```
-
 ---
 
-## Connectors
+## Integration Pattern
 
-| Connector | Direct API | LangChain Tools | CrewAI Tools | MCP |
-|-----------|------------|-----------------|--------------|-----|
-| AWS | ✅ | ✅ | ✅ | — |
-| Google Cloud | ✅ | ✅ | ✅ | — |
-| GitHub | ✅ | ✅ | ✅ | — |
-| Slack | ✅ | ✅ | ✅ | — |
-| Vault | ✅ | ✅ | ✅ | — |
-| Zoom | ✅ | ✅ | ✅ | — |
-| Meshy | ✅ | ✅ | ✅ | ✅ |
-| Anthropic | ✅ | ✅ | ✅ | — |
-| Cursor | ✅ | — | — | — |
+Most connectors expose the same three layers:
+
+- Direct Python clients for application code.
+- `get_tools(framework=...)` adapters for LangChain or CrewAI.
+- MCP entry points where the connector benefits from tool-server usage.
+
+Meshy is the broadest example because it supports all three surfaces. Other connectors expose the subset that makes sense for their API shape.
 
 ---
 
