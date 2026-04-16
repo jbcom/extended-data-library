@@ -339,6 +339,14 @@ jobs:
           go-version: "1.25"
           cache-dependency-path: packages/secretssync/go.sum
 
+      - name: Assert installable Go module metadata
+        working-directory: packages/secretssync
+        run: |
+          if grep -q '^replace ' go.mod; then
+            echo "packages/secretssync/go.mod must not contain replace directives for a published installable module"
+            exit 1
+          fi
+
       - name: Run Go tests
         working-directory: packages/secretssync
         run: go test -v -race ./...
