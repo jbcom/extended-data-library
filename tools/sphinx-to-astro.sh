@@ -85,5 +85,10 @@ if [ -f "${compat_src}" ]; then
     done
 fi
 
+# Astro may cache the pre-normalized `_compat` path between local runs. Clear
+# its caches so `npm run build` sees the renamed content tree immediately.
+rm -rf "${REPO_ROOT}/docs/.astro" \
+       "${REPO_ROOT}/docs/node_modules/.astro"
+
 echo "==> Sphinx-to-Astro bridge complete"
 echo "    Generated $(find "${ASTRO_API_DIR}" -name '*.md' -type f | wc -l | tr -d ' ') markdown files"
