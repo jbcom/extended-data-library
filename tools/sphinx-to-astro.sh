@@ -76,9 +76,13 @@ compat_src="${ASTRO_API_DIR}/apidocs/vendor_connectors/vendor_connectors._compat
 compat_dst="${ASTRO_API_DIR}/apidocs/vendor_connectors/vendor_connectors.compat.md"
 if [ -f "${compat_src}" ]; then
     mv "${compat_src}" "${compat_dst}"
-    find "${ASTRO_API_DIR}" -name '*.md' -type f -exec sed -i '' \
-        -e 's/vendor_connectors\/vendor_connectors\._compat\.md/vendor_connectors\/vendor_connectors.compat.md/g' \
-        {} +
+    find "${ASTRO_API_DIR}" -name '*.md' -type f | while read -r md_file; do
+        tmp_replace_file=$(mktemp)
+        sed \
+            -e 's/vendor_connectors\/vendor_connectors\._compat\.md/vendor_connectors\/vendor_connectors.compat.md/g' \
+            "${md_file}" > "${tmp_replace_file}"
+        mv "${tmp_replace_file}" "${md_file}"
+    done
 fi
 
 echo "==> Sphinx-to-Astro bridge complete"
