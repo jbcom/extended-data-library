@@ -10,6 +10,6 @@ from directed_inputs_class.__main__ import DirectedInputsClass
 from directed_inputs_class.decorators import directed_inputs, input_config
 
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 __all__ = ["DirectedInputsClass", "directed_inputs", "input_config"]

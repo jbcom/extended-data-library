@@ -4,6 +4,13 @@
 
 <!-- version list -->
 
+## [2.1.1](https://github.com/jbcom/extended-data-library/compare/logging-v2.1.0...logging-v2.1.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* **connectors:** align exports and clean api docs warnings ([#133](https://github.com/jbcom/extended-data-library/issues/133)) ([ea125f8](https://github.com/jbcom/extended-data-library/commit/ea125f8360026c7404f750f636d41345ef682a3f))
+
 ## [2.1.0](https://github.com/jbcom/extended-data-library/compare/logging-v2.0.0...logging-v2.1.0) (2026-02-26)
 
 

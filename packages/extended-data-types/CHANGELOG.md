@@ -4,6 +4,13 @@
 
 <!-- version list -->
 
+## [6.2.2](https://github.com/jbcom/extended-data-library/compare/edt-v6.2.1...edt-v6.2.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **connectors:** align exports and clean api docs warnings ([#133](https://github.com/jbcom/extended-data-library/issues/133)) ([ea125f8](https://github.com/jbcom/extended-data-library/commit/ea125f8360026c7404f750f636d41345ef682a3f))
+
 ## [6.2.1](https://github.com/jbcom/extended-data-library/compare/edt-v6.2.0...edt-v6.2.1) (2026-04-16)
 
 

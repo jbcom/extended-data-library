@@ -7,7 +7,7 @@ configurable logging for console and file outputs, and clean exit functionality.
 from __future__ import annotations
 
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 from lifecyclelogging.logging import ExitRunError, KeyTransform, Logging
 
