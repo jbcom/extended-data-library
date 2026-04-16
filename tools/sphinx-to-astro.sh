@@ -70,5 +70,16 @@ find "${ASTRO_API_DIR}" -name '*.md' -type f | while read -r md_file; do
     fi
 done
 
+# Astro content collections reject the generated vendor_connectors._compat page
+# unless the filename is normalized away from the `._` pattern.
+compat_src="${ASTRO_API_DIR}/apidocs/vendor_connectors/vendor_connectors._compat.md"
+compat_dst="${ASTRO_API_DIR}/apidocs/vendor_connectors/vendor_connectors.compat.md"
+if [ -f "${compat_src}" ]; then
+    mv "${compat_src}" "${compat_dst}"
+    find "${ASTRO_API_DIR}" -name '*.md' -type f -exec sed -i '' \
+        -e 's/vendor_connectors\/vendor_connectors\._compat\.md/vendor_connectors\/vendor_connectors.compat.md/g' \
+        {} +
+fi
+
 echo "==> Sphinx-to-Astro bridge complete"
 echo "    Generated $(find "${ASTRO_API_DIR}" -name '*.md' -type f | wc -l | tr -d ' ') markdown files"

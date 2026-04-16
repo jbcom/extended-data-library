@@ -287,8 +287,6 @@ packages = ["src/vendor_connectors"]
 [tool.hatch.build.targets.sdist]
 exclude = [
     ".github",
-    ".cursor",
-    ".kiro",
 ]
 
 [tool.pytest.ini_options]
