@@ -36,11 +36,16 @@ pip install vendor-connectors
 ### Optional Extras
 
 ```bash
+pip install vendor-connectors[langchain]     # LangChain / LangGraph tool adapters
+pip install vendor-connectors[crewai]        # CrewAI tool adapters
+pip install vendor-connectors[meshy,mcp]     # Meshy MCP server support
 pip install vendor-connectors[webhooks]      # Meshy webhooks
-pip install vendor-connectors[meshy-crewai]  # CrewAI-specific features
-pip install vendor-connectors[meshy-mcp]     # Meshy MCP server
 pip install vendor-connectors[all]           # Everything
 ```
+
+> The `crewai` extra currently resolves to the first patched CrewAI line,
+> `1.14.2rc1+`, until upstream ships the same dependency floor in a stable
+> release.
 
 ## Quick Start
 
@@ -113,11 +118,11 @@ from vendor_connectors.meshy.mcp import run_server
 
 ## Contributing
 
-Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/CONTRIBUTING.md) for more information.
+Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/docs/development/contributing.md) for more information.
 
 ## Project Links
 
 - [**PyPI**](https://pypi.org/project/vendor-connectors/)
 - [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors)
-- [**Documentation**](https://extendeddata.dev)
+- [**Documentation**](https://extendeddata.dev/packages/vendor-connectors/)
 - [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md)

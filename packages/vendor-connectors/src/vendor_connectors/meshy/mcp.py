@@ -43,7 +43,7 @@ def _create_mcp_tools() -> list[Any]:
     try:
         from mcp.types import Tool
     except ImportError as e:
-        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy-mcp]"
+        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy,mcp]"
         raise ImportError(msg) from e
 
     # Import Meshy tool functions
@@ -263,7 +263,7 @@ def create_server():
     try:
         from mcp.server import Server
     except ImportError as e:
-        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy-mcp]"
+        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy,mcp]"
         raise ImportError(msg) from e
 
     server = Server("meshy-ai")
@@ -317,7 +317,7 @@ def run_server(server=None):
     try:
         from mcp.server.stdio import stdio_server
     except ImportError as e:
-        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy-mcp]"
+        msg = "MCP SDK not installed. Install with: pip install vendor-connectors[meshy,mcp]"
         raise ImportError(msg) from e
 
     if server is None:

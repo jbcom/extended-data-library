@@ -82,6 +82,7 @@ export default defineConfig({
         {
           label: 'Vendor Connectors',
           items: [
+            { label: 'Overview', slug: 'packages/vendor-connectors' },
             { label: 'API Reference', link: '/api/apidocs/vendor_connectors/vendor_connectors/', attrs: { class: 'api-link' } },
           ],
         },
