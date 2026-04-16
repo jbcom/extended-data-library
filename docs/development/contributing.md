@@ -10,6 +10,17 @@ cd extended-data-library
 uv sync --all-extras
 ```
 
+## GitHub CLI
+
+Use `gh` directly with your existing local authentication context. Do not
+prefix local commands with `GH_TOKEN=...`.
+
+```bash
+gh auth status
+gh pr list
+gh issue list
+```
+
 ## Required Local Checks
 
 ```bash

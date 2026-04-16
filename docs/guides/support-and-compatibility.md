@@ -10,7 +10,7 @@ versions it actively supports, and where the compatibility boundaries are.
 :::{grid-item-card} Supported runtimes
 :class-card: docs-card docs-card--feature
 
-The package targets Python `3.9`, `3.10`, `3.11`, `3.12`, `3.13`, and `3.14`.
+The package targets Python `3.10`, `3.11`, `3.12`, `3.13`, and `3.14`.
 :::
 
 :::{grid-item-card} Stable entry points
@@ -30,10 +30,9 @@ of the release bar for the documented package contract.
 
 ## Supported Python Versions
 
-`extended-data-types` is documented and tested as a Python 3.9+ library, with
+`extended-data-types` is documented and tested as a Python 3.10+ library, with
 the currently tagged support window covering:
 
-- Python 3.9
 - Python 3.10
 - Python 3.11
 - Python 3.12
@@ -106,7 +105,7 @@ cross-version spot-check, run the test suite across the supported Python range:
 
 ```bash
 export UV_LINK_MODE=copy
-for py in 3.9 3.10 3.11 3.12 3.13 3.14; do
+for py in 3.10 3.11 3.12 3.13 3.14; do
   uv run --python "$py" --extra tests pytest tests -q
 done
 ```

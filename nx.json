@@ -17,14 +17,6 @@
         "testTargetName": "test",
         "lintTargetName": "lint"
       }
-    },
-    {
-      "plugin": "@nx-go/nx-go",
-      "options": {
-        "buildTargetName": "build",
-        "testTargetName": "test",
-        "lintTargetName": "lint"
-      }
     }
   ],
   "targetDefaults": {
