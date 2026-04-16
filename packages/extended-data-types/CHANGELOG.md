@@ -4,6 +4,13 @@
 
 <!-- version list -->
 
+## [6.2.0](https://github.com/jbcom/extended-data-library/compare/edt-v6.1.0...edt-v6.2.0) (2026-04-16)
+
+
+### Features
+
+* **edt:** finish production stabilization and docs overhaul ([#114](https://github.com/jbcom/extended-data-library/issues/114)) ([b9d94b1](https://github.com/jbcom/extended-data-library/commit/b9d94b1aa0c05c17a4de5825a7fec66d79a1fb46))
+
 ## [6.1.0](https://github.com/jbcom/extended-data-library/compare/edt-v6.0.0...edt-v6.1.0) (2026-02-26)
 
 
