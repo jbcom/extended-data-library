@@ -16,7 +16,7 @@ else:
     from itertools import islice
 
     def batched(iterable, n: int) -> Iterator[tuple]:
-        """Batch an iterable into chunks of size n (Python 3.9+ compatible)."""
+        """Batch an iterable into chunks of size n for Python < 3.12."""
         it = iter(iterable)
         while batch := tuple(islice(it, n)):
             yield batch
