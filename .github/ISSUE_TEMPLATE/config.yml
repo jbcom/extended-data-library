@@ -1,12 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📚 Documentation
-    url: https://github.com/jbcom
-    about: Check the docs before filing an issue
-  # TODO: Enable org discussions after migration to jbcom organization
-  # - name: 💬 Discussions
-  #   url: https://github.com/orgs/jbcom/discussions
-  #   about: Ask questions and discuss ideas
-  - name: 💬 Discussions
-    url: https://github.com/jbcom?tab=repositories
-    about: Find repository-specific discussions in each project (org discussions coming soon)
+    url: https://extendeddata.dev
+    about: Read the package guides, examples, and API docs before filing an issue
+  - name: 🛡️ Security Policy
+    url: https://github.com/jbcom/extended-data-library/security/policy
+    about: Report vulnerabilities privately instead of opening a public issue
