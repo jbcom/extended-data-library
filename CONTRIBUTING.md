@@ -75,6 +75,11 @@ cd packages/secretssync && go test ./... && cd ../..
 - Treat runnable examples as part of the public contract.
 - Do not commit generated `.tox/`, `docs/dist/`, or other local build output.
 
+## Current Roadmap
+
+- The active repository cleanup and hardening roadmap lives in
+  `docs/plans/2026-04-16-remaining-work-prd.md`.
+
 ## Commit Conventions
 
 Use conventional commits:
