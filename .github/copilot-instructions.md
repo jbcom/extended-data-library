@@ -30,7 +30,8 @@ cd packages/secretssync && go test ./...
 
 ## GitHub CLI
 
-Use `gh` directly with the existing local authentication context.
+Use `gh` directly with the existing local authentication context. Do not wrap
+local commands with `GH_TOKEN=...`.
 
 ```bash
 gh auth status
