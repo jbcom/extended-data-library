@@ -60,6 +60,14 @@ Every Python project reinvents the same infrastructure: YAML parsing, environmen
     pip install vendor-connectors
     ```
   </Card>
+
+  <Card title="SecretSync" icon="seti:go">
+    A Go-based secret synchronization pipeline for Vault-to-cloud workflows, dry-run diffs, GitHub Actions, and multi-account automation.
+
+    ```bash
+    go install github.com/jbcom/extended-data-library/packages/secretssync/cmd/secretsync@latest
+    ```
+  </Card>
 </CardGrid>
 
 ---
@@ -185,7 +193,7 @@ Or install individually — each package works on its own.
 | [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | ![PyPI](https://img.shields.io/pypi/v/directed-inputs-class.svg) | 3.10+ |
 | [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | ![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg) | 3.10+ |
 | [vendor-connectors](https://pypi.org/project/vendor-connectors/) | ![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg) | 3.10+ |
-| [secretssync](https://github.com/jbcom/extended-data-library/tree/main/packages/secretssync) | Go binary | Go 1.25+ |
+| [secretssync](/packages/secretssync/) | Go binary | Go 1.25+ |
 
 ---
 
@@ -209,5 +217,10 @@ Or install individually — each package works on its own.
     title="Vendor Connectors"
     description="AWS, GCP, GitHub, Slack, AI APIs — with LangChain and MCP"
     href="/packages/vendor-connectors/"
+  />
+  <LinkCard
+    title="SecretSync"
+    description="Secret synchronization pipelines, GitHub Action usage, and Python integration"
+    href="/packages/secretssync/"
   />
 </CardGrid>

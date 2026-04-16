@@ -89,7 +89,8 @@ export default defineConfig({
         {
           label: 'SecretSync',
           items: [
-            { label: 'Overview', slug: 'api/secretsync' },
+            { label: 'Overview', slug: 'packages/secretssync' },
+            { label: 'Legacy Overview Route', slug: 'api/secretsync' },
           ],
         },
         {
