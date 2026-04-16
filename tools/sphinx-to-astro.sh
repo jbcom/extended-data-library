@@ -79,6 +79,7 @@ if [ -f "${compat_src}" ]; then
     find "${ASTRO_API_DIR}" -name '*.md' -type f | while read -r md_file; do
         tmp_replace_file=$(mktemp)
         sed \
+            -e 's/vendor_connectors\._compat\.md/vendor_connectors.compat.md/g' \
             -e 's/vendor_connectors\/vendor_connectors\._compat\.md/vendor_connectors\/vendor_connectors.compat.md/g' \
             "${md_file}" > "${tmp_replace_file}"
         mv "${tmp_replace_file}" "${md_file}"
