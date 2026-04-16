@@ -1,127 +1,110 @@
 # Contributing to Extended Data Library
 
-Thank you for your interest in contributing! This monorepo contains multiple packages -- please read through these guidelines to get started.
+Thanks for contributing. This repository is a small monorepo containing Python
+packages, a Go package, and a docs site. Keep changes focused and validate the
+surfaces you touch.
 
-## Prerequisites
+## Repository Shape
 
-- Python 3.10+
-- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
-- [just](https://github.com/casey/just) (optional, for task running)
-- Go 1.25+ (only if working on secretssync)
+- `packages/extended-data-types`: typed serialization, file, map, string, and
+  transformation helpers
+- `packages/lifecyclelogging`: structured logging helpers
+- `packages/directed-inputs-class`: input/config loading utilities
+- `packages/vendor-connectors`: vendor API connectors and MCP surfaces
+- `packages/secretssync`: Go-based secret synchronization pipeline
+- `docs/`: Astro/Starlight site fed by generated Sphinx API content
 
 ## Development Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/jbcom/extended-data-library.git
 cd extended-data-library
-
-# Install all dependencies (uv handles workspace resolution)
-uv sync
+uv sync --all-extras
 ```
 
-## Running Tests
+If you are working on the Astro docs site, install the Node dependencies too:
 
 ```bash
-# All Python packages via tox
-tox -e edt,logging,inputs,connectors
-
-# Single package
-tox -e edt            # extended-data-types
-tox -e logging        # lifecyclelogging
-tox -e inputs         # directed-inputs-class
-tox -e connectors     # vendor-connectors
-
-# Using just
-just test
-
-# Go (secretssync)
-cd packages/secretssync && go test ./...
+cd docs
+npm install
+cd ..
 ```
 
-## Linting and Formatting
+## GitHub CLI
+
+Use `gh` directly with your existing local authentication context. Do not wrap
+local commands with `GH_TOKEN=...`.
 
 ```bash
-# Via tox
+gh auth status
+gh pr list
+gh issue list
+```
+
+## Common Local Checks
+
+Run the checks that match the areas you changed.
+
+```bash
+# Python quality gates
 tox -e lint
+tox -e typecheck
 
-# Directly
-uvx ruff check packages/
-uvx ruff format packages/
+# Python package tests
+tox -e edt
+tox -e edt-examples
+tox -e logging
+tox -e inputs
+tox -e connectors
 
-# Using just
-just lint
+# Cross-version compatibility for extended-data-types
+tox -e py310-edt,py311-edt,py312-edt,py313-edt,py314-edt
+
+# Docs pipeline
+tox -e docs
+bash tools/sphinx-to-astro.sh
+cd docs && npm run build && cd ..
+
+# Go package
+cd packages/secretssync && go test ./... && cd ../..
 ```
 
-## Type Checking
+## Documentation Alignment
 
-```bash
-uvx mypy packages/extended-data-types/src/
-uvx mypy packages/lifecyclelogging/src/
-```
+- Keep `README.md`, package READMEs, the docs site, examples, and the
+  documented API surface aligned.
+- Treat runnable examples as part of the public contract.
+- Do not commit generated `.tox/`, `docs/dist/`, or other local build output.
 
 ## Commit Conventions
 
-All commits **must** follow [Conventional Commits](https://www.conventionalcommits.org/):
+Use conventional commits:
 
-```
-<type>(<scope>): <description>
-```
-
-### Types
-
-| Type | Description | Release |
-|------|-------------|---------|
-| `feat` | New feature | Minor bump |
-| `fix` | Bug fix | Patch bump |
-| `docs` | Documentation only | No |
-| `refactor` | Code restructuring | No |
-| `test` | Adding/fixing tests | No |
-| `chore` | Maintenance tasks | No |
-| `feat!` | Breaking change | Major bump |
-
-### Scopes
-
-Use the package scope when the change is package-specific:
-
-| Scope | Package |
-|-------|---------|
-| `edt` | extended-data-types |
-| `logging` | lifecyclelogging |
-| `inputs` | directed-inputs-class |
-| `connectors` | vendor-connectors |
-| `secretssync` | secretssync |
-
-### Examples
-
-```bash
+```text
 feat(edt): add TOML round-trip support
 fix(logging): handle empty context markers
-docs: update installation instructions
-test(inputs): add coverage for stdin JSON parsing
+docs(connectors): update MCP usage notes
+test(inputs): cover stdin JSON parsing
 ```
 
-## Pull Request Process
+Recommended scopes in this repo:
 
-1. Create a feature branch from `main` (`feat/`, `fix/`, `docs/`, etc.)
-2. Make your changes with tests
-3. Ensure CI passes locally (`tox -e lint` and `tox -e <package>`)
-4. Submit a Pull Request with a clear title using conventional commit format
-5. Address all review feedback
+- `edt`
+- `logging`
+- `inputs`
+- `connectors`
+- `secretssync`
+- `docs`
 
-## Project Structure
+## Pull Requests
 
-```
-packages/
-  extended-data-types/   Foundation utilities (Python)
-  lifecyclelogging/      Structured logging (Python)
-  directed-inputs-class/ Input handling (Python)
-  vendor-connectors/     Cloud connectors (Python)
-  secretssync/           Secret sync pipeline (Go)
-```
-
-Each Python package lives in `packages/<name>/` with its own `pyproject.toml`, `src/`, and `tests/` directories. The root `pyproject.toml` defines the uv workspace.
+1. Start from `main`.
+2. Keep the change set narrow and validate the affected surfaces locally.
+3. Update tests or examples when behavior changes.
+4. Update docs when package-facing behavior, setup, or support policy changes.
+5. Address review feedback before merging.
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the
+MIT License.

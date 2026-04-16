@@ -118,7 +118,7 @@ from vendor_connectors.meshy.mcp import run_server
 
 ## Contributing
 
-Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/docs/development/contributing.md) for more information.
+Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/CONTRIBUTING.md) for more information.
 
 ## Project Links
 
