@@ -7,7 +7,8 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Extended Data Packages
 
-The Extended Data ecosystem provides four production-ready Python packages that work together seamlessly or independently.
+The Extended Data ecosystem provides four production-ready Python packages plus
+SecretSync, a Go-based operational package for secret synchronization.
 
 <CardGrid>
   <LinkCard
@@ -30,6 +31,11 @@ The Extended Data ecosystem provides four production-ready Python packages that 
     description="Universal connectors for AWS, GCP, GitHub, Slack, AI APIs"
     href="/packages/vendor-connectors/"
   />
+  <LinkCard
+    title="SecretSync"
+    description="Go-based secret synchronization pipeline with GitHub Action and Python integration"
+    href="/packages/secretssync/"
+  />
 </CardGrid>
 
 ---
@@ -45,6 +51,9 @@ pip install extended-data-types      # Core utilities
 pip install directed-inputs-class    # Input handling
 pip install lifecyclelogging         # Logging
 pip install vendor-connectors[all]   # All vendor connectors
+
+# SecretSync (Go)
+go install github.com/jbcom/extended-data-library/packages/secretssync/cmd/secretsync@latest
 ```
 
 ---
@@ -124,6 +133,7 @@ print(encode_yaml(config))
 | [directed-inputs-class](https://pypi.org/project/directed-inputs-class/) | ![PyPI](https://img.shields.io/pypi/v/directed-inputs-class.svg) | 3.10+ | MIT |
 | [lifecyclelogging](https://pypi.org/project/lifecyclelogging/) | ![PyPI](https://img.shields.io/pypi/v/lifecyclelogging.svg) | 3.10+ | MIT |
 | [vendor-connectors](https://pypi.org/project/vendor-connectors/) | ![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg) | 3.10+ | MIT |
+| [SecretSync](https://github.com/jbcom/extended-data-library/tree/main/packages/secretssync) | GitHub Release | Go 1.25+ | MIT |
 
 ---
 
