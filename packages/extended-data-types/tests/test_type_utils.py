@@ -32,6 +32,7 @@ from extended_data_types.type_utils import (
     strtotime,
     typeof,
 )
+from extended_data_types.yaml_utils import YamlPairs, YamlTagged
 
 
 # Constants for expected test values
@@ -183,6 +184,19 @@ def test_strtobool(strtobool_data: tuple[str, bool | None]) -> None:
             strtobool(val, raise_on_error=True)
 
 
+def test_strtobool_passthrough_for_bool_and_none() -> None:
+    """Return boolean and None inputs unchanged."""
+    assert strtobool(True) is True
+    assert strtobool(False) is False
+    assert strtobool(None) is None
+
+
+def test_strtobool_rejects_non_strings_when_requested() -> None:
+    """Reject unsupported non-string inputs when raise_on_error is enabled."""
+    with pytest.raises(ConversionError, match=r"Invalid <class 'bool'> value: 123"):
+        strtobool(123, raise_on_error=True)
+
+
 def test_strtofloat(strtofloat_data: tuple[str, float | None]) -> None:
     """Tests converting a string to a float value.
 
@@ -199,6 +213,20 @@ def test_strtofloat(strtofloat_data: tuple[str, float | None]) -> None:
             strtofloat(val, raise_on_error=True)
 
 
+def test_strtofloat_wraps_float_value_errors(mocker) -> None:
+    """Surface float conversion failures as ConversionError when requested."""
+    mocker.patch("builtins.float", side_effect=ValueError("boom"))
+
+    with pytest.raises(ConversionError, match=r"Invalid .* value: '3.14'"):
+        strtofloat("3.14", raise_on_error=True)
+
+
+def test_strtofloat_swallows_float_value_errors_when_not_requested(mocker) -> None:
+    """Return None when float conversion fails and raise_on_error is disabled."""
+    mocker.patch("builtins.float", side_effect=ValueError("boom"))
+    assert strtofloat("3.14") is None
+
+
 def test_strtoint(strtoint_data: tuple[str, int | None]) -> None:
     """Tests converting a string to an integer value.
 
@@ -213,6 +241,35 @@ def test_strtoint(strtoint_data: tuple[str, int | None]) -> None:
     if expected is None and val == "invalid":
         with pytest.raises(ConversionError, match=r"Invalid <class 'int'> value: 'invalid'"):
             strtoint(val, raise_on_error=True)
+
+
+def test_strtoint_wraps_nested_conversion_errors(mocker) -> None:
+    """Map nested float conversion failures to integer conversion failures."""
+    mocker.patch(
+        "extended_data_types.type_utils.strtofloat",
+        side_effect=ConversionError(float, "3.14"),
+    )
+
+    with pytest.raises(ConversionError, match=r"Invalid <class 'int'> value: '3.14'"):
+        strtoint("3.14", raise_on_error=True)
+
+
+def test_strtoint_swallows_nested_conversion_errors_when_not_requested(mocker) -> None:
+    """Return None when nested conversion fails and raise_on_error is disabled."""
+    mocker.patch(
+        "extended_data_types.type_utils.strtofloat",
+        side_effect=ConversionError(float, "3.14"),
+    )
+
+    assert strtoint("3.14") is None
+
+
+def test_strtoint_raises_when_nested_conversion_returns_none(mocker) -> None:
+    """Raise an integer conversion error when nested conversion returns no value."""
+    mocker.patch("extended_data_types.type_utils.strtofloat", return_value=None)
+
+    with pytest.raises(ConversionError, match=r"Invalid <class 'int'> value: '3.14'"):
+        strtoint("3.14", raise_on_error=True)
 
 
 def test_strtopath(
@@ -277,6 +334,13 @@ def test_strtodate(strtodate_data: tuple[str, datetime.date | None]) -> None:
             strtodate(val, raise_on_error=True)
 
 
+def test_strtodate_invalid_matching_pattern_raises() -> None:
+    """Reject impossible calendar dates that still match the date pattern."""
+    assert strtodate("2023-13-40") is None
+    with pytest.raises(ConversionError, match=r"Invalid <class 'datetime.date'> value: '2023-13-40'"):
+        strtodate("2023-13-40", raise_on_error=True)
+
+
 def test_strtodatetime(
     strtodatetime_data: tuple[str, datetime.datetime | None],
 ) -> None:
@@ -298,6 +362,21 @@ def test_strtodatetime(
             strtodatetime(val, raise_on_error=True)
 
 
+def test_strtodatetime_invalid_matching_pattern_raises() -> None:
+    """Reject impossible datetimes that still match the datetime pattern."""
+    invalid_value = "2023-13-05T25:61:00"
+    assert strtodatetime(invalid_value) is None
+    with pytest.raises(ConversionError, match=r"Invalid <class 'datetime.datetime'> value: '2023-13-05T25:61:00'"):
+        strtodatetime(invalid_value, raise_on_error=True)
+
+
+def test_strtodatetime_preserves_explicit_timezone() -> None:
+    """Keep explicit timezone offsets instead of forcing UTC."""
+    result = strtodatetime("2023-09-05T12:30:00+02:00")
+
+    assert result == datetime.datetime(2023, 9, 5, 12, 30, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=2)))
+
+
 def test_strtotime(strtotime_data: tuple[str, datetime.time | None]) -> None:
     """Tests converting a string to a time value.
 
@@ -315,6 +394,14 @@ def test_strtotime(strtotime_data: tuple[str, datetime.time | None]) -> None:
             match=r"Invalid <class 'datetime.time'> value: 'invalid-time'",
         ):
             strtotime(val, raise_on_error=True)
+
+
+def test_strtotime_invalid_matching_pattern_raises() -> None:
+    """Reject impossible times that still match the time pattern."""
+    invalid_value = "25:61:00"
+    assert strtotime(invalid_value) is None
+    with pytest.raises(ConversionError, match=r"Invalid <class 'datetime.time'> value: '25:61:00'"):
+        strtotime(invalid_value, raise_on_error=True)
 
 
 # Test for get_default_value_for_type function
@@ -392,6 +479,25 @@ def test_convert_special_type(obj: Any, expected: Any) -> None:
     assert convert_special_type(obj) == expected
 
 
+def test_convert_special_type_handles_yaml_wrappers_and_custom_objects() -> None:
+    """Convert YAML wrapper types and unknown objects to simple forms."""
+
+    class CustomObject:
+        def __str__(self) -> str:
+            return "custom-object"
+
+    assert convert_special_type(YamlTagged("!Ref", "BucketName")) == "BucketName"
+    assert convert_special_type(YamlTagged("!Ref", {"path": Path("/tmp/config.yml")})) == {"path": "/tmp/config.yml"}
+    assert convert_special_type(YamlPairs([("key", "value")])) == [["key", "value"]]
+    assert convert_special_type(CustomObject()) == "custom-object"
+
+
+def test_convert_special_type_handles_mappings_and_sequences_directly() -> None:
+    """Normalize container inputs passed directly to convert_special_type."""
+    assert convert_special_type({"path": Path("/tmp/config.yml")}) == {"path": "/tmp/config.yml"}
+    assert convert_special_type((Path("/tmp/a"), datetime.date(2025, 1, 15))) == ["/tmp/a", "2025-01-15"]
+
+
 # Test for convert_special_types function
 @pytest.mark.parametrize(
     ("obj", "expected"),
@@ -416,6 +522,21 @@ def test_convert_special_types(obj: Any, expected: Any) -> None:
     assert convert_special_types(obj) == expected
 
 
+def test_convert_special_types_handles_tuple_frozenset_and_yaml_pairs() -> None:
+    """Normalize composite container types consistently across serializers."""
+    result = convert_special_types(
+        {
+            "tuple": (Path("/tmp/a"), datetime.date(2025, 1, 15)),
+            "frozenset": frozenset([1, 2]),
+            "pairs": YamlPairs([("path", Path("/tmp/b"))]),
+        }
+    )
+
+    assert result["tuple"] == ["/tmp/a", "2025-01-15"]
+    assert sorted(result["frozenset"]) == [1, 2]
+    assert result["pairs"] == [["path", "/tmp/b"]]
+
+
 @pytest.mark.parametrize(
     ("obj", "expected"),
     [
@@ -424,6 +545,7 @@ def test_convert_special_types(obj: Any, expected: Any) -> None:
             "2023-09-05T12:30:00",
             datetime.datetime(2023, 9, 5, 12, 30, tzinfo=datetime.timezone.utc),
         ),  # Datetime string to datetime.datetime
+        ("12:30:00", datetime.time(12, 30, 0)),  # Time string to datetime.time
         ("/some/path", Path("/some/path")),  # Path string to Path
         ("simple string", "simple string"),  # Simple string remains unchanged
         ("123", 123),  # Numeric string to integer
@@ -437,6 +559,31 @@ def test_convert_special_types(obj: Any, expected: Any) -> None:
 def test_reconstruct_special_type(obj: str, expected: Any) -> None:
     """Tests reconstruction of strings back into their original special types."""
     assert reconstruct_special_type(obj, fail_silently=False) == expected
+
+
+@pytest.mark.parametrize(
+    ("obj", "expected"),
+    [
+        ("a: 1\n", {"a": 1}),
+        ('{"a":1}', {"a": 1}),
+    ],
+)
+def test_reconstruct_special_type_decodes_yaml_and_json(obj: str, expected: Any) -> None:
+    """Reconstruct YAML and JSON string documents into structured data."""
+    assert reconstruct_special_type(obj, fail_silently=False) == expected
+
+
+@pytest.mark.parametrize("obj", ["a: [1\n", '{"a":1,}'])
+def test_reconstruct_special_type_raises_on_invalid_structured_data(obj: str) -> None:
+    """Raise ConversionError when malformed YAML or JSON decoding fails."""
+    with pytest.raises(ConversionError):
+        reconstruct_special_type(obj, fail_silently=False)
+
+
+@pytest.mark.parametrize("obj", ["a: [1\n", '{"a":1,}'])
+def test_reconstruct_special_type_fails_silently_for_invalid_structured_data(obj: str) -> None:
+    """Return the original text when malformed structured data is allowed to fail silently."""
+    assert reconstruct_special_type(obj, fail_silently=True) == obj
 
 
 # Test for reconstruct_special_types function
@@ -471,6 +618,26 @@ def test_reconstruct_special_type(obj: str, expected: Any) -> None:
 def test_reconstruct_special_types(obj: Any, expected: Any) -> None:
     """Tests reconstruction of nested structures back into their original types."""
     assert reconstruct_special_types(obj, fail_silently=False) == expected
+
+
+def test_reconstruct_special_types_handles_sets() -> None:
+    """Reconstruct values contained in sets."""
+    result = reconstruct_special_types({"2023-09-05", "true"}, fail_silently=False)
+    assert result == {datetime.date(2023, 9, 5), True}
+
+
+def test_reconstruct_special_types_handles_tuples_and_frozensets() -> None:
+    """Reconstruct values inside immutable composite containers."""
+    tuple_result = reconstruct_special_types(("2023-09-05", "true"), fail_silently=False)
+    frozenset_result = reconstruct_special_types(frozenset(["2023-09-05", "true"]), fail_silently=False)
+
+    assert tuple_result == (datetime.date(2023, 9, 5), True)
+    assert frozenset_result == frozenset([datetime.date(2023, 9, 5), True])
+
+
+def test_reconstruct_special_types_leaves_non_container_values_alone() -> None:
+    """Pass through values that do not need recursive reconstruction."""
+    assert reconstruct_special_types(123, fail_silently=False) == 123
 
 
 # Test for reconstruct_special_type with fail_silently=True
@@ -535,6 +702,19 @@ class TestMakeHashable:
         expected_nested = frozenset([("nested", "value")])
         expected_list = (1, 2, expected_nested)
         assert result == frozenset([("key", expected_list)])
+
+    def test_dict_with_mixed_keys_sorts_stably(self) -> None:
+        """Mixed key types should still normalize without raising TypeError."""
+        result = make_hashable({Path("/tmp/a"): "path", "name": "value"})
+        assert isinstance(result, frozenset)
+        assert (Path("/tmp/a"), "path") not in result
+
+    def test_cyclic_list_uses_cycle_marker(self) -> None:
+        """Self-referential lists should normalize without RecursionError."""
+        cyclic: list[object] = []
+        cyclic.append(cyclic)
+
+        assert make_hashable(cyclic) == (("__cycle__", "list"),)
 
     def test_result_is_hashable(self) -> None:
         """Test that the result can be used as a dict key."""

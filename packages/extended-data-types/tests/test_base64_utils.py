@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import base64
 
+import pytest
+
 from extended_data_types.base64_utils import base64_decode, base64_encode
 from extended_data_types.export_utils import wrap_raw_data_for_export
 
@@ -128,10 +130,10 @@ def test_base64_decode_string() -> None:
     """Tests Base64 decoding of a standard encoded string.
 
     Asserts:
-        The result of base64_decode matches the expected decoded string.
+        The result of base64_decode matches the expected decoded bytes.
     """
     encoded_data = "dGVzdCBkYXRh"
-    expected_decoded_data = "test data"
+    expected_decoded_data = b"test data"
     result = base64_decode(encoded_data, unwrap_raw_data=False)
     assert result == expected_decoded_data, f"Expected {expected_decoded_data}, but got {result}."
 
@@ -140,10 +142,10 @@ def test_base64_decode_bytes() -> None:
     """Tests Base64 decoding of bytes data.
 
     Asserts:
-        The result of base64_decode matches the expected decoded string.
+        The result of base64_decode matches the expected decoded bytes.
     """
     encoded_data = "dGVzdCBkYXRh"
-    expected_decoded_data = "test data"
+    expected_decoded_data = b"test data"
     result = base64_decode(encoded_data, unwrap_raw_data=False)
     assert result == expected_decoded_data, f"Expected {expected_decoded_data}, but got {result}."
 
@@ -159,3 +161,26 @@ def test_base64_decode_with_unwrap() -> None:
     encoded_data = base64.b64encode(wrapped_data.encode("utf-8")).decode("utf-8")
     result = base64_decode(encoded_data, unwrap_raw_data=True)
     assert result == raw_data, f"Expected {raw_data}, but got {result}."
+
+
+def test_base64_decode_with_raw_unwrap() -> None:
+    """Raw unwrap should return the decoded string without parser coercion."""
+    encoded_data = base64.b64encode(b"plain text").decode("utf-8")
+    result = base64_decode(encoded_data, unwrap_raw_data=True, encoding="raw")
+    assert result == "plain text"
+
+
+def test_base64_decode_with_tf_alias_unwrap() -> None:
+    """Terraform aliases should unwrap through the HCL decoder."""
+    hcl_data = 'locals { region = "us-east-1" }'
+    encoded_data = base64.b64encode(hcl_data.encode("utf-8")).decode("utf-8")
+    result = base64_decode(encoded_data, unwrap_raw_data=True, encoding="tf")
+    assert result == {"locals": [{"region": "us-east-1"}]}
+
+
+def test_base64_decode_rejects_non_utf8_when_unwrapping() -> None:
+    """Raise a clear error when wrapped decoding requires non-text bytes to be parsed."""
+    encoded_data = base64.b64encode(b"\xff\xfe").decode("utf-8")
+
+    with pytest.raises(ValueError, match="not valid UTF-8 text"):
+        base64_decode(encoded_data, unwrap_raw_data=True)

@@ -178,10 +178,13 @@ def test_to_fraction() -> None:
 
     # Test with precision
     assert to_fraction(0.3333, precision=2) == "33/100"
+    assert to_fraction(2.0, mixed=True) == "2"
 
     # Test invalid input
     with pytest.raises(ValueError):
         to_fraction(float("inf"))
+    with pytest.raises(TypeError):
+        to_fraction("0.5")  # type: ignore[arg-type]
 
 
 def test_from_fraction() -> None:

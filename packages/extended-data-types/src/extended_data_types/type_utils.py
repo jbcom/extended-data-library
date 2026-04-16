@@ -343,9 +343,13 @@ def typeof(item: Any, primitive_only: bool = False) -> type:
 def convert_special_type(obj: Any) -> Any:
     """Converts a single special type to a simpler form."""
     if isinstance(obj, YamlTagged):
-        obj = obj.__wrapped__
-    elif isinstance(obj, YamlPairs):
-        obj = list(obj)
+        return convert_special_types(obj.__wrapped__)
+    if isinstance(obj, YamlPairs):
+        return [convert_special_types(list(pair)) for pair in obj]
+    if isinstance(obj, Mapping):
+        return {k: convert_special_types(v) for k, v in obj.items()}
+    if isinstance(obj, (set, list, tuple, frozenset)):
+        return [convert_special_types(v) for v in obj]
 
     if isinstance(obj, (datetime.date, datetime.datetime)):
         return removesuffix(obj.isoformat(), "+00:00")
@@ -359,9 +363,13 @@ def convert_special_type(obj: Any) -> Any:
 
 def convert_special_types(obj: Any) -> Any:
     """Converts an object and its contained objects of special types to simpler forms."""
+    if isinstance(obj, YamlTagged):
+        return convert_special_types(obj.__wrapped__)
+    if isinstance(obj, YamlPairs):
+        return [convert_special_types(list(pair)) for pair in obj]
     if isinstance(obj, Mapping):
         return {k: convert_special_types(v) for k, v in obj.items()}
-    if isinstance(obj, (set, list)):
+    if isinstance(obj, (set, list, tuple, frozenset)):
         return [convert_special_types(v) for v in obj]
 
     return convert_special_type(obj)
@@ -451,12 +459,16 @@ def reconstruct_special_types(obj: Any, fail_silently: bool = False) -> Any:
         return {k: reconstruct_special_types(v, fail_silently=fail_silently) for k, v in obj.items()}
     if isinstance(obj, list):
         return [reconstruct_special_types(v, fail_silently=fail_silently) for v in obj]
+    if isinstance(obj, tuple):
+        return tuple(reconstruct_special_types(v, fail_silently=fail_silently) for v in obj)
     if isinstance(obj, set):
         return {reconstruct_special_types(v, fail_silently=fail_silently) for v in obj}
+    if isinstance(obj, frozenset):
+        return frozenset(reconstruct_special_types(v, fail_silently=fail_silently) for v in obj)
     return obj
 
 
-def make_hashable(obj: Any) -> Any:
+def make_hashable(obj: Any, _memo: set[int] | None = None) -> Any:
     """Convert an object to a hashable type for use in cache keys or sets.
 
     This function recursively converts mutable types (dicts, lists) to their
@@ -481,9 +493,25 @@ def make_hashable(obj: Any) -> Any:
     """
     if isinstance(obj, (str, int, float, bool, type(None))):
         return obj
-    if isinstance(obj, (list, tuple)):
-        return tuple(make_hashable(item) for item in obj)
-    if isinstance(obj, dict):
-        return frozenset((k, make_hashable(v)) for k, v in sorted(obj.items()))
+
+    memo = _memo if _memo is not None else set()
+    if isinstance(obj, (list, tuple, Mapping, set, frozenset)):
+        obj_id = id(obj)
+        if obj_id in memo:
+            return ("__cycle__", type(obj).__name__)
+
+        memo.add(obj_id)
+        try:
+            if isinstance(obj, (list, tuple)):
+                return tuple(make_hashable(item, _memo=memo) for item in obj)
+            if isinstance(obj, Mapping):
+                normalized_items = [
+                    (make_hashable(key, _memo=memo), make_hashable(value, _memo=memo)) for key, value in obj.items()
+                ]
+                return frozenset(sorted(normalized_items, key=lambda item: repr(item[0])))
+            return frozenset(make_hashable(item, _memo=memo) for item in obj)
+        finally:
+            memo.remove(obj_id)
+
     # For other types, convert to string
     return str(obj)

@@ -1,11 +1,13 @@
 ---
 title: Extended Data Types
-description: Supercharge your Python data types with serialization, transformations, and utilities
+description: Typed utilities for serialization, repository-aware file workflows, YAML and HCL interoperability, and transformation pipelines
 ---
 
 import { Tabs, TabItem, Aside, Card, CardGrid, Code } from '@astrojs/starlight/components';
 
-**Extended Data Types** (`extended-data-types`) is the core utility library providing enhanced Python data type operations.
+**Extended Data Types** (`extended-data-types`) is the core utility library for
+serialization, filesystem-aware workflows, transformation helpers, and typed
+data normalization inside larger automation systems.
 
 ```bash
 pip install extended-data-types
@@ -14,6 +16,22 @@ pip install extended-data-types
 [![PyPI](https://img.shields.io/pypi/v/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
 [![Python](https://img.shields.io/pypi/pyversions/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
 [![CI](https://github.com/jbcom/extended-data-library/workflows/CI/badge.svg)](https://github.com/jbcom/extended-data-library/actions)
+
+---
+
+<CardGrid>
+  <Card title="Supported runtimes" icon="seti:python">
+    Python 3.10 through 3.14.
+  </Card>
+  <Card title="Public API model" icon="seti:config">
+    Start with `extended_data_types`, then move to the namespaced
+    transformation modules when you need the richer surfaces directly.
+  </Card>
+  <Card title="Workflow-ready design" icon="seti:terminal">
+    Explicit read/decode/write boundaries and plain-data HCL support make the
+    package predictable inside larger automation systems.
+  </Card>
+</CardGrid>
 
 ---
 
@@ -82,7 +100,7 @@ assert decoded == data
 
 ### TOML
 
-Python 3.11+ compatible TOML handling:
+TOML handling for application metadata and configuration documents:
 
 ```python
 from extended_data_types import encode_toml, decode_toml
@@ -106,6 +124,30 @@ decoded = decode_toml(toml_str)
 assert decoded == data
 ```
 
+### HCL
+
+Terraform-style HCL for plain mappings, scalars, lists, and block lists:
+
+```python
+from extended_data_types import decode_hcl2, encode_hcl2
+
+terraform = {
+    "locals": [{"region": "us-east-1"}],
+    "resource": [
+        {
+            "aws_s3_bucket": {
+                "logs": {"bucket": "my-logs-bucket", "acl": "private"},
+            },
+        },
+    ],
+}
+
+hcl_text = encode_hcl2(terraform)
+round_tripped = decode_hcl2(hcl_text)
+
+assert round_tripped == terraform
+```
+
 ### Base64
 
 Encoding and decoding with optional data wrapping:
@@ -126,6 +168,27 @@ wrapped_encoded = base64_encode(text, wrap_raw_data=True)
 wrapped_decoded = base64_decode(wrapped_encoded, unwrap_raw_data=True)
 assert wrapped_decoded == text
 ```
+
+---
+
+## File Workflows
+
+The package is designed so file I/O and decoding stay explicit:
+
+```python
+from extended_data_types import decode_file, read_file, write_file
+
+write_file("settings.yaml", {"debug": True}, tld=".")
+content = read_file("settings.yaml", tld=".")
+settings = decode_file(content, file_path="settings.yaml")
+```
+
+- `read_file()` reads bytes or text
+- `decode_file()` decodes already-read content
+- `write_file()` selects the matching export path from the output suffix
+
+That boundary is deliberate. It keeps local files, remote payloads, and larger
+automation pipelines easier to reason about.
 
 ---
 

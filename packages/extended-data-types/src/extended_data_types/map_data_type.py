@@ -12,7 +12,7 @@ from typing import Any, TypeVar
 
 import inflection
 
-from deepmerge import Merger  # type: ignore[attr-defined]
+from deepmerge.merger import Merger
 from sortedcontainers import SortedDict
 
 from extended_data_types.type_utils import convert_special_types
@@ -124,18 +124,19 @@ def deduplicate_map(m: Mapping[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The deduplicated map.
     """
-    deduplicated_map: dict[str, Any] = convert_special_types(m)
+    deduplicated_map: dict[str, Any] = {}
 
     for k, v in m.items():
         if isinstance(v, list):
+            converted_list = convert_special_types(v)
             # Try using dict.fromkeys for hashable elements (more efficient)
             # Fall back to manual deduplication for unhashable elements
             try:
-                deduplicated_map[k] = list(dict.fromkeys(v))
+                deduplicated_map[k] = list(dict.fromkeys(converted_list))
             except TypeError:
                 # Handle unhashable elements (e.g., dicts, lists) with manual deduplication
                 deduplicated_list = []
-                for elem in v:
+                for elem in converted_list:
                     if elem not in deduplicated_list:
                         deduplicated_list.append(elem)
                 deduplicated_map[k] = deduplicated_list
@@ -145,8 +146,7 @@ def deduplicate_map(m: Mapping[str, Any]) -> dict[str, Any]:
             deduplicated_map[k] = deduplicate_map(v)
             continue
 
-        if k not in deduplicated_map:
-            deduplicated_map[k] = v
+        deduplicated_map[k] = convert_special_types(v)
 
     return deduplicated_map
 
@@ -270,6 +270,28 @@ class SortedDefaultDict(defaultdict[KT, VT], SortedDict[KT, VT]):  # type: ignor
         """
         defaultdict.__init__(self, default_factory)
         SortedDict.__init__(self)
+
+    def __missing__(self, key: KT) -> VT:
+        """Create and store a default value for missing keys.
+
+        SortedDict does not provide defaultdict-style missing-key behavior, and
+        relying on multiple-inheritance dispatch has proven brittle across
+        Python versions. Handle the default-factory contract explicitly so the
+        semantics remain stable on every supported interpreter.
+        """
+        if self.default_factory is None:
+            raise KeyError(key)
+
+        value = self.default_factory()
+        self[key] = value
+        return value
+
+    def __getitem__(self, key: KT) -> VT:
+        """Return the existing value or create one through the default factory."""
+        try:
+            return SortedDict.__getitem__(self, key)
+        except KeyError:
+            return self.__missing__(key)
 
 
 def get_default_dict(

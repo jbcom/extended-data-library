@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from extended_data_types.string_transformations import (
     humanize,
     ordinalize,
@@ -29,6 +31,7 @@ def test_singularize() -> None:
     assert singularize("children") == "child"
     assert singularize("people") == "person"
     assert singularize("sheep") == "sheep"
+    assert singularize("criteria") == "criterion"
 
 
 def test_to_snake_case() -> None:
@@ -85,3 +88,9 @@ def test_ordinalize() -> None:
     assert ordinalize(11) == "11th"
     assert ordinalize(21) == "21st"
     assert ordinalize("42") == "42nd"
+
+
+def test_ordinalize_rejects_non_numeric_values() -> None:
+    """Reject non-numeric ordinal inputs."""
+    with pytest.raises(ValueError, match="ordinalize expects a numeric value"):
+        ordinalize("forty-two")

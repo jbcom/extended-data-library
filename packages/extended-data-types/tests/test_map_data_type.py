@@ -30,13 +30,19 @@ Functions:
 
 from __future__ import annotations
 
+import datetime
+
 from collections import defaultdict
+from pathlib import Path
 
 import pytest
 
 from extended_data_types.map_data_type import (
+    SortedDefaultDict,
     all_values_from_map,
+    create_merger,
     deduplicate_map,
+    deep_merge,
     filter_map,
     first_non_empty_value_from_map,
     flatten_map,
@@ -212,6 +218,33 @@ def test_first_non_empty_value_from_map(test_map: dict, test_keys: list[str]) ->
     assert result == "value2"
 
 
+def test_first_non_empty_value_from_map_returns_none_for_falsy_values() -> None:
+    """Return None when candidate keys are missing or only contain falsy values."""
+    test_map = {"empty": "", "zero": 0, "false": False}
+    assert first_non_empty_value_from_map(test_map, "empty", "zero", "false", "missing") is None
+
+
+def test_deep_merge_merges_nested_dicts_lists_and_sets() -> None:
+    """Merge nested structures using the default strategies."""
+    result = deep_merge(
+        {},
+        {"config": {"enabled": True}, "items": [1], "tags": {"a"}},
+        {"config": {"threshold": 2}, "items": [2], "tags": {"b"}},
+    )
+
+    assert result == {
+        "config": {"enabled": True, "threshold": 2},
+        "items": [1, 2],
+        "tags": {"a", "b"},
+    }
+
+
+def test_create_merger_can_override_list_values() -> None:
+    """Create custom mergers with alternate strategies."""
+    merger = create_merger(list_strategy="override")
+    assert merger.merge({"items": [1]}, {"items": [2]}) == {"items": [2]}
+
+
 def test_deduplicate_map(duplicated_map: dict) -> None:
     """Tests deduplication of map values.
 
@@ -226,6 +259,21 @@ def test_deduplicate_map(duplicated_map: dict) -> None:
         "key1": ["value1", "value2"],
         "key2": {"subkey1": "value1", "subkey2": "value2"},
         "key3": "value3",
+    }
+
+
+def test_deduplicate_map_converts_special_types_inside_lists() -> None:
+    """Keep deduplicated list values serialization-safe after conversion."""
+    result = deduplicate_map(
+        {
+            "paths": [Path("/tmp/a"), Path("/tmp/a")],
+            "dates": [datetime.date(2025, 1, 15), datetime.date(2025, 1, 15)],
+        }
+    )
+
+    assert result == {
+        "paths": ["/tmp/a"],
+        "dates": ["2025-01-15"],
     }
 
 
@@ -300,6 +348,11 @@ def test_zipmap(a_list: list[str], b_list: list[str], zipmap_result: dict) -> No
     """
     result = zipmap(a_list, b_list)
     assert result == zipmap_result
+
+
+def test_zipmap_stops_when_second_list_is_shorter() -> None:
+    """Stop zipping once the value list is exhausted."""
+    assert zipmap(["a", "b", "c"], ["1"]) == {"a": "1"}
 
 
 def test_get_default_dict() -> None:
@@ -410,6 +463,17 @@ def test_get_default_dict_invalid_levels() -> None:
         get_default_dict(levels=0)
 
 
+def test_sorted_default_dict_creates_defaults_and_keeps_keys_sorted() -> None:
+    """Accessing missing keys should create values while preserving sort order."""
+    result = SortedDefaultDict(list)
+    result["c"].append(3)
+    result["a"].append(1)
+    result["b"].append(2)
+
+    assert list(result.keys()) == ["a", "b", "c"]
+    assert result["a"] == [1]
+
+
 def test_unhump_map(camel_case_map: dict) -> None:
     """Tests converting camelCase keys to snake_case.
 
@@ -424,6 +488,23 @@ def test_unhump_map(camel_case_map: dict) -> None:
         "camel_case_key": "value1",
         "another_camel_case": {"nested_camel_case_key": "nested_value1"},
         "without_prefix": "value2",
+    }
+
+
+def test_unhump_map_drops_keys_without_prefix() -> None:
+    """Optionally discard keys that do not match the required prefix."""
+    result = unhump_map(
+        {
+            "prefixName": "value1",
+            "prefixNested": {"prefixInner": "value2", "other": "ignored"},
+            "otherName": "ignored",
+        },
+        drop_without_prefix="prefix",
+    )
+
+    assert result == {
+        "prefix_name": "value1",
+        "prefix_nested": {"prefix_inner": "value2"},
     }
 
 
@@ -445,3 +526,8 @@ def test_filter_map(filter_map_data: dict, allowlist: list[str], denylist: list[
     )
     assert filtered == {"allowed1": "value1", "allowed2": "value2"}
     assert remaining == {"denied1": "value3", "denied2": "value4"}
+
+
+def test_filter_map_handles_none_input_and_default_lists() -> None:
+    """Default None inputs to empty mappings and lists."""
+    assert filter_map(None) == ({}, {})

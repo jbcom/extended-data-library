@@ -31,7 +31,7 @@ from extended_data_types.file_data_type import (
     resolve_local_path,
     write_file,
 )
-from extended_data_types.hcl2_utils import decode_hcl2
+from extended_data_types.hcl2_utils import decode_hcl2, encode_hcl2
 from extended_data_types.import_utils import unwrap_raw_data_from_import
 from extended_data_types.json_utils import decode_json, encode_json
 from extended_data_types.list_data_type import filter_list, flatten_list
@@ -125,7 +125,6 @@ __all__ = [
     "DevelopmentIntegration",
     "EcosystemPackageDiscovery",
     "EcosystemStatusMonitor",
-    # Core Data Types and Utilities
     "FilePath",
     "ReleaseCoordinator",
     "SortedDefaultDict",
@@ -150,6 +149,7 @@ __all__ = [
     "deduplicate_map",
     "deep_merge",
     "delete_file",
+    "encode_hcl2",
     "encode_json",
     "encode_toml",
     "encode_yaml",
@@ -173,7 +173,6 @@ __all__ = [
     "get_repository_name",
     "get_tld",
     "get_unique_signature",
-    # String transformation aliases
     "humanize",
     "is_non_empty_match",
     "is_nothing",

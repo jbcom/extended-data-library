@@ -25,6 +25,8 @@ def test_to_roman() -> None:
     assert to_roman(3999) == "MMMCMXCIX"
 
     # Test invalid input
+    with pytest.raises(TypeError):
+        to_roman("42")  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         to_roman(0)
     with pytest.raises(ValueError):
@@ -65,6 +67,9 @@ def test_number_to_words_invalid_language() -> None:
     """Unsupported languages should raise a ValueError."""
     with pytest.raises(ValueError):
         number_to_words(1, lang="zz")
+    assert number_to_words(1, lang="en_US") == "one"
+    with pytest.raises(ValueError, match=r"Language code must be a non-empty string\."):
+        number_to_words(1, lang=" ")
 
 
 def test_number_to_ordinal() -> None:
@@ -103,6 +108,14 @@ def test_number_to_currency_invalid_currency_code() -> None:
     """Unknown currency codes should raise a ValueError."""
     with pytest.raises(ValueError):
         number_to_currency(1.0, currency="zzz")
+    with pytest.raises(ValueError, match=r"Currency code must be a non-empty string\."):
+        number_to_currency(1.0, currency="")
+
+
+def test_number_to_currency_rejects_languages_without_currency_forms() -> None:
+    """Raise a clear error when num2words lacks currency data for a language."""
+    with pytest.raises(ValueError, match="does not define currency conversions"):
+        number_to_currency(1.0, lang="tr")
 
 
 def test_number_to_currency_case_insensitive_currency() -> None:

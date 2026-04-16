@@ -36,6 +36,7 @@ CATEGORIES: dict[str, list[str]] = {
         "decode_json",
         "encode_toml",
         "decode_toml",
+        "encode_hcl2",
         "decode_hcl2",
         "base64_encode",
         "base64_decode",

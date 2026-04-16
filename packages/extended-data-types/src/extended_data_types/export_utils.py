@@ -1,8 +1,4 @@
-"""This module provides utilities for exporting raw data in various formats.
-
-It includes functions to make raw data export-safe and to wrap raw data for export
-with optional encoding formats such as YAML, JSON, or TOML.
-"""
+"""This module provides utilities for exporting raw data in various formats."""
 
 from __future__ import annotations
 
@@ -12,11 +8,15 @@ import pathlib
 from collections.abc import Mapping
 from typing import Any
 
+from extended_data_types.hcl2_utils import encode_hcl2
 from extended_data_types.json_utils import encode_json
+from extended_data_types.serialization_utils import normalize_data_encoding
 from extended_data_types.toml_utils import encode_toml
 from extended_data_types.type_utils import convert_special_types, strtobool
 from extended_data_types.yaml_utils import (
     LiteralScalarString,
+    YamlPairs,
+    YamlTagged,
     encode_yaml,
     is_yaml_data,
 )
@@ -40,20 +40,22 @@ def wrap_raw_data_for_export(
     Raises:
         ValueError: If an invalid or unsupported encoding is provided.
     """
-    # Convert special types in the raw data to simpler forms
-    raw_data = convert_special_types(raw_data)
+    contains_yaml_data = is_yaml_data(raw_data)
+    converted_data = convert_special_types(raw_data)
 
     # Check if allow_encoding is a string specifying the format
     if isinstance(allow_encoding, str):
-        allow_encoding_lower = allow_encoding.casefold()
+        allow_encoding_lower = normalize_data_encoding(allow_encoding)
         if allow_encoding_lower == "yaml":
-            return encode_yaml(raw_data)
+            return encode_yaml(make_raw_data_export_safe(raw_data, export_to_yaml=True))
         if allow_encoding_lower == "json":
-            return encode_json(raw_data, **format_opts)
+            return encode_json(converted_data, **format_opts)
         if allow_encoding_lower == "toml":
-            return encode_toml(raw_data)
+            return encode_toml(converted_data)
+        if allow_encoding_lower == "hcl":
+            return encode_hcl2(converted_data)
         if allow_encoding_lower == "raw":
-            return str(raw_data)
+            return str(converted_data)
 
         # Attempt to convert string-based allow_encoding to a boolean
         try:
@@ -64,13 +66,13 @@ def wrap_raw_data_for_export(
 
     # Determine the encoding based on boolean allow_encoding and YAML data check
     if allow_encoding:
-        if is_yaml_data(raw_data):
-            return encode_yaml(raw_data)
+        if contains_yaml_data:
+            return encode_yaml(make_raw_data_export_safe(raw_data, export_to_yaml=True))
         # Call encode_json with options unpacked to ensure they are correctly passed
-        return encode_json(raw_data, **format_opts)
+        return encode_json(converted_data, **format_opts)
 
     # If no encoding is allowed, return the string representation of raw_data
-    return str(raw_data)
+    return str(converted_data)
 
 
 def make_raw_data_export_safe(raw_data: Any, export_to_yaml: bool = False) -> Any:
@@ -101,9 +103,21 @@ def make_raw_data_export_safe(raw_data: Any, export_to_yaml: bool = False) -> An
         >>> type(result["script"]).__name__
         'LiteralScalarString'
     """
-    if isinstance(raw_data, dict):
+    if export_to_yaml and isinstance(raw_data, YamlTagged):
+        return YamlTagged(
+            raw_data.tag,
+            make_raw_data_export_safe(raw_data.__wrapped__, export_to_yaml=export_to_yaml),
+        )
+    if export_to_yaml and isinstance(raw_data, YamlPairs):
+        return YamlPairs(
+            [
+                tuple(make_raw_data_export_safe(item, export_to_yaml=export_to_yaml) for item in pair)
+                for pair in raw_data
+            ]
+        )
+    if isinstance(raw_data, Mapping):
         return {k: make_raw_data_export_safe(v, export_to_yaml=export_to_yaml) for k, v in raw_data.items()}
-    elif isinstance(raw_data, (set, list, tuple, frozenset)):
+    if isinstance(raw_data, (set, list, tuple, frozenset)):
         return [make_raw_data_export_safe(v, export_to_yaml=export_to_yaml) for v in raw_data]
 
     exported_data = raw_data

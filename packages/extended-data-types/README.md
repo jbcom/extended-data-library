@@ -1,82 +1,66 @@
 # Extended Data Types
 
-*Typed utilities for Python data formats and structures.*
+Typed utilities for serialization, repository-aware file workflows, YAML and
+HCL interoperability, and automation-friendly transformation pipelines.
 
 [![CI Status](https://github.com/jbcom/extended-data-library/actions/workflows/ci.yml/badge.svg)](https://github.com/jbcom/extended-data-library/actions/workflows/ci.yml)
 [![PyPI Package latest release](https://img.shields.io/pypi/v/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
 [![Supported versions](https://img.shields.io/pypi/pyversions/extended-data-types.svg)](https://pypi.org/project/extended-data-types/)
 
-Extended Data Types provides safe, typed helpers for working with common serialization formats (YAML, JSON, TOML, HCL, Base64), file system operations, data structure manipulation, string transformations, and type utilities.
+## Supported Python Versions
+
+`extended-data-types` supports Python `3.10`, `3.11`, `3.12`, `3.13`, and
+`3.14`.
+
+## Public API Model
+
+- `extended_data_types` is the backward-compatible root convenience surface.
+- `extended_data_types.transformations.numbers` and
+  `extended_data_types.transformations.strings` expose the richer namespaced
+  transformation APIs.
+- `extended_data_types.yaml_utils` is the documented advanced surface for
+  tagged YAML values and lower-level YAML helpers.
 
 ## Key Features
 
-- **Serialization** - Encode and decode YAML, JSON, TOML, HCL, and Base64 with consistent APIs
-- **File System** - Platform-aware path handling, Git repository discovery, encoding detection
-- **Data Structures** - Enhanced list and dictionary operations (flatten, filter, deep merge)
-- **String Utilities** - Case conversion, humanization, pluralization, URL validation
-- **Type Safety** - Safe type conversion, validation, and full type annotations
-
----
-
-## Installation
-
-```bash
-pip install extended-data-types
-```
+- Serialization helpers for YAML, JSON, TOML, HCL, and Base64.
+- Repository-aware file helpers for reading, writing, decoding, and path resolution.
+- Map, list, and type utilities for normalization and deep composition.
+- String and number transformations for case conversion, words, ordinals, and fractions.
+- Predictable read/decode/write boundaries for larger automation and agentic systems.
 
 ## Quick Start
 
-### YAML
-
 ```python
-from extended_data_types import encode_yaml, decode_yaml
+from extended_data_types import decode_file, encode_hcl2, encode_yaml, read_file, write_file
 
-data = {"name": "Alice", "age": 30}
-yaml_str = encode_yaml(data)
-print(yaml_str)
-# name: Alice
-# age: 30
+config = {"service": "api", "enabled": True}
+write_file("config.yaml", config, tld=".")
 
-decoded = decode_yaml(yaml_str)
-print(decoded)  # {'name': 'Alice', 'age': 30}
+yaml_text = read_file("config.yaml", tld=".")
+decoded = decode_file(yaml_text, file_path="config.yaml")
+
+terraform = {"locals": [{"region": "us-east-1"}]}
+hcl_text = encode_hcl2(terraform)
+
+print(encode_yaml(decoded))
+print(hcl_text)
 ```
 
-### Base64
+## Documentation
 
-```python
-from extended_data_types import base64_encode
-
-encoded = base64_encode("Hello, world!")
-print(encoded)  # SGVsbG8sIHdvcmxkIQ==
-```
-
-### File Path Utilities
-
-```python
-from extended_data_types import match_file_extensions
-
-is_text = match_file_extensions("example.txt", [".txt", ".log"])
-print(is_text)  # True
-```
-
-### String Transformations
-
-```python
-from extended_data_types import to_snake_case, to_camel_case
-
-print(to_snake_case("MyClassName"))   # my_class_name
-print(to_camel_case("my_function"))   # myFunction
-```
-
----
+- Package docs: [extendeddata.dev/core/data-types](https://extendeddata.dev/core/data-types/)
+- Monorepo docs: [extendeddata.dev](https://extendeddata.dev)
+- Examples: [packages/extended-data-types/examples](https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types/examples)
 
 ## Contributing
 
-Contributions are welcome! Please see the [Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/CONTRIBUTING.md) for more information.
+Contributions are welcome. See the shared contributing docs in
+[docs/development/contributing.md](https://github.com/jbcom/extended-data-library/blob/main/docs/development/contributing.md).
 
 ## Project Links
 
-- [**PyPI**](https://pypi.org/project/extended-data-types/)
-- [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types)
-- [**Documentation**](https://extendeddata.dev)
-- [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/extended-data-types/CHANGELOG.md)
+- [PyPI](https://pypi.org/project/extended-data-types/)
+- [GitHub](https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types)
+- [Documentation](https://extendeddata.dev/core/data-types/)
+- [Changelog](https://github.com/jbcom/extended-data-library/blob/main/packages/extended-data-types/CHANGELOG.md)

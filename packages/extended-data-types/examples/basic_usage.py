@@ -1,69 +1,57 @@
 #!/usr/bin/env python3
-"""Basic usage examples for extended-data-types library.
-
-This module demonstrates common operations with strings, lists, maps,
-and state utilities provided by the library.
-"""
+"""Basic usage examples for extended-data-types."""
 
 from __future__ import annotations
 
 from extended_data_types import (
-    # State utilities
+    all_non_empty,
+    any_non_empty,
     deep_merge,
-    # List utilities
     filter_list,
     filter_map,
+    first_non_empty,
+    flatten_list,
     flatten_map,
 )
 
 
 def demonstrate_state_utilities() -> None:
-    """Demonstrate state checking utilities."""
-    # Check if values are "nothing" (None, empty string, empty list, etc.)
-
-    # Check if all values are non-empty
-
-    # Check if any value is non-empty
-
-    # Get first non-empty value
+    """Demonstrate state helper behavior."""
+    print("=== State Utilities ===")
+    state = {"name": "worker", "region": "", "enabled": True}
+    print("Any non-empty:", any_non_empty(state, "region", "name"))
+    print("All non-empty:", all_non_empty(state["name"], state["enabled"]))
+    print("First non-empty:", first_non_empty(None, "", "fallback"))
 
 
 def demonstrate_list_utilities() -> None:
-    """Demonstrate list manipulation utilities."""
-    # Flatten nested lists
+    """Demonstrate list flattening and allowlist/denylist filtering."""
+    print("\n=== List Utilities ===")
+    nested = ["api", ["worker", ["scheduler"]], "docs"]
+    print("Flattened:", flatten_list(nested))
 
-    # Filter list items
     items = ["apple", "banana", "apricot", "cherry"]
-    filter_list(items, lambda x: x.startswith("a"))
+    print("Allowlist:", filter_list(items, allowlist=["apple", "apricot"]))
+    print("Denylist:", filter_list(items, denylist=["banana"]))
 
 
 def demonstrate_map_utilities() -> None:
-    """Demonstrate dictionary/map manipulation utilities."""
-    # Deep merge dictionaries
-    dict1 = {"a": 1, "b": {"c": 2, "d": 3}}
-    dict2 = {"b": {"d": 4, "e": 5}, "f": 6}
-    deep_merge(dict1, dict2)
+    """Demonstrate map merge, flatten, and filtering helpers."""
+    print("\n=== Map Utilities ===")
+    base = {"service": {"debug": False, "host": "localhost"}}
+    override = {"service": {"debug": True, "port": 8080}}
+    print("Deep merge:", deep_merge(base, override))
 
-    # Flatten nested dictionary
-    nested_dict = {"a": {"b": {"c": 1}}, "d": 2}
-    flatten_map(nested_dict)
+    nested = {"service": {"http": {"port": 8080}}, "enabled": True}
+    print("Flattened:", flatten_map(nested))
 
-    # Filter dictionary
-    data = {"name": "John", "age": 30, "city": "NYC", "active": True}
-    filter_map(data, lambda _k, v: isinstance(v, str))
-
-
-def demonstrate_string_utilities() -> None:
-    """Demonstrate string manipulation utilities."""
-    # Remove prefix/suffix (backport for older Python versions)
-
-    # Truncate strings
-
-    # Sanitize keys for use in data structures
+    payload = {"name": "api", "age": 30, "city": "Chicago", "active": True}
+    kept, removed = filter_map(payload, allowlist=["name", "city"])
+    print("Filtered map:", kept)
+    print("Removed map:", removed)
 
 
 if __name__ == "__main__":
     demonstrate_state_utilities()
     demonstrate_list_utilities()
     demonstrate_map_utilities()
-    demonstrate_string_utilities()

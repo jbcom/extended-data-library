@@ -13,7 +13,7 @@ import yaml
 from extended_data_types.string_data_type import bytestostr
 from extended_data_types.yaml_utils.dumpers import PureDumper
 from extended_data_types.yaml_utils.loaders import PureLoader
-from extended_data_types.yaml_utils.tag_classes import YamlTagged
+from extended_data_types.yaml_utils.tag_classes import YamlPairs, YamlTagged
 
 
 def decode_yaml(yaml_data: str | memoryview | bytes | bytearray) -> Any:
@@ -53,13 +53,17 @@ def is_yaml_data(data: Any) -> bool:
     Returns:
         bool: True if the data is a YAML tagged object, False otherwise.
     """
-    if isinstance(data, YamlTagged):
+    if isinstance(data, (YamlTagged, YamlPairs)):
         return True
     if isinstance(data, dict):
         for value in data.values():
             if is_yaml_data(value):
                 return True
     if isinstance(data, list):
+        for item in data:
+            if is_yaml_data(item):
+                return True
+    if isinstance(data, tuple):
         for item in data:
             if is_yaml_data(item):
                 return True

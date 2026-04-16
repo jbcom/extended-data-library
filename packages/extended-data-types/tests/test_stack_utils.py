@@ -25,6 +25,7 @@ from extended_data_types.stack_utils import (
     get_available_methods,
     get_caller,
     get_inputs_from_docstring,
+    get_unique_signature,
     update_docstring,
 )
 
@@ -103,6 +104,13 @@ def test_filter_methods(methods_list: list[str]) -> None:
     """
     filtered = filter_methods(methods_list)
     assert filtered == ["public_method", "public_method_no_doc", "method_with_noparse"]
+
+
+def test_get_unique_signature() -> None:
+    """Build a deterministic module/class signature for an object."""
+    signature = get_unique_signature(DummyClass())
+    assert signature.endswith("/DummyClass")
+    assert "test_stack_utils" in signature
 
 
 def test_get_available_methods() -> None:
@@ -197,6 +205,30 @@ def test_update_docstring_idempotency() -> None:
 
     result = update_docstring(original_docstring, new_inputs)
     assert result.strip() == expected_docstring.strip()
+
+
+def test_update_docstring_handles_empty_source() -> None:
+    """Append inputs even when the original docstring is empty."""
+    result = update_docstring("", {"API_KEY": {"required": "true", "sensitive": "false"}})
+    assert result == "env=name: API_KEY, required: true, sensitive: false"
+
+
+def test_update_docstring_preserves_non_env_text() -> None:
+    """Keep descriptive lines while appending new env entries."""
+    original_docstring = """
+    Summary line.
+
+    env=name: API_KEY, required: true, sensitive: false
+    """
+
+    result = update_docstring(
+        original_docstring,
+        {"DB_PASSWORD": {"required": "true", "sensitive": "true"}},
+    )
+
+    assert "Summary line." in result
+    assert "env=name: API_KEY, required: true, sensitive: false" in result
+    assert "env=name: DB_PASSWORD, required: true, sensitive: true" in result
 
 
 def test_python_version_is_at_least() -> None:

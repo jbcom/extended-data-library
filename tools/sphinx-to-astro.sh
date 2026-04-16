@@ -36,7 +36,11 @@ rm -rf "${ASTRO_API_DIR}/.buildinfo" \
 find "${ASTRO_API_DIR}" -name '*.md' -type f | while read -r md_file; do
     # Replace unsupported code block languages (portable: redirect + mv)
     tmp_sed_file=$(mktemp)
-    sed -e 's/```pycon/```python/g' -e 's/```default/```text/g' "${md_file}" > "${tmp_sed_file}"
+    sed \
+        -e 's/```pycon/```python/g' \
+        -e 's/```default/```text/g' \
+        -e 's/```none/```text/g' \
+        "${md_file}" > "${tmp_sed_file}"
     mv "${tmp_sed_file}" "${md_file}"
 
     # Extract the first H1 heading as the title (skip if frontmatter already exists)

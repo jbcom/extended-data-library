@@ -54,6 +54,7 @@ def test_singularize() -> None:
 
 def test_camelize() -> None:
     """Test camelization."""
+    assert camelize("") == ""
     assert camelize("hello_world") == "HelloWorld"
     assert camelize("hello_world", False) == "helloWorld"
     assert camelize("hello world") == "HelloWorld"
