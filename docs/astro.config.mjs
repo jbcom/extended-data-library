@@ -114,6 +114,7 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/jbcom/extended-data-library/edit/main/docs/',
       },
+      disable404Route: true,
       lastUpdated: true,
     }),
   ],

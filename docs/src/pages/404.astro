@@ -1,0 +1,43 @@
+---
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const frontmatter = {
+  title: '404',
+  description: 'The page you requested does not exist in the Extended Data documentation.',
+  editUrl: false,
+  template: 'splash',
+  hero: {
+    tagline: 'The page you requested does not exist or has moved.',
+    actions: [
+      { text: 'Documentation Home', link: '/' },
+      { text: 'Getting Started', link: '/getting-started/' },
+      {
+        text: 'GitHub',
+        link: 'https://github.com/jbcom/extended-data-library',
+        variant: 'minimal',
+      },
+    ],
+  },
+};
+---
+
+<StarlightPage frontmatter={frontmatter}>
+  <CardGrid>
+    <LinkCard
+      title="Documentation Home"
+      description="Return to the main documentation landing page."
+      href="/"
+    />
+    <LinkCard
+      title="Getting Started"
+      description="Install the packages and jump into the first working examples."
+      href="/getting-started/"
+    />
+    <LinkCard
+      title="API Reference"
+      description="Browse the generated reference pages for every package surface."
+      href="/api/"
+    />
+  </CardGrid>
+</StarlightPage>
