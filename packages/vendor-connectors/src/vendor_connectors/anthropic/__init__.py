@@ -462,8 +462,8 @@ class AnthropicConnector(VendorConnectorBase):
         """Execute a task using Claude as an agent (sandbox mode).
 
         This is a simplified agent execution pattern for local single-agent
-        workflows. For full agent capabilities, consider using LangChain agents
-        or the agentic-control package.
+        workflows. For richer orchestration, consider LangChain, LangGraph,
+        or another workflow runner that can manage tools and multi-turn state.
 
         Args:
             task: The task description.

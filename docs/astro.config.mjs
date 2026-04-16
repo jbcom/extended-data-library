@@ -102,11 +102,11 @@ export default defineConfig({
           autogenerate: { directory: 'api/apidocs' },
         },
         {
-          label: 'Ecosystem',
+          label: 'Resources',
           items: [
-            { label: 'jbcom Hub', link: 'https://jbcom.github.io', attrs: { target: '_blank' } },
-            { label: 'Agentic (AI)', link: 'https://agentic.dev', attrs: { target: '_blank' } },
-            { label: 'Strata (Games)', link: 'https://strata.game', attrs: { target: '_blank' } },
+            { label: 'GitHub', link: 'https://github.com/jbcom/extended-data-library', attrs: { target: '_blank' } },
+            { label: 'PyPI Packages', link: 'https://pypi.org/user/jbcom/', attrs: { target: '_blank' } },
+            { label: 'Releases', link: 'https://github.com/jbcom/extended-data-library/releases', attrs: { target: '_blank' } },
           ],
         },
       ],

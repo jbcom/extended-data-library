@@ -14,8 +14,8 @@ Usage:
 The server automatically discovers all registered connectors and exposes
 their public methods as MCP tools.
 
-This provides the bridge between TypeScript (@agentic/control) and Python
-with zero custom code - just standard MCP over stdio.
+This provides a standard MCP bridge between Python connectors and any MCP-aware
+client with zero custom glue code - just standard MCP over stdio.
 """
 
 from __future__ import annotations
