@@ -52,7 +52,7 @@ Usage:
 from __future__ import annotations
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 # Core imports (always available)
 from vendor_connectors import meshy

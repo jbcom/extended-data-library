@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "extended-data-types"
-version = "6.2.1"
+version = "6.2.2"
 description = "Extended functionality for data types"
 requires-python = ">=3.10"
 license = { text = "MIT" }
