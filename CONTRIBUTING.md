@@ -32,8 +32,7 @@ cd ..
 
 ## GitHub CLI
 
-Use `gh` directly with your existing local authentication context. Do not wrap
-local commands with `GH_TOKEN=...`.
+Use `gh` directly with your existing local authentication context.
 
 ```bash
 gh auth status

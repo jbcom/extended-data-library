@@ -38,8 +38,7 @@ tox -e py310-edt,py311-edt,py312-edt,py313-edt,py314-edt
 
 ## GitHub CLI
 
-Use `gh` directly with the existing local authentication context. Do not prefix
-local commands with `GH_TOKEN=...`.
+Use `gh` directly with the existing local authentication context.
 
 ```bash
 gh auth status
