@@ -4,6 +4,13 @@
 
 <!-- version list -->
 
+## [1.1.2](https://github.com/jbcom/extended-data-library/compare/connectors-v1.1.1...connectors-v1.1.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **connectors:** remediate dependency alerts and align docs ([#120](https://github.com/jbcom/extended-data-library/issues/120)) ([5820d98](https://github.com/jbcom/extended-data-library/commit/5820d98fcc45d6c1d6600bd1b61566f9bb3572f4))
+
 ## [1.1.1](https://github.com/jbcom/extended-data-library/compare/connectors-v1.1.0...connectors-v1.1.1) (2026-04-16)
 
 
