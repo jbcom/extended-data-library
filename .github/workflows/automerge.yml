@@ -17,9 +17,19 @@ jobs:
       github.actor == 'github-actions[bot]' ||
       contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
     steps:
-      - name: Auto-approve PR
+      - name: Auto-approve dependabot PRs
+        if: github.actor == 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr review "${{ github.event.pull_request.number }}" --approve --repo "${{ github.repository }}" || true
+
+      - name: Auto-approve release-please PRs
+        if: >-
+          github.actor == 'github-actions[bot]' ||
+          contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
+        env:
+          # Use the PAT-backed token here so the eventual merge commit triggers downstream push workflows.
+          GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
         run: gh pr review "${{ github.event.pull_request.number }}" --approve --repo "${{ github.repository }}" || true
 
       - name: Merge dependabot PRs (skip actions)
@@ -39,7 +49,8 @@ jobs:
           github.actor == 'github-actions[bot]' ||
           contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use the PAT-backed token here so the merge commit triggers release/CI push workflows on main.
+          GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: >-
           gh pr merge "${{ github.event.pull_request.number }}"
