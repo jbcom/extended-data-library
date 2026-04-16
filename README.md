@@ -58,8 +58,7 @@ uv sync
 
 ### GitHub CLI
 
-Use `gh` directly with your existing local authentication context. Do not
-prefix local `gh` commands with `GH_TOKEN=...`.
+Use `gh` directly with your existing local authentication context.
 
 ```bash
 gh auth status
