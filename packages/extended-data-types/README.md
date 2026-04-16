@@ -55,8 +55,8 @@ print(hcl_text)
 
 ## Contributing
 
-Contributions are welcome. See the shared contributing docs in
-[docs/development/contributing.md](https://github.com/jbcom/extended-data-library/blob/main/docs/development/contributing.md).
+Contributions are welcome. See the shared
+[Contributing Guidelines](https://github.com/jbcom/extended-data-library/blob/main/CONTRIBUTING.md).
 
 ## Project Links
 
