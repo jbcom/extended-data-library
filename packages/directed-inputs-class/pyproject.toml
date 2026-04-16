@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev/packages/inputs/"
+Documentation = "https://extended-data.dev/packages/inputs/"
 Issues = "https://github.com/jbcom/extended-data-library/issues"
 Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/directed-inputs-class"
 Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/directed-inputs-class/CHANGELOG.md"

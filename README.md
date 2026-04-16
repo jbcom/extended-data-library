@@ -106,7 +106,7 @@ feat!: breaking API change             # major bump
 
 ## Documentation
 
-Full documentation is available at [extendeddata.dev](https://extendeddata.dev).
+Full documentation is available at [extended-data.dev](https://extended-data.dev).
 
 ## License
 

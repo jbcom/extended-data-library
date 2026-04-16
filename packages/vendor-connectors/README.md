@@ -138,5 +138,5 @@ Contributions are welcome! Please see the [Contributing Guidelines](https://gith
 
 - [**PyPI**](https://pypi.org/project/vendor-connectors/)
 - [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors)
-- [**Documentation**](https://extendeddata.dev/packages/vendor-connectors/)
+- [**Documentation**](https://extended-data.dev/packages/vendor-connectors/)
 - [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md)

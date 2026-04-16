@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev/packages/vendor-connectors/"
+Documentation = "https://extended-data.dev/packages/vendor-connectors/"
 Issues = "https://github.com/jbcom/extended-data-library/issues"
 Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors"
 Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md"

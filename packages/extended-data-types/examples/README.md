@@ -16,9 +16,9 @@ guides and are part of the documented contract, not throwaway snippets.
 
 ## Related Documentation
 
-- [Package docs](https://extendeddata.dev/core/data-types/)
-- [Getting started](https://extendeddata.dev/getting-started/)
-- [Packages overview](https://extendeddata.dev/packages/)
+- [Package docs](https://extended-data.dev/core/data-types/)
+- [Getting started](https://extended-data.dev/getting-started/)
+- [Packages overview](https://extended-data.dev/packages/)
 
 ## Running Examples
 
