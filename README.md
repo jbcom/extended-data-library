@@ -18,11 +18,17 @@ A collection of high-performance Python libraries and tools for data processing,
 ## Quick Start
 
 ```bash
-# Install any package directly
+# Python packages
 pip install extended-data-types
 pip install lifecyclelogging
 pip install directed-inputs-class
 pip install vendor-connectors
+
+# Python integration for SecretSync workflows
+pip install vendor-connectors[secrets]
+
+# SecretSync CLI
+go install github.com/jbcom/extended-data-library/packages/secretssync/cmd/secretsync@latest
 ```
 
 ## Monorepo Structure

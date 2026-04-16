@@ -7,7 +7,7 @@ Migrate all extended-data-library Python packages and the Go secretssync binary 
 ## Target Structure
 
 ```
-extended-data-types/                    # repo root
+extended-data-library/                  # repo root
 ├── nx.json                             # Nx workspace config
 ├── package.json                        # Nx + plugins (root)
 ├── pyproject.toml                      # uv workspace root
@@ -86,7 +86,7 @@ docs (builds from all packages)
 [project]
 name = "extended-data-library"
 version = "0.0.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [tool.uv]
 workspace = { members = [
