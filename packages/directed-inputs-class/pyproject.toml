@@ -30,10 +30,10 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev"
-Issues = "https://github.com/extended-data-library/extended-data-types/issues"
-Source = "https://github.com/extended-data-library/extended-data-types"
-Changelog = "https://github.com/extended-data-library/extended-data-types/blob/main/packages/directed-inputs-class/CHANGELOG.md"
+Documentation = "https://extendeddata.dev/packages/inputs/"
+Issues = "https://github.com/jbcom/extended-data-library/issues"
+Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/directed-inputs-class"
+Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/directed-inputs-class/CHANGELOG.md"
 
 [project.optional-dependencies]
 tests = [
@@ -50,12 +50,9 @@ typing = [
 ]
 docs = [
     "sphinx>=7.0",
-    "sphinx-rtd-theme>=2.0.0",
-    "sphinx-autodoc-typehints>=2.0.0",
-    "sphinxawesome-theme>=5.2.0",
-    "sphinx-autodoc2>=0.5.0",
     "myst-parser>=3.0.1",
-    "docutils>=0.17",
+    "sphinx-autodoc2>=0.5.0",
+    "sphinx-markdown-builder>=0.6.0",
 ]
 
 [tool.uv.sources]
