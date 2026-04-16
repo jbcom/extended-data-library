@@ -980,8 +980,12 @@ from vendor_connectors.github.tools import (
 )
 
 
+GitHubConnector = GithubConnector
+
+
 __all__ = [
     # Core connector
+    "GitHubConnector",
     "GithubConnector",
     "get_crewai_tools",
     "get_langchain_tools",

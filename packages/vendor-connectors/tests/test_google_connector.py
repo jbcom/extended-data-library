@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from vendor_connectors.google import GoogleConnector
+from vendor_connectors.google import (
+    GoogleBillingConnector,
+    GoogleCloudConnector,
+    GoogleConnector,
+    GoogleConnectorFull,
+    GoogleWorkspaceConnector,
+)
 
 
 def _service_account():
@@ -222,3 +228,20 @@ class TestGoogleConnector:
         assert result["keepers@example.com"]["suspended"] is True
         assert "team@example.com" in result
         assert result["team@example.com"]["primaryEmail"] == "team@example.com"
+
+    def test_specialized_connector_exports_match_available_operations(self, base_connector_kwargs):
+        """Specialized Google connectors expose the operations their entry points advertise."""
+        service_account = _service_account()
+
+        cloud = GoogleCloudConnector(service_account_info=service_account, **base_connector_kwargs)
+        workspace = GoogleWorkspaceConnector(service_account_info=service_account, **base_connector_kwargs)
+        billing = GoogleBillingConnector(service_account_info=service_account, **base_connector_kwargs)
+        full = GoogleConnectorFull(service_account_info=service_account, **base_connector_kwargs)
+
+        assert hasattr(cloud, "list_projects")
+        assert hasattr(workspace, "list_users")
+        assert hasattr(billing, "list_billing_accounts")
+
+        assert hasattr(full, "list_projects")
+        assert hasattr(full, "list_users")
+        assert hasattr(full, "list_billing_accounts")

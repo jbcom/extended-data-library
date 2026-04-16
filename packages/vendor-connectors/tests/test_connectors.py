@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from vendor_connectors.connectors import VendorConnectors
+from vendor_connectors.registry import _register_builtins
 
 
 # Helper to check if optional dependencies are available
@@ -254,3 +255,22 @@ class TestVendorConnectors:
         if not _has_module("github"):
             with pytest.raises(ImportError, match="PyGithub"):
                 vc.get_github_client()
+
+    def test_register_builtins_includes_specialized_google_connectors(self):
+        """Registry builtins expose the advertised specialized Google connectors."""
+        connectors = {}
+
+        _register_builtins(connectors)
+
+        assert connectors["google"].__name__ == "GoogleConnector"
+        assert connectors["google_cloud"].__name__ == "GoogleCloudConnector"
+        assert connectors["google_workspace"].__name__ == "GoogleWorkspaceConnector"
+        assert connectors["google_billing"].__name__ == "GoogleBillingConnector"
+
+    def test_register_builtins_loads_github_entrypoint_name(self):
+        """Registry builtins keep the GitHub connector spelling compatible with entry points."""
+        connectors = {}
+
+        _register_builtins(connectors)
+
+        assert connectors["github"].__name__ == "GithubConnector"

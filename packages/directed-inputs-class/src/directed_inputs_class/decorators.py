@@ -16,6 +16,7 @@ python-terraform-bridge) to instantiate the classes safely.
 
 from __future__ import annotations
 
+import builtins
 import functools
 import inspect
 
@@ -176,7 +177,7 @@ def directed_inputs(
     from_stdin: bool = False,
     env_prefix: str | None = None,
     strip_env_prefix: bool = False,
-) -> Callable[[type[Any]], type[Any]]:
+) -> Callable[[builtins.type[Any]], builtins.type[Any]]:
     """Class decorator that injects DirectedInputsClass behavior."""
     base_options = {
         "inputs": inputs,
@@ -186,7 +187,7 @@ def directed_inputs(
         "strip_env_prefix": strip_env_prefix,
     }
 
-    def decorator(cls: type[Any]) -> type[Any]:
+    def decorator(cls: builtins.type[Any]) -> builtins.type[Any]:
         if getattr(cls, "__directed_inputs_enabled__", False):
             return cls
 
@@ -242,7 +243,7 @@ def directed_inputs(
     return decorator
 
 
-def _inject_proxies(cls: type[Any]) -> None:
+def _inject_proxies(cls: builtins.type[Any]) -> None:
     """Inject helper properties/methods for interacting with the context."""
 
     def _get_context(self: Any) -> InputContext:
@@ -266,7 +267,7 @@ def _inject_proxies(cls: type[Any]) -> None:
         cls.refresh_inputs = refresh_inputs
 
 
-def _wrap_instance_methods(cls: type[Any]) -> None:
+def _wrap_instance_methods(cls: builtins.type[Any]) -> None:
     """Wrap instance methods so missing parameters are auto-populated."""
     for name, attribute in list(cls.__dict__.items()):
         if _should_skip_method(name, attribute):

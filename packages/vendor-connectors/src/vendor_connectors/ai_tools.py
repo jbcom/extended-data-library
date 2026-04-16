@@ -6,12 +6,14 @@ that are compatible with the Vercel AI SDK and other modern AI frameworks.
 
 from __future__ import annotations
 
+import builtins
+
 from typing import Any
 
 from pydantic import BaseModel
 
 
-def get_pydantic_schema(model: type[BaseModel]) -> dict[str, Any]:
+def get_pydantic_schema(model: builtins.type[BaseModel]) -> dict[str, Any]:
     """Generate a Vercel AI SDK-compatible JSON schema from a Pydantic model.
 
     This function removes the top-level 'title' and 'description' fields,

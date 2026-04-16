@@ -30,6 +30,8 @@ Entry Points (in pyproject.toml):
 
 from __future__ import annotations
 
+import builtins
+
 from typing import TYPE_CHECKING, Any
 
 
@@ -37,17 +39,17 @@ if TYPE_CHECKING:
     from vendor_connectors.base import VendorConnectorBase
 
 # Cache for discovered connectors
-_connector_cache: dict[str, type[VendorConnectorBase]] | None = None
+_connector_cache: dict[str, builtins.type[VendorConnectorBase]] | None = None
 
 
-def _discover_connectors() -> dict[str, type[VendorConnectorBase]]:
+def _discover_connectors() -> dict[str, builtins.type[VendorConnectorBase]]:
     """Discover all registered connectors via entry points."""
     global _connector_cache
 
     if _connector_cache is not None:
         return _connector_cache
 
-    connectors: dict[str, type[VendorConnectorBase]] = {}
+    connectors: dict[str, builtins.type[VendorConnectorBase]] = {}
 
     # Python 3.10+ uses importlib.metadata
     from importlib.metadata import entry_points
@@ -71,7 +73,7 @@ def _discover_connectors() -> dict[str, type[VendorConnectorBase]]:
     return connectors
 
 
-def _register_builtins(connectors: dict[str, type[VendorConnectorBase]]) -> None:
+def _register_builtins(connectors: dict[str, builtins.type[VendorConnectorBase]]) -> None:
     """Register built-in connectors that may not be in entry points yet."""
     builtins = {
         # Google connectors
@@ -105,7 +107,7 @@ def _register_builtins(connectors: dict[str, type[VendorConnectorBase]]) -> None
             pass  # Optional dependency not installed
 
 
-def list_connectors() -> dict[str, type[VendorConnectorBase]]:
+def list_connectors() -> dict[str, builtins.type[VendorConnectorBase]]:
     """List all available connectors.
 
     Returns:
@@ -114,7 +116,7 @@ def list_connectors() -> dict[str, type[VendorConnectorBase]]:
     return _discover_connectors().copy()
 
 
-def get_connector_class(name: str) -> type[VendorConnectorBase]:
+def get_connector_class(name: str) -> builtins.type[VendorConnectorBase]:
     """Get a connector class by name.
 
     Args:
