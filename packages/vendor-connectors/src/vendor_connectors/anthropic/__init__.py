@@ -1,4 +1,4 @@
-"""Anthropic Connector - Claude AI SDK wrapper for the jbcom ecosystem.
+"""Anthropic connector for Claude APIs and local agent execution.
 
 This connector provides Python access to Anthropic's Claude AI, including
 the Claude Agent SDK for sandbox/local agent execution.

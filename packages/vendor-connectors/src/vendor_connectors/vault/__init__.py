@@ -1,4 +1,4 @@
-"""Vault Connector using jbcom ecosystem packages."""
+"""Vault connector built on shared packages from this monorepo."""
 
 from __future__ import annotations
 

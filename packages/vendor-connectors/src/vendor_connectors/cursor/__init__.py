@@ -1,7 +1,7 @@
 """Cursor Connector - HTTP client for Cursor Background Agent API.
 
 This connector provides Python access to the Cursor Background Agent API for
-managing AI coding agents, following the patterns established in the jbcom ecosystem.
+managing AI coding agents through the shared connector patterns in this monorepo.
 
 Usage:
     from vendor_connectors.cursor import CursorConnector

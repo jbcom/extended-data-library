@@ -1,4 +1,4 @@
-"""Zoom Connector using jbcom ecosystem packages."""
+"""Zoom connector built on shared packages from this monorepo."""
 
 from __future__ import annotations
 

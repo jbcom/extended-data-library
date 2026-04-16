@@ -1,4 +1,4 @@
-"""Google Cloud and Workspace Connector using jbcom ecosystem packages."""
+"""Google Cloud and Workspace connector built on shared monorepo packages."""
 
 from __future__ import annotations
 

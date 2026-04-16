@@ -75,7 +75,7 @@ def _discover_connectors() -> dict[str, builtins.type[VendorConnectorBase]]:
 
 def _register_builtins(connectors: dict[str, builtins.type[VendorConnectorBase]]) -> None:
     """Register built-in connectors that may not be in entry points yet."""
-    builtins = {
+    builtin_connectors = {
         # Google connectors
         "jules": ("vendor_connectors.google.jules", "JulesConnector"),
         "google": ("vendor_connectors.google", "GoogleConnector"),
@@ -84,7 +84,7 @@ def _register_builtins(connectors: dict[str, builtins.type[VendorConnectorBase]]
         "google_billing": ("vendor_connectors.google", "GoogleBillingConnector"),
         # Other connectors
         "cursor": ("vendor_connectors.cursor", "CursorConnector"),
-        "github": ("vendor_connectors.github", "GithubConnector"),
+        "github": ("vendor_connectors.github", "GitHubConnector"),
         "meshy": ("vendor_connectors.meshy", "MeshyConnector"),
         "anthropic": ("vendor_connectors.anthropic", "AnthropicConnector"),
         "aws": ("vendor_connectors.aws", "AWSConnector"),
@@ -93,7 +93,7 @@ def _register_builtins(connectors: dict[str, builtins.type[VendorConnectorBase]]
         "vault": ("vendor_connectors.vault", "VaultConnector"),
     }
 
-    for name, (module_path, class_name) in builtins.items():
+    for name, (module_path, class_name) in builtin_connectors.items():
         if name in connectors:
             continue  # Entry point takes precedence
         try:
