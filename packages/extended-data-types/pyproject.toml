@@ -40,7 +40,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev/core/data-types/"
+Documentation = "https://extended-data.dev/core/data-types/"
 Issues = "https://github.com/jbcom/extended-data-library/issues"
 Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types"
 Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/extended-data-types/CHANGELOG.md"

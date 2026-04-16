@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev/packages/logging/"
+Documentation = "https://extended-data.dev/packages/logging/"
 Issues = "https://github.com/jbcom/extended-data-library/issues"
 Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/lifecyclelogging"
 Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/lifecyclelogging/CHANGELOG.md"

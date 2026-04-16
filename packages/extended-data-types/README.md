@@ -49,8 +49,8 @@ print(hcl_text)
 
 ## Documentation
 
-- Package docs: [extendeddata.dev/core/data-types](https://extendeddata.dev/core/data-types/)
-- Monorepo docs: [extendeddata.dev](https://extendeddata.dev)
+- Package docs: [extended-data.dev/core/data-types](https://extended-data.dev/core/data-types/)
+- Monorepo docs: [extended-data.dev](https://extended-data.dev)
 - Examples: [packages/extended-data-types/examples](https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types/examples)
 
 ## Contributing
@@ -62,5 +62,5 @@ Contributions are welcome. See the shared
 
 - [PyPI](https://pypi.org/project/extended-data-types/)
 - [GitHub](https://github.com/jbcom/extended-data-library/tree/main/packages/extended-data-types)
-- [Documentation](https://extendeddata.dev/core/data-types/)
+- [Documentation](https://extended-data.dev/core/data-types/)
 - [Changelog](https://github.com/jbcom/extended-data-library/blob/main/packages/extended-data-types/CHANGELOG.md)

@@ -114,5 +114,5 @@ Contributions are welcome! Please see the [Contributing Guidelines](https://gith
 
 - [**PyPI**](https://pypi.org/project/lifecyclelogging/)
 - [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/lifecyclelogging)
-- [**Documentation**](https://extendeddata.dev/packages/logging/)
+- [**Documentation**](https://extended-data.dev/packages/logging/)
 - [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/lifecyclelogging/CHANGELOG.md)
