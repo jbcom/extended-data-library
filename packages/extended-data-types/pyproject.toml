@@ -90,7 +90,6 @@ source = ["src/extended_data_types"]
 branch = true
 parallel = true
 source = ["extended_data_types"]
-relative_files = true
 
 [tool.coverage.xml]
 output = "coverage.xml"

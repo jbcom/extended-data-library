@@ -329,7 +329,6 @@ omit = [
     # Test files
     "tests/*",
 ]
-relative_files = true
 
 [tool.coverage.xml]
 output = "coverage.xml"

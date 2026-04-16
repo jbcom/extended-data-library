@@ -78,7 +78,6 @@ source = ["src/directed_inputs_class"]
 branch = true
 parallel = true
 source = ["directed_inputs_class"]
-relative_files = true
 
 [tool.coverage.xml]
 output = "coverage.xml"
