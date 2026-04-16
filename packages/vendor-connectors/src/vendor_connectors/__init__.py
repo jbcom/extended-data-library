@@ -1,4 +1,4 @@
-"""Vendor Connectors - Universal vendor connectors for the jbcom ecosystem.
+"""Vendor Connectors - shared connectors for cloud, SaaS, and AI platforms.
 
 This package provides modular connectors for various cloud providers and services:
 - Anthropic: Claude AI API and Agent SDK (NEW)
@@ -10,7 +10,6 @@ This package provides modular connectors for various cloud providers and service
 - Slack: Channel and message operations
 - Vault: HashiCorp Vault secret management
 - Zoom: User and meeting management
-- Meshy: AI 3D asset generation
 
 Usage:
     # Basic connector (session management + secrets)
@@ -45,7 +44,7 @@ Usage:
     rigged = rigging.rig(model.id)
     animated = animate.apply(rigged.id, animation_id=0)
 
-    # AI tools for agents
+    # AI tools and automation integrations
     from vendor_connectors.meshy.tools import get_tools, get_crewai_tools
     from vendor_connectors.meshy.mcp import create_server, run_server
 """
@@ -97,8 +96,9 @@ except ImportError:
 
 # GitHub connector (requires: pip install vendor-connectors[github])
 try:
-    from vendor_connectors.github import GithubConnector
+    from vendor_connectors.github import GitHubConnector, GithubConnector
 except ImportError:
+    GitHubConnector = None  # type: ignore[misc, assignment]
     GithubConnector = None  # type: ignore[misc, assignment]
 
 # Google connector (requires: pip install vendor-connectors[google])
@@ -142,6 +142,7 @@ __all__ = [
     "AnthropicConnector",
     "CursorConnector",
     # Other connectors
+    "GitHubConnector",
     "GithubConnector",
     "GoogleBillingMixin",
     "GoogleCloudMixin",

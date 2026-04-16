@@ -20,6 +20,7 @@ client with zero custom glue code - just standard MCP over stdio.
 
 from __future__ import annotations
 
+import builtins
 import inspect
 import json
 import sys
@@ -89,14 +90,14 @@ def _get_method_schema(method: Callable) -> dict[str, Any]:
     }
 
 
-def _get_public_methods(connector_class: type) -> list[tuple[str, Callable]]:
+def _get_public_methods(connector_class: builtins.type[Any]) -> list[tuple[str, Callable]]:
     """Get public methods from a connector class (excluding dunder and private)."""
     methods = []
     for name in dir(connector_class):
         if name.startswith("_"):
             continue
         attr = getattr(connector_class, name, None)
-        if callable(attr) and not isinstance(attr, type):
+        if callable(attr) and not isinstance(attr, builtins.type):
             methods.append((name, attr))
     return methods
 

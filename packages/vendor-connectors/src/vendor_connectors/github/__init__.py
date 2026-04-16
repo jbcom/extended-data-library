@@ -1,4 +1,4 @@
-"""Github Connector using jbcom ecosystem packages."""
+"""GitHub connector using shared packages from this monorepo."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ FilePath = str | bytes | os.PathLike[Any]
 
 
 def get_github_api_error(exc: GithubException) -> str | None:
-    """Extract error message from Github exception."""
+    """Extract error message from a GitHub exception."""
     data = getattr(exc, "data", {})
     return data.get("message", None)
 
@@ -37,7 +37,7 @@ DEFAULT_PER_PAGE = 100
 
 
 class GithubConnector(VendorConnectorBase):
-    """Github connector for repository operations."""
+    """GitHub connector for repository operations."""
 
     def __init__(
         self,
@@ -980,8 +980,12 @@ from vendor_connectors.github.tools import (
 )
 
 
+GitHubConnector = GithubConnector
+
+
 __all__ = [
     # Core connector
+    "GitHubConnector",
     "GithubConnector",
     "get_crewai_tools",
     "get_langchain_tools",

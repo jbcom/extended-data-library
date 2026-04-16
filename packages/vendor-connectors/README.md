@@ -73,12 +73,12 @@ cursor = vc.get_cursor_client()
 ### Using Individual Connectors
 
 ```python
-from vendor_connectors import AWSConnector, GithubConnector
+from vendor_connectors import AWSConnector, GitHubConnector
 
 aws = AWSConnector(execution_role_arn="arn:aws:iam::123456789012:role/MyRole")
 s3 = aws.get_aws_client("s3")
 
-github = GithubConnector(
+github = GitHubConnector(
     github_owner="myorg",
     github_repo="myrepo",
     github_token=os.getenv("GITHUB_TOKEN")

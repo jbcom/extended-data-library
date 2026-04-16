@@ -6,6 +6,7 @@ methods and their docstrings for a class.
 
 from __future__ import annotations
 
+import builtins
 import re
 import sys
 
@@ -47,7 +48,7 @@ def filter_methods(methods: list[str]) -> list[str]:
     return [method for method in methods if not method.startswith("_")]
 
 
-def get_available_methods(cls: type[Any]) -> dict[str, str | None]:
+def get_available_methods(cls: builtins.type[Any]) -> dict[str, str | None]:
     """Gets available methods and their docstrings for a class.
 
     An "available method" is a public method that:

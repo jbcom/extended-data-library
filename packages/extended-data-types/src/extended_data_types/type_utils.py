@@ -31,6 +31,7 @@ Constants:
 
 from __future__ import annotations
 
+import builtins
 import datetime
 import os
 import pathlib
@@ -88,7 +89,7 @@ class ConversionError(ValueError):
         in different Python versions.
     """
 
-    def __init__(self, expected_type: type, value: Any):
+    def __init__(self, expected_type: builtins.type[Any], value: Any):
         """Initialize the ConversionError with expected type and value.
 
         Args:
@@ -311,7 +312,7 @@ def strtotime(val: str, raise_on_error: bool = False) -> datetime.time | None:
     return None
 
 
-def get_default_value_for_type(input_type: type) -> Any:
+def get_default_value_for_type(input_type: builtins.type[Any]) -> Any:
     """Returns the default value for a given type."""
     if input_type is list:
         return []
@@ -322,7 +323,7 @@ def get_default_value_for_type(input_type: type) -> Any:
     return None
 
 
-def get_primitive_type_for_instance_type(value: Any) -> type:
+def get_primitive_type_for_instance_type(value: Any) -> builtins.type[Any]:
     """Gets the primitive type for a given value."""
     if isinstance(value, (bool, int, float, str, bytes, bytearray)):
         return type(value)
@@ -335,7 +336,7 @@ def get_primitive_type_for_instance_type(value: Any) -> type:
     return type(None) if value is None else object
 
 
-def typeof(item: Any, primitive_only: bool = False) -> type:
+def typeof(item: Any, primitive_only: bool = False) -> builtins.type[Any]:
     """Determines either the primitive or exact type of a given value."""
     return get_primitive_type_for_instance_type(item) if primitive_only else type(item)
 

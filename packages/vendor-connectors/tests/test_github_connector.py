@@ -1,14 +1,19 @@
-"""Tests for GithubConnector."""
+"""Tests for GitHub connector aliases and behavior."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
+from vendor_connectors import GitHubConnector
 from vendor_connectors.github import GithubConnector
 
 
 class TestGithubConnector:
-    """Test suite for GithubConnector."""
+    """Test suite for GitHub connector behavior."""
+
+    def test_root_export_alias_points_to_same_connector(self):
+        """The canonical root export and legacy alias should resolve to the same class."""
+        assert GitHubConnector is GithubConnector
 
     @patch("vendor_connectors.github.Github")
     def test_init_with_repo(self, mock_github_class, base_connector_kwargs):

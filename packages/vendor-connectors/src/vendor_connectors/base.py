@@ -27,6 +27,7 @@ Usage:
 
 from __future__ import annotations
 
+import builtins
 import threading
 import time
 
@@ -100,8 +101,8 @@ class VendorConnectorBase(DirectedInputsClass, ABC):
     # Each subclass gets its own lock and timestamp to avoid cross-connector interference.
     # This is intentionally class-level (not instance-level) so all instances of the same
     # connector type share rate limiting, but different connector types are independent.
-    _rate_limit_locks: ClassVar[dict[type, threading.Lock]] = {}
-    _last_request_times: ClassVar[dict[type, float]] = {}
+    _rate_limit_locks: ClassVar[dict[builtins.type[VendorConnectorBase], threading.Lock]] = {}
+    _last_request_times: ClassVar[dict[builtins.type[VendorConnectorBase], float]] = {}
 
     def __init__(
         self,
@@ -143,7 +144,7 @@ class VendorConnectorBase(DirectedInputsClass, ABC):
         # Tool registry for LangChain/MCP
         self._tools: list[StructuredTool] = []
         self._tool_functions: dict[str, Callable] = {}
-        self._tool_schemas: dict[str, type[BaseModel]] = {}
+        self._tool_schemas: dict[str, builtins.type[BaseModel]] = {}
 
     @property
     def api_key(self) -> str:
@@ -333,7 +334,7 @@ class VendorConnectorBase(DirectedInputsClass, ABC):
         func: Callable,
         name: str | None = None,
         description: str | None = None,
-        schema: type[BaseModel] | None = None,
+        schema: builtins.type[BaseModel] | None = None,
     ) -> None:
         """Register a function as a LangChain tool.
 

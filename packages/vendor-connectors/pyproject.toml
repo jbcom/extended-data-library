@@ -26,7 +26,7 @@ classifiers = [
 ]
 dependencies = [
     # === Core dependencies (minimal - HTTP client foundation) ===
-    # jbcom ecosystem
+    # Shared monorepo packages
     "extended-data-types",
     "lifecyclelogging",
     "directed-inputs-class",
@@ -329,7 +329,6 @@ omit = [
     # Test files
     "tests/*",
 ]
-relative_files = true
 
 [tool.coverage.xml]
 output = "coverage.xml"

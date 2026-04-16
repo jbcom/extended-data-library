@@ -1,4 +1,4 @@
-"""AWS Connector using jbcom ecosystem packages.
+"""AWS connector built on shared packages from this monorepo.
 
 This package provides AWS operations organized into submodules:
 - organizations: AWS Organizations and Control Tower account management

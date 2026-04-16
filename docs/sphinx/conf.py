@@ -5,6 +5,9 @@
 # autodoc2 parses Python source with astroid (no imports needed),
 # making it reliable in CI where dependencies may not be installed.
 
+from docutils import nodes
+from sphinx_markdown_builder.translator import MarkdownTranslator
+
 # -- Project information -----------------------------------------------------
 project = "Extended Data Library"
 copyright = "2025-2026, Jon Bogaty"
@@ -53,6 +56,10 @@ autodoc2_render_plugin = "myst"
 
 # Hide inherited members and undocumented dunder methods by default
 autodoc2_hidden_objects = ["inherited", "dunder"]
+autodoc2_hidden_regexes = [
+    r"vendor_connectors\.anthropic\.ContentBlock\.type",
+    r"vendor_connectors\.anthropic\.Message\.type",
+]
 
 # Merge class and __init__ docstrings
 autodoc2_class_docstring = "merge"
@@ -80,3 +87,19 @@ myst_enable_extensions = [
     "tasklist",
 ]
 myst_heading_anchors = 3
+
+
+class PatchedMarkdownTranslator(MarkdownTranslator):
+    """Handle docutils nodes the markdown builder leaves unsupported."""
+
+    def visit_abbreviation(self, node: nodes.abbreviation) -> None:  # noqa: ARG002
+        """Treat abbreviation nodes as transparent wrappers around their text."""
+
+    def depart_abbreviation(self, node: nodes.abbreviation) -> None:  # noqa: ARG002
+        """Keep abbreviation node rendering as plain text in markdown output."""
+
+
+def setup(app):
+    """Register markdown translator patches for the docs pipeline."""
+
+    app.set_translator("markdown", PatchedMarkdownTranslator, override=True)

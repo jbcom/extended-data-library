@@ -1,4 +1,4 @@
-"""Google Cloud and Workspace Connector using jbcom ecosystem packages."""
+"""Google Cloud and Workspace connector built on shared monorepo packages."""
 
 from __future__ import annotations
 
@@ -533,7 +533,20 @@ from vendor_connectors.google.constants import (
     GCP_REQUIRED_ROLES,
     GCP_SECURITY_PROJECT,
 )
+from vendor_connectors.google.jules import (
+    JulesConnector,
+    JulesError,
+    Session,
+    SessionState,
+    Source,
+)
 from vendor_connectors.google.services import GoogleServicesMixin
+from vendor_connectors.google.tools import (
+    get_crewai_tools,
+    get_langchain_tools,
+    get_strands_tools,
+    get_tools,
+)
 from vendor_connectors.google.workspace import GoogleWorkspaceMixin
 
 
@@ -548,17 +561,20 @@ class GoogleConnectorFull(
     """
 
 
-from vendor_connectors.google.tools import (
-    get_crewai_tools,
-    get_langchain_tools,
-    get_strands_tools,
-    get_tools,
-)
+class GoogleCloudConnector(GoogleConnector, GoogleCloudMixin):
+    """Google connector focused on Cloud Resource Manager and IAM operations."""
+
+
+class GoogleWorkspaceConnector(GoogleConnector, GoogleWorkspaceMixin):
+    """Google connector focused on Admin Directory user and group operations."""
+
+
+class GoogleBillingConnector(GoogleConnector, GoogleBillingMixin):
+    """Google connector focused on Cloud Billing account and project billing operations."""
 
 
 __all__ = [
     "DEFAULT_DOMAIN",
-    # Constants
     "DEFAULT_SCOPES",
     "DEFAULT_USER_OUS",
     "GCP_KMS",
@@ -566,41 +582,22 @@ __all__ = [
     "GCP_REQUIRED_ORGANIZATION_ROLES",
     "GCP_REQUIRED_ROLES",
     "GCP_SECURITY_PROJECT",
+    "GoogleBillingConnector",
     "GoogleBillingMixin",
+    "GoogleCloudConnector",
     "GoogleCloudMixin",
-    # Core connector classes
     "GoogleConnector",
     "GoogleConnectorFull",
     "GoogleServicesMixin",
-    # Mixins
-    "GoogleWorkspaceMixin",
-    "get_crewai_tools",
-    "get_langchain_tools",
-    "get_strands_tools",
-    # Tools
-    "get_tools",
-]
-
-# Jules AI Agent
-from vendor_connectors.google.jules import (
-    JulesConnector,
-    JulesError,
-    Session,
-    SessionState,
-    Source,
-)
-
-
-__all__ = [
-    "GoogleBillingConnector",
-    "GoogleCloudConnector",
-    # Existing exports...
-    "GoogleConnector",
     "GoogleWorkspaceConnector",
-    # Jules exports
+    "GoogleWorkspaceMixin",
     "JulesConnector",
     "JulesError",
     "Session",
     "SessionState",
     "Source",
+    "get_crewai_tools",
+    "get_langchain_tools",
+    "get_strands_tools",
+    "get_tools",
 ]

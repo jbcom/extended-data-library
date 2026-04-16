@@ -6,6 +6,8 @@ dictionaries, and to convert keys from camelCase to snake_case.
 
 from __future__ import annotations
 
+import builtins
+
 from collections import defaultdict
 from collections.abc import Callable, Mapping, MutableMapping
 from typing import Any, TypeVar
@@ -296,7 +298,7 @@ class SortedDefaultDict(defaultdict[KT, VT], SortedDict[KT, VT]):  # type: ignor
 
 def get_default_dict(
     use_sorted_dict: bool = False,
-    default_type: type[dict[Any, Any]] = dict,
+    default_type: builtins.type[dict[Any, Any]] = dict,
     levels: int = 2,
 ) -> defaultdict[str, Any] | Any:
     """Create a nested `defaultdict` with the specified number of levels.

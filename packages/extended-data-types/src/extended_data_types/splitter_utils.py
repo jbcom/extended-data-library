@@ -10,13 +10,17 @@ Functions:
 
 from __future__ import annotations
 
+import builtins
+
 from collections import defaultdict
 from typing import Any
 
 from extended_data_types.type_utils import typeof
 
 
-def split_list_by_type(input_list: list[Any], primitive_only: bool = False) -> defaultdict[type, list[Any]]:
+def split_list_by_type(
+    input_list: list[Any], primitive_only: bool = False
+) -> defaultdict[builtins.type[Any], list[Any]]:
     """Split a list by the type of its items, with an option to categorize by primitive types only.
 
     Args:
@@ -27,13 +31,15 @@ def split_list_by_type(input_list: list[Any], primitive_only: bool = False) -> d
     Returns:
         DefaultDict[type, List[Any]]: A defaultdict storing lists of elements categorized by their type.
     """
-    result: defaultdict[type, list[Any]] = defaultdict(list)
+    result: defaultdict[builtins.type[Any], list[Any]] = defaultdict(list)
     for item in input_list:
         result[typeof(item, primitive_only=primitive_only)].append(item)
     return result
 
 
-def split_dict_by_type(input_dict: dict[Any, Any], primitive_only: bool = False) -> defaultdict[type, dict[Any, Any]]:
+def split_dict_by_type(
+    input_dict: dict[Any, Any], primitive_only: bool = False
+) -> defaultdict[builtins.type[Any], dict[Any, Any]]:
     """Split a dictionary by the type of its values, with an option to categorize by primitive types only.
 
     Args:
@@ -44,7 +50,7 @@ def split_dict_by_type(input_dict: dict[Any, Any], primitive_only: bool = False)
     Returns:
         DefaultDict[type, Dict[Any, Any]]: A defaultdict storing dictionaries of elements categorized by their type.
     """
-    result: defaultdict[type, dict[Any, Any]] = defaultdict(dict)
+    result: defaultdict[builtins.type[Any], dict[Any, Any]] = defaultdict(dict)
     for key, value in input_dict.items():
         result[typeof(value, primitive_only=primitive_only)][key] = value
     return result
