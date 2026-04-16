@@ -29,6 +29,7 @@ import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/compone
     pip install vendor-connectors[slack]
     pip install vendor-connectors[vault]
     pip install vendor-connectors[anthropic]
+    pip install vendor-connectors[secrets]
     pip install vendor-connectors[meshy]
     ```
   </TabItem>
@@ -47,6 +48,12 @@ import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/compone
 The `crewai` extra currently resolves to `crewai[tools] >= 1.14.2rc1` because that is the first upstream line carrying the patched `uv` and `requests` floors. Once CrewAI publishes the same fix on a stable release line, this package can move back to a stable minimum.
 </Aside>
 
+<Aside type="tip">
+The `secrets` extra installs the Python connector surface for SecretSync. Full
+pipeline execution still requires the `secretsync` CLI binary or native
+bindings to be available in the runtime environment.
+</Aside>
+
 ---
 
 ## What You Get
@@ -54,6 +61,10 @@ The `crewai` extra currently resolves to `crewai[tools] >= 1.14.2rc1` because th
 <CardGrid>
   <Card title="Cloud Connectors" icon="seti:cloud">
     Typed clients for AWS, Google Cloud, GitHub, Slack, Vault, Zoom, Anthropic, Cursor, and Meshy.
+  </Card>
+  <Card title="SecretSync Bridge" icon="seti:go">
+    Python-facing access to SecretSync validation, dry-run, and pipeline
+    operations through `vendor_connectors.secrets`.
   </Card>
   <Card title="AI Tool Adapters" icon="seti:graphql">
     Framework-ready tools exposed from the same connector primitives through `get_tools(...)`.
@@ -78,6 +89,15 @@ vc = VendorConnectors()
 github = vc.get_github_client(github_owner="jbcom")
 slack = vc.get_slack_client()
 anthropic = vc.get_anthropic_client()
+```
+
+### SecretSync Connector
+
+```python
+from vendor_connectors.secrets import SecretsConnector
+
+connector = SecretsConnector()
+is_valid, message = connector.validate_config("pipeline.yaml")
 ```
 
 ### Framework Tools
@@ -115,4 +135,5 @@ Meshy is the broadest example because it supports all three surfaces. Other conn
 - [Package source](https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors)
 - [Changelog](https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md)
 - [API reference](/api/apidocs/vendor_connectors/vendor_connectors/)
+- [SecretSync package](/packages/secretssync/)
 - [Getting started](/getting-started/)

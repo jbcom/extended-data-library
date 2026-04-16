@@ -38,6 +38,7 @@ pip install vendor-connectors
 ```bash
 pip install vendor-connectors[langchain]     # LangChain / LangGraph tool adapters
 pip install vendor-connectors[crewai]        # CrewAI tool adapters
+pip install vendor-connectors[secrets]       # SecretSync Python connector surface
 pip install vendor-connectors[meshy,mcp]     # Meshy MCP server support
 pip install vendor-connectors[webhooks]      # Meshy webhooks
 pip install vendor-connectors[all]           # Everything
@@ -84,6 +85,19 @@ github = GitHubConnector(
     github_token=os.getenv("GITHUB_TOKEN")
 )
 ```
+
+### SecretSync from Python
+
+```python
+from vendor_connectors.secrets import SecretsConnector
+
+connector = SecretsConnector()
+is_valid, message = connector.validate_config("pipeline.yaml")
+```
+
+`vendor-connectors[secrets]` exposes the Python connector surface, but actual
+pipeline execution still requires either the `secretsync` CLI binary or native
+SecretSync bindings to be available in the environment.
 
 ### Three Interfaces Per Connector
 
