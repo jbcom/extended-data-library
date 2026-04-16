@@ -30,10 +30,10 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev"
-Issues = "https://github.com/extended-data-library/extended-data-types/issues"
-Source = "https://github.com/extended-data-library/extended-data-types"
-Changelog = "https://github.com/extended-data-library/extended-data-types/blob/main/packages/lifecyclelogging/CHANGELOG.md"
+Documentation = "https://extendeddata.dev/packages/logging/"
+Issues = "https://github.com/jbcom/extended-data-library/issues"
+Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/lifecyclelogging"
+Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/lifecyclelogging/CHANGELOG.md"
 
 [project.optional-dependencies]
 tests = [
@@ -45,12 +45,9 @@ tests = [
 ]
 docs = [
     "sphinx>=7.4.0",
-    "sphinxawesome-theme>=5.2.0",
-    "sphinx-autodoc2>=0.5.0",
-    "sphinx-autodoc-typehints>=2.2.0",
-    "sphinx-rtd-theme>=2.0.0",
     "myst-parser>=3.0.1",
-    "docutils>=0.21.2",
+    "sphinx-autodoc2>=0.5.0",
+    "sphinx-markdown-builder>=0.6.0",
 ]
 typing = ["mypy>=1.10.1"]
 

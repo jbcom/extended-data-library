@@ -313,5 +313,5 @@ Contributions are welcome! Please see the [Contributing Guidelines](https://gith
 
 - [**PyPI**](https://pypi.org/project/directed-inputs-class/)
 - [**GitHub**](https://github.com/jbcom/extended-data-library/tree/main/packages/directed-inputs-class)
-- [**Documentation**](https://extendeddata.dev)
+- [**Documentation**](https://extendeddata.dev/packages/inputs/)
 - [**Changelog**](https://github.com/jbcom/extended-data-library/blob/main/packages/directed-inputs-class/CHANGELOG.md)
