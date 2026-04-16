@@ -1,0 +1,118 @@
+---
+title: Vendor Connectors
+description: Vendor integrations for cloud APIs, service APIs, AI tool adapters, and MCP servers
+---
+
+import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+**Vendor Connectors** (`vendor-connectors`) provides typed connectors for cloud providers, service APIs, AI tool adapters, and MCP server surfaces. Install only the vendors and framework extras you need, or use the full bundle when you want the entire integration surface available in one environment.
+
+[![PyPI](https://img.shields.io/pypi/v/vendor-connectors.svg)](https://pypi.org/project/vendor-connectors/)
+[![Python](https://img.shields.io/pypi/pyversions/vendor-connectors.svg)](https://pypi.org/project/vendor-connectors/)
+[![CI](https://github.com/jbcom/extended-data-library/workflows/CI/badge.svg)](https://github.com/jbcom/extended-data-library/actions)
+
+---
+
+## Installation
+
+<Tabs>
+  <TabItem label="Base Package">
+    ```bash
+    pip install vendor-connectors
+    ```
+  </TabItem>
+  <TabItem label="Service Extras">
+    ```bash
+    pip install vendor-connectors[aws]
+    pip install vendor-connectors[google]
+    pip install vendor-connectors[github]
+    pip install vendor-connectors[slack]
+    pip install vendor-connectors[vault]
+    pip install vendor-connectors[anthropic]
+    pip install vendor-connectors[meshy]
+    ```
+  </TabItem>
+  <TabItem label="AI + MCP Extras">
+    ```bash
+    pip install vendor-connectors[langchain]
+    pip install vendor-connectors[crewai]
+    pip install vendor-connectors[mcp]
+    pip install vendor-connectors[meshy,mcp]
+    pip install vendor-connectors[all]
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="note">
+The `crewai` extra currently resolves to `crewai[tools] >= 1.14.2rc1` because that is the first upstream line carrying the patched `uv` and `requests` floors. Once CrewAI publishes the same fix on a stable release line, this package can move back to a stable minimum.
+</Aside>
+
+---
+
+## What You Get
+
+<CardGrid>
+  <Card title="Cloud Connectors" icon="seti:cloud">
+    Typed clients for AWS, Google Cloud, GitHub, Slack, Vault, Zoom, Anthropic, Cursor, and Meshy.
+  </Card>
+  <Card title="AI Tool Adapters" icon="seti:graphql">
+    Framework-ready tools exposed from the same connector primitives through `get_tools(...)`.
+  </Card>
+  <Card title="MCP Servers" icon="seti:config">
+    MCP entry points where a tool server makes sense, including the Meshy workflow surface.
+  </Card>
+  <Card title="Typed Core" icon="seti:python">
+    Shared retries, validation, logging, and input handling inherited from the rest of the monorepo.
+  </Card>
+</CardGrid>
+
+---
+
+## Quick Start
+
+```python
+from vendor_connectors import VendorConnectors
+
+vc = VendorConnectors()
+
+github = vc.get_github_client(github_owner="jbcom")
+slack = vc.get_slack_client()
+anthropic = vc.get_anthropic_client()
+```
+
+### Framework Tools
+
+```python
+from vendor_connectors.meshy.tools import get_tools
+
+langchain_tools = get_tools("langchain")
+crewai_tools = get_tools("crewai")
+```
+
+### Meshy MCP
+
+```bash
+pip install vendor-connectors[meshy,mcp]
+meshy-mcp
+```
+
+---
+
+## Integration Pattern
+
+Most connectors expose the same three layers:
+
+- Direct Python clients for application code.
+- `get_tools(framework=...)` adapters for LangChain or CrewAI.
+- MCP entry points where the connector benefits from tool-server usage.
+
+Meshy is the broadest example because it supports all three surfaces. Other connectors expose the subset that makes sense for their API shape.
+
+---
+
+## Related Links
+
+- [Package source](https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors)
+- [Changelog](https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md)
+- [API reference](/api/apidocs/vendor_connectors/vendor_connectors/)
+- [Getting started](/getting-started/)

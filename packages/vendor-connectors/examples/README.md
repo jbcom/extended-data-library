@@ -15,6 +15,10 @@ pip install vendor-connectors[aws,google,meshy]
 
 # For AI framework integration
 pip install vendor-connectors[langchain]
+pip install vendor-connectors[crewai]
+
+# For the Meshy MCP server
+pip install vendor-connectors[meshy,mcp]
 ```
 
 ## Examples

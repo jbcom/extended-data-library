@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,13 +7,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const docsRoot = resolve(__dirname, '../..');
 const contentDir = resolve(docsRoot, 'src/content/docs');
 
-/**
- * Extract all sidebar items with slugs from the Astro config.
- * We parse the config file as text to avoid importing Astro internals in unit tests.
- */
-async function loadAstroConfig() {
-  const { default: config } = await import('../../astro.config.mjs');
-  return config;
+function loadAstroConfigSource(): string {
+  return readFileSync(resolve(docsRoot, 'astro.config.mjs'), 'utf-8');
 }
 
 /**
@@ -57,27 +52,21 @@ function resolveSlugToFile(slug: string): string | null {
 }
 
 describe('Astro configuration', () => {
-  it('can be imported without errors', async () => {
-    const config = await loadAstroConfig();
-    expect(config).toBeDefined();
-    expect(config.site).toBe('https://extended-data.dev');
+  it('defines the production site URL', () => {
+    const configSource = loadAstroConfigSource();
+    expect(configSource).toContain("site: 'https://extended-data.dev'");
   });
 
-  it('has Starlight integration configured', async () => {
-    const config = await loadAstroConfig();
-    expect(config.integrations).toBeDefined();
-    expect(config.integrations.length).toBeGreaterThan(0);
+  it('has Starlight integration configured', () => {
+    const configSource = loadAstroConfigSource();
+    expect(configSource).toContain("import starlight from '@astrojs/starlight'");
+    expect(configSource).toContain('starlight({');
   });
 });
 
 describe('Starlight sidebar structure', () => {
-  it('has sidebar groups defined', async () => {
-    const config = await loadAstroConfig();
-    const starlight = config.integrations[0];
-    // Starlight stores its config internally; we access it from the config source
-    // Re-import the raw config to extract sidebar
-    const { readFileSync } = await import('node:fs');
-    const configSource = readFileSync(resolve(docsRoot, 'astro.config.mjs'), 'utf-8');
+  it('has sidebar groups defined', () => {
+    const configSource = loadAstroConfigSource();
     expect(configSource).toContain('sidebar');
   });
 });

@@ -34,17 +34,17 @@ dependencies = [
     "httpx>=0.28.1",
     "tenacity>=8.4.1",
     "pydantic>=2.11.9",
-    "requests>=2.32.5",
+    "requests>=2.33.0",
     # Utilities
     "deepmerge>=2.0",
     "more-itertools>=11.0.2",
 ]
 
 [project.urls]
-Documentation = "https://extendeddata.dev"
-Issues = "https://github.com/extended-data-library/extended-data-types/issues"
-Source = "https://github.com/extended-data-library/extended-data-types"
-Changelog = "https://github.com/extended-data-library/extended-data-types/blob/main/packages/vendor-connectors/CHANGELOG.md"
+Documentation = "https://extendeddata.dev/packages/vendor-connectors/"
+Issues = "https://github.com/jbcom/extended-data-library/issues"
+Source = "https://github.com/jbcom/extended-data-library/tree/main/packages/vendor-connectors"
+Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/vendor-connectors/CHANGELOG.md"
 
 [project.optional-dependencies]
 # === Vendor Connector Extras (install what you need) ===
@@ -98,10 +98,16 @@ secrets = [
 # LangChain, LangGraph, and any framework that uses LangChain tool format.
 langchain = [
     "langchain-core>=1.2.28",
+    # Intentionally pinned here to enforce the safe transitive minimum used by `langchain-core`.
+    "langsmith>=0.7.31",
 ]
 # CrewAI tools support
 crewai = [
-    "crewai[tools]>=1.14.1",
+    # `1.14.2rc1` is the first CrewAI line that carries the patched `uv`
+    # and `requests` transitive requirements.
+    "crewai[tools]>=1.14.2rc1",
+    # Intentionally pinned here to enforce the safe transitive minimum used by `crewai`.
+    "uv>=0.11.6",
 ]
 # AWS Strands agents support
 strands = [
@@ -114,7 +120,9 @@ mcp = [
 # All AI frameworks
 ai = [
     "langchain-core>=1.2.28",
-    "crewai[tools]>=1.14.1",
+    "langsmith>=0.7.31",
+    "crewai[tools]>=1.14.2rc1",
+    "uv>=0.11.6",
     "strands-agents>=1.35.0",
     "mcp>=1.26.0",
 ]
@@ -161,6 +169,7 @@ tests-e2e-langchain = [
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
     "langchain-core>=1.2.28",
+    "langsmith>=0.7.31",
     "langchain-anthropic>=1.4.0",
     "langgraph>=1.1.6",
 ]
@@ -173,7 +182,8 @@ tests-e2e-crewai = [
     "pytest-timeout>=2.4.0",
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
-    "crewai[tools]>=1.14.1",
+    "crewai[tools]>=1.14.2rc1",
+    "uv>=0.11.6",
 ]
 # E2E tests for Strands
 tests-e2e-strands = [
@@ -196,9 +206,11 @@ tests-e2e-all = [
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
     "langchain-core>=1.2.28",
+    "langsmith>=0.7.31",
     "langchain-anthropic>=1.4.0",
     "langgraph>=1.1.6",
-    "crewai[tools]>=1.14.1",
+    "crewai[tools]>=1.14.2rc1",
+    "uv>=0.11.6",
     "strands-agents>=1.35.0",
 ]
 
@@ -241,7 +253,9 @@ all = [
     "filelock>=3.25.2",
     # AI frameworks
     "langchain-core>=1.2.28",
-    "crewai[tools]>=1.14.1",
+    "langsmith>=0.7.31",
+    "crewai[tools]>=1.14.2rc1",
+    "uv>=0.11.6",
     "strands-agents>=1.35.0",
     "mcp>=1.26.0",
     # Features
