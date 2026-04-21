@@ -85,8 +85,8 @@ terraform = {
 hcl_text = encode_hcl2(terraform)
 wrapped = base64_encode(hcl_text, wrap_raw_data=False)
 
-decoded_text = base64_decode(wrapped, unwrap_raw_data=False)
-round_tripped = decode_hcl2(decoded_text)
+decoded_bytes = base64_decode(wrapped, unwrap_raw_data=False)
+round_tripped = decode_hcl2(decoded_bytes)
 
 assert round_tripped == terraform
 ```

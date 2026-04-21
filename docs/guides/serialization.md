@@ -100,7 +100,8 @@ from extended_data_types import base64_decode, base64_encode
 encoded = base64_encode("hello", wrap_raw_data=False)
 decoded = base64_decode(encoded, unwrap_raw_data=False)
 
-assert decoded == "hello"
+assert decoded == b"hello"
+assert decoded.decode("utf-8") == "hello"
 ```
 
 ## Decoding File Content

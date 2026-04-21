@@ -161,7 +161,8 @@ encoded = base64_encode(text, wrap_raw_data=False)
 print(encoded)  # SGVsbG8sIFdvcmxkIQ==
 
 decoded = base64_decode(encoded, unwrap_raw_data=False)
-print(decoded)  # Hello, World!
+print(decoded)  # b'Hello, World!'
+print(decoded.decode("utf-8"))  # Hello, World!
 
 # With data wrapping (useful for structured data)
 wrapped_encoded = base64_encode(text, wrap_raw_data=True)
