@@ -74,6 +74,18 @@ cd packages/secretssync && go test ./... && cd ../..
   documented API surface aligned.
 - Treat runnable examples as part of the public contract.
 - Do not commit generated `.tox/`, `docs/dist/`, or other local build output.
+- Do not commit local agent/editor state such as `.gemini/`, `memory-bank/`,
+  or one-off assistant instruction files.
+
+## Branch Hygiene
+
+- Delete feature branches after their pull requests are merged or closed.
+- Keep long-lived remote branches only when they have an active owner and a
+  documented reason.
+- Treat stale automation branches with no open pull request as cleanup
+  candidates, not as active work.
+- Before deleting an old branch, check whether it has an open pull request or
+  unique commits that need to be migrated into a current branch.
 
 ## Current Roadmap
 

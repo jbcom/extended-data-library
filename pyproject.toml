@@ -8,7 +8,7 @@ authors = [{ name = "Jon Bogaty", email = "jon@jonbogaty.com" }]
 
 [dependency-groups]
 dev = [
-    "extended-data-types[tests,mcp]",
+    "extended-data-types[tests]",
     "lifecyclelogging[tests]",
     "directed-inputs-class[tests]",
     "vendor-connectors[tests,aws,google,github,slack,vault,anthropic,mcp]",
@@ -28,6 +28,9 @@ workspace = { members = [
     "packages/vendor-connectors",
 ] }
 required-version = ">=0.5.0"
+# CrewAI currently caps python-dotenv below the patched 1.2.x line. Keep the
+# workspace lock on the patched dependency until upstream relaxes that cap.
+override-dependencies = ["python-dotenv>=1.2.2"]
 
 # ── Shared tool configuration ─────────────────────────
 

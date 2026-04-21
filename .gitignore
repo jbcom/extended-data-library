@@ -38,6 +38,8 @@ htmlcov/
 # IDE
 .idea/
 .vscode/
+.gemini/
+**/.gemini/
 *.swp
 *.swo
 *~
@@ -73,34 +75,11 @@ docs/sphinx/apidocs/
 # Screenshots (browser automation artifacts)
 *.png
 
-# START Ruler Generated Files
-/.aider.conf.yml
-/.amazonq/mcp.json
-/.amazonq/rules/ruler_q_rules.md
-/.cursor/mcp.json
-/.gemini/settings.json
-/.kiro/settings/mcp.json
-/.kiro/steering/ruler_kiro_instructions.md
-/.mcp.json
-/.vscode/mcp.json
-/AGENTS.md
-/CLAUDE.md
-/docs/.aider.conf.yml
-/docs/.amazonq/mcp.json
-/docs/.amazonq/rules/ruler_q_rules.md
-/docs/.kiro/steering/ruler_kiro_instructions.md
-/docs/AGENTS.md
-/docs/CLAUDE.md
-/packages/extended-data-types/tests/.aider.conf.yml
-/packages/extended-data-types/tests/.amazonq/mcp.json
-/packages/extended-data-types/tests/.amazonq/rules/ruler_q_rules.md
-/packages/extended-data-types/tests/.kiro/steering/ruler_kiro_instructions.md
-/packages/extended-data-types/tests/AGENTS.md
-/packages/extended-data-types/tests/CLAUDE.md
-/src/.aider.conf.yml
-/src/.amazonq/mcp.json
-/src/.amazonq/rules/ruler_q_rules.md
-/src/.kiro/steering/ruler_kiro_instructions.md
-/src/AGENTS.md
-/src/CLAUDE.md
-# END Ruler Generated Files
+# Local agent/editor state
+.aider.conf.yml
+.amazonq/
+.cursor/mcp.json
+.kiro/
+.mcp.json
+CLAUDE.md
+memory-bank/
