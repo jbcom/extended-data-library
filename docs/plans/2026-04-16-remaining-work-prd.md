@@ -7,11 +7,11 @@ Owner: Maintainers
 
 ## Executive Summary
 
-The monorepo is operational and materially more stable than it was before the
-recent cleanup push. `main` is clean, there are no open pull requests, there
-are no open GitHub issues, the docs site is live, package release automation is
-working, and the repo no longer depends on the removed control-center/agentic
-scaffolding for day-to-day work.
+As of 2026-04-16, the monorepo is operational and materially more stable than
+it was before the recent cleanup push. `main` is clean, there are no open pull
+requests, there are no open GitHub issues, the docs site is live, package
+release automation is working, and the repo no longer depends on the removed
+control-center/agentic scaffolding for day-to-day work.
 
 The remaining work is not a single blocking product bug. It is a set of
 maintainer-facing cleanup and hardening tracks that still matter because they
@@ -30,8 +30,8 @@ As of 2026-04-16:
 - GitHub open issues: `0`
 - Default branch: `main`
 - GitHub repo homepage: unset
-- GitHub repo description: still `Extended Data Types ` instead of a monorepo
-  description
+- GitHub repo description: still `Extended Data Types` with a trailing space
+  instead of a monorepo description
 - Unmerged remote branches with no open PR attached: `37`
 - Root instruction surface: `AGENTS.md` is current and tracked
 - Public docs host: `https://extended-data.dev`
@@ -117,8 +117,9 @@ like a single-package repository.
 
 #### Requirements
 
-- Update the GitHub repository description from `Extended Data Types ` to a
-  monorepo description that reflects all maintained packages.
+- Update the GitHub repository description from `Extended Data Types` with a
+  trailing space to a monorepo description that reflects all maintained
+  packages.
 - Set the GitHub repository homepage to `https://extended-data.dev`.
 - Verify that root README positioning matches the GitHub description and docs
   site headline.
@@ -304,7 +305,7 @@ docstring explicitly says the threshold is not implemented yet.
   - Anthropic
   - Cursor
   - Meshy
-  - SecretSync Python surface
+  - SecretSync Go package surface
 - Define a support-tier model and document it.
 - Ensure package README and docs site reflect those support tiers.
 - Identify any arguments, examples, or public methods that imply functionality
@@ -456,7 +457,7 @@ won’t know what to trust.
 - GitHub open PRs: `0`
 - Unmerged remote branches without open PRs: `37`
 - GitHub homepage URL: unset
-- GitHub repo description: `Extended Data Types `
+- GitHub repo description: `Extended Data Types` with a trailing space
 - Tracked internal/editor state:
   - `docs/.gemini/settings.json`
   - `memory-bank/activeContext.md`

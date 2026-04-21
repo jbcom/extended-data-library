@@ -78,7 +78,7 @@ cd packages/secretssync && go test ./... && cd ../..
 ## Current Roadmap
 
 - The active repository cleanup and hardening roadmap lives in
-  `docs/plans/2026-04-16-remaining-work-prd.md`.
+  [docs/plans/2026-04-16-remaining-work-prd.md](docs/plans/2026-04-16-remaining-work-prd.md).
 
 ## Commit Conventions
 
