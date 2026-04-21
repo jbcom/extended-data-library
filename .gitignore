@@ -39,7 +39,6 @@ htmlcov/
 .idea/
 .vscode/
 .gemini/
-**/.gemini/
 *.swp
 *.swo
 *~

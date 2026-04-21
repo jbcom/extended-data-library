@@ -75,7 +75,8 @@ cd packages/secretssync && go test ./... && cd ../..
 - Treat runnable examples as part of the public contract.
 - Do not commit generated `.tox/`, `docs/dist/`, or other local build output.
 - Do not commit local agent/editor state such as `.gemini/`, `memory-bank/`,
-  or one-off assistant instruction files.
+  Aider history/state files like `.aider.chat.history.md` and
+  `.aider.input.history`, or one-off assistant instruction files.
 
 ## Branch Hygiene
 

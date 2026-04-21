@@ -30,7 +30,7 @@ workspace = { members = [
 required-version = ">=0.5.0"
 # CrewAI currently caps python-dotenv below the patched 1.2.x line. Keep the
 # workspace lock on the patched dependency until upstream relaxes that cap.
-override-dependencies = ["python-dotenv>=1.2.2"]
+override-dependencies = ["python-dotenv>=1.2.2,<1.3.0"]
 
 # ── Shared tool configuration ─────────────────────────
 
