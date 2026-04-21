@@ -63,9 +63,9 @@ terraform = {"locals": [{"region": "us-east-1"}]}
 hcl_text = encode_hcl2(terraform)
 
 transport = base64_encode(hcl_text, wrap_raw_data=False)
-decoded_hcl = base64_decode(transport, unwrap_raw_data=False)
+decoded_hcl_bytes = base64_decode(transport, unwrap_raw_data=False)
 
-assert decode_hcl2(decoded_hcl) == terraform
+assert decode_hcl2(decoded_hcl_bytes) == terraform
 ```
 
 This is useful when a higher-level workflow needs raw text transport while the

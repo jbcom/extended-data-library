@@ -79,10 +79,12 @@ def demonstrate_terraform_handoff_workflow() -> None:
 
     hcl_text = encode_hcl2(terraform)
     wrapped = base64_encode(hcl_text, wrap_raw_data=False)
-    decoded_text = base64_decode(wrapped, unwrap_raw_data=False)
+    decoded_bytes = base64_decode(wrapped, unwrap_raw_data=False)
 
     print(hcl_text)
-    print(f"\nRound-tripped: {decode_hcl2(decoded_text) == terraform}")
+    print(f"\nTransport characters: {len(wrapped)}")
+    print(f"Raw decoded bytes: {len(decoded_bytes)}")
+    print(f"\nRound-tripped: {decode_hcl2(decoded_bytes) == terraform}")
 
 
 def demonstrate_api_payload_workflow() -> None:

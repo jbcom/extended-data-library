@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Serialization examples for extended-data-types library.
 
-This module demonstrates YAML, JSON, TOML, and Base64 encoding/decoding
+This module demonstrates YAML, JSON, TOML, HCL, and Base64 encoding/decoding
 utilities provided by the library.
 """
 
@@ -23,6 +23,8 @@ from extended_data_types import (
 
 def demonstrate_yaml() -> None:
     """Demonstrate YAML encoding and decoding."""
+    print("=== YAML Utilities ===\n")
+
     data = {
         "name": "example",
         "version": "1.0.0",
@@ -32,13 +34,18 @@ def demonstrate_yaml() -> None:
 
     # Encode to YAML
     yaml_str = encode_yaml(data)
+    print("Encoded YAML:")
+    print(yaml_str)
 
     # Decode from YAML
-    decode_yaml(yaml_str)
+    decoded = decode_yaml(yaml_str)
+    print(f"Decoded data: {decoded}")
 
 
 def demonstrate_json() -> None:
     """Demonstrate JSON encoding and decoding."""
+    print("\n=== JSON Utilities ===\n")
+
     data = {
         "users": [
             {"id": 1, "name": "Alice", "active": True},
@@ -49,13 +56,17 @@ def demonstrate_json() -> None:
 
     # Encode to JSON (uses orjson for speed)
     json_str = encode_json(data)
+    print(f"Encoded JSON: {json_str}")
 
     # Decode from JSON
-    decode_json(json_str)
+    decoded = decode_json(json_str)
+    print(f"Decoded data: {decoded}")
 
 
 def demonstrate_toml() -> None:
     """Demonstrate TOML encoding and decoding."""
+    print("\n=== TOML Utilities ===\n")
+
     data = {
         "package": {"name": "my-app", "version": "0.1.0"},
         "dependencies": {"requests": ">=2.28.0", "pyyaml": ">=6.0"},
@@ -63,9 +74,12 @@ def demonstrate_toml() -> None:
 
     # Encode to TOML
     toml_str = encode_toml(data)
+    print("Encoded TOML:")
+    print(toml_str)
 
     # Decode from TOML
-    decode_toml(toml_str)
+    decoded = decode_toml(toml_str)
+    print(f"Decoded data: {decoded}")
 
 
 def demonstrate_hcl() -> None:
@@ -96,16 +110,23 @@ def demonstrate_hcl() -> None:
 
 def demonstrate_base64() -> None:
     """Demonstrate Base64 encoding and decoding."""
+    print("\n=== Base64 Utilities ===\n")
+
     # Simple string encoding
     text = "Hello, World!"
     encoded = base64_encode(text, wrap_raw_data=False)
+    print(f"Original: {text}")
+    print(f"Base64 encoded: {encoded}")
 
     # Decoding
-    base64_decode(encoded, unwrap_raw_data=False)
+    decoded = base64_decode(encoded, unwrap_raw_data=False)
+    print(f"Raw decoded bytes: {decoded!r}")
+    print(f"Decoded text: {decoded.decode('utf-8')}")
 
     # With data wrapping (useful for structured data)
     wrapped_encoded = base64_encode(text, wrap_raw_data=True)
-    base64_decode(wrapped_encoded, unwrap_raw_data=True)
+    wrapped_decoded = base64_decode(wrapped_encoded, unwrap_raw_data=True)
+    print(f"Wrapped decoded data: {wrapped_decoded}")
 
 
 if __name__ == "__main__":

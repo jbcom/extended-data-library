@@ -12,6 +12,11 @@ from extended_data_types import (
     first_non_empty,
     flatten_list,
     flatten_map,
+    is_nothing,
+    removeprefix,
+    removesuffix,
+    sanitize_key,
+    truncate,
 )
 
 
@@ -19,6 +24,7 @@ def demonstrate_state_utilities() -> None:
     """Demonstrate state helper behavior."""
     print("=== State Utilities ===")
     state = {"name": "worker", "region": "", "enabled": True}
+    print("Is empty string nothing:", is_nothing(""))
     print("Any non-empty:", any_non_empty(state, "region", "name"))
     print("All non-empty:", all_non_empty(state["name"], state["enabled"]))
     print("First non-empty:", first_non_empty(None, "", "fallback"))
@@ -51,7 +57,18 @@ def demonstrate_map_utilities() -> None:
     print("Removed map:", removed)
 
 
+def demonstrate_string_utilities() -> None:
+    """Demonstrate basic string cleanup helpers."""
+    print("\n=== String Utilities ===")
+    text = "prefix_content_suffix"
+    print("Remove prefix:", removeprefix(text, "prefix_"))
+    print("Remove suffix:", removesuffix(text, "_suffix"))
+    print("Truncate:", truncate("This value is intentionally too long", 20))
+    print("Sanitize key:", sanitize_key("User Name (Primary)"))
+
+
 if __name__ == "__main__":
     demonstrate_state_utilities()
     demonstrate_list_utilities()
     demonstrate_map_utilities()
+    demonstrate_string_utilities()
