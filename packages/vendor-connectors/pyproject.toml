@@ -33,10 +33,10 @@ dependencies = [
     # HTTP client with retries
     "httpx>=0.28.1",
     # CrewAI/instructor currently cap tenacity below 9.
-    "tenacity>=8.4.1,<9.0.0",
+    "tenacity>=9.1.4,<10.0.0",
     # CrewAI currently caps pydantic below 2.12, and all optional extras must
     # remain jointly resolvable for the workspace lock.
-    "pydantic>=2.11.10,<2.12.dev0",
+    "pydantic>=2.13.3,<2.14",
     "requests>=2.33.1",
     # Utilities
     "deepmerge>=2.0",
@@ -53,7 +53,7 @@ Changelog = "https://github.com/jbcom/extended-data-library/blob/main/packages/v
 # === Vendor Connector Extras (install what you need) ===
 # AWS connector
 aws = [
-    "boto3>=1.42.92",
+    "boto3>=1.42.97",
 ]
 # Google Cloud connector
 google = [
@@ -78,13 +78,13 @@ vault = [
 zoom = []
 # Anthropic connector
 anthropic = [
-    "anthropic>=0.96.0",
+    "anthropic>=0.97.0",
 ]
 # Cursor connector (no extra deps)
 cursor = []
 # Meshy connector (extra utils for CLI/display)
 meshy = [
-    "rich>=13.7.0,<15.0.0",
+    "rich>=15.0.0,<16.0.0",
     "numpy>=2.2.6",
     "validators>=0.35.0",
     "filelock>=3.29.0",
@@ -100,43 +100,43 @@ secrets = [
 # langchain-core provides standard StructuredTool definitions that work with
 # LangChain, LangGraph, and any framework that uses LangChain tool format.
 langchain = [
-    "langchain-core>=1.3.0",
+    "langchain-core>=1.3.2",
     # Intentionally pinned here to enforce the safe transitive minimum used by `langchain-core`.
-    "langsmith>=0.7.33",
+    "langsmith>=0.7.37",
 ]
 # CrewAI tools support
 crewai = [
     # `1.14.2rc1` is the first CrewAI line that carries the patched `uv`
     # and `requests` transitive requirements.
-    "crewai[tools]>=1.14.2rc1",
+    "crewai[tools]>=1.14.3",
     # Intentionally pinned here to enforce the safe transitive minimum used by `crewai`.
-    "uv>=0.11.7",
+    "uv>=0.11.8",
 ]
 # AWS Strands agents support
 strands = [
-    "strands-agents>=1.36.0",
+    "strands-agents>=1.37.0",
 ]
 # MCP server support
 mcp = [
     # CrewAI currently caps MCP below 1.27; keep this extra jointly resolvable.
-    "mcp>=1.26.0,<1.27.dev0",
+    "mcp>=1.27.0,<1.28",
 ]
 # All AI frameworks
 ai = [
-    "langchain-core>=1.3.0",
-    "langsmith>=0.7.33",
-    "crewai[tools]>=1.14.2rc1",
-    "uv>=0.11.7",
-    "strands-agents>=1.36.0",
-    "mcp>=1.26.0,<1.27.dev0",
+    "langchain-core>=1.3.2",
+    "langsmith>=0.7.37",
+    "crewai[tools]>=1.14.3",
+    "uv>=0.11.8",
+    "strands-agents>=1.37.0",
+    "mcp>=1.27.0,<1.28",
 ]
 
 # === Feature Extras ===
 # Meshy webhooks support
 webhooks = [
-    "fastapi>=0.136.0",
-    "uvicorn>=0.45.0",
-    "pyngrok>=8.0.0",
+    "fastapi>=0.136.1",
+    "uvicorn>=0.46.0",
+    "pyngrok>=8.1.1",
 ]
 # Vector store for Meshy RAG embeddings
 vector = [
@@ -172,10 +172,10 @@ tests-e2e-langchain = [
     "pytest-timeout>=2.4.0",
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
-    "langchain-core>=1.3.0",
-    "langsmith>=0.7.33",
+    "langchain-core>=1.3.2",
+    "langsmith>=0.7.37",
     "langchain-anthropic>=1.4.1",
-    "langgraph>=1.1.9",
+    "langgraph>=1.1.10",
 ]
 # E2E tests for CrewAI
 tests-e2e-crewai = [
@@ -186,8 +186,8 @@ tests-e2e-crewai = [
     "pytest-timeout>=2.4.0",
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
-    "crewai[tools]>=1.14.2rc1",
-    "uv>=0.11.7",
+    "crewai[tools]>=1.14.3",
+    "uv>=0.11.8",
 ]
 # E2E tests for Strands
 tests-e2e-strands = [
@@ -198,7 +198,7 @@ tests-e2e-strands = [
     "pytest-timeout>=2.4.0",
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
-    "strands-agents>=1.36.0",
+    "strands-agents>=1.37.0",
 ]
 # All E2E tests
 tests-e2e-all = [
@@ -209,13 +209,13 @@ tests-e2e-all = [
     "pytest-timeout>=2.4.0",
     "pytest-vcr>=1.0.2",
     "vcrpy>=8.1.1",
-    "langchain-core>=1.3.0",
-    "langsmith>=0.7.33",
+    "langchain-core>=1.3.2",
+    "langsmith>=0.7.37",
     "langchain-anthropic>=1.4.1",
-    "langgraph>=1.1.9",
-    "crewai[tools]>=1.14.2rc1",
-    "uv>=0.11.7",
-    "strands-agents>=1.36.0",
+    "langgraph>=1.1.10",
+    "crewai[tools]>=1.14.3",
+    "uv>=0.11.8",
+    "strands-agents>=1.37.0",
 ]
 
 # === Documentation ===
@@ -232,18 +232,18 @@ dev = [
     "pytest-cov>=7.1.0",
     "pytest-mock>=3.15.1",
     "pytest-asyncio>=1.3.0",
-    "mypy>=1.20.1",
+    "mypy>=1.20.2",
     "types-requests>=2.33.0.20260408",
     # Development tools
     # CrewAI tools currently require beautifulsoup4 below 4.14.
-    "beautifulsoup4>=4.13.4,<4.14.dev0",
-    "rich>=13.7.0,<15.0.0",
+    "beautifulsoup4>=4.14.3,<4.15",
+    "rich>=15.0.0,<16.0.0",
 ]
 
 # === Full Installation (all vendors + all AI frameworks) ===
 all = [
     # Vendors
-    "boto3>=1.42.92",
+    "boto3>=1.42.97",
     "google-api-python-client>=2.194.0",
     "google-cloud-billing>=1.19.0",
     "google-cloud-resource-manager>=1.17.0",
@@ -251,22 +251,22 @@ all = [
     "python-graphql-client>=0.4.3",
     "slack-sdk>=3.41.0",
     "hvac>=2.4.0",
-    "anthropic>=0.96.0",
-    "rich>=13.7.0,<15.0.0",
+    "anthropic>=0.97.0",
+    "rich>=15.0.0,<16.0.0",
     "numpy>=2.2.6",
     "validators>=0.35.0",
     "filelock>=3.29.0",
     # AI frameworks
-    "langchain-core>=1.3.0",
-    "langsmith>=0.7.33",
-    "crewai[tools]>=1.14.2rc1",
-    "uv>=0.11.7",
-    "strands-agents>=1.36.0",
-    "mcp>=1.26.0,<1.27.dev0",
+    "langchain-core>=1.3.2",
+    "langsmith>=0.7.37",
+    "crewai[tools]>=1.14.3",
+    "uv>=0.11.8",
+    "strands-agents>=1.37.0",
+    "mcp>=1.27.0,<1.28",
     # Features
-    "fastapi>=0.136.0",
-    "uvicorn>=0.45.0",
-    "pyngrok>=8.0.0",
+    "fastapi>=0.136.1",
+    "uvicorn>=0.46.0",
+    "pyngrok>=8.1.1",
     "sqlite-vec>=0.1.9",
     "sentence-transformers>=5.4.1",
 ]
