@@ -28,7 +28,7 @@ jobs:
       secretssync--release_created: ${{ steps.release.outputs['packages/secretssync--release_created'] }}
       secretssync--tag_name: ${{ steps.release.outputs['packages/secretssync--tag_name'] }}
     steps:
-      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
           config-file: release-please-config.json
@@ -171,7 +171,7 @@ jobs:
           cache-dependency-path: packages/secretssync/go.sum
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@e24998b8b67b290c2fa8b7c14fcfa7de2c5c9b8c # v7
+        uses: goreleaser/goreleaser-action@1a80836c5c9d9e5755a25cb59ec6f45a3b5f41a8 # v7
         with:
           distribution: goreleaser
           version: latest
